@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL ─────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-fittrack}
+      POSTGRES_USER: ${POSTGRES_USER:-fittrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fittrack} -d ${POSTGRES_DB:-fittrack}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── FastAPI backend ────────────────────────────────────────
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-fittrack}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-fittrack}
+      APP_ENV: ${APP_ENV:-development}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Hot-reload in development: mount source over the image copy.
+      - ./apps/api:/app
+    command: >
+      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  # ── Next.js frontend ───────────────────────────────────────
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      target: development
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      INTERNAL_API_URL: http://api:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    volumes:
+      # node_modules and .next in named volumes for performance.
+      # Source files come from the image (see Dockerfile development stage).
+      # To enable hot-reload, uncomment the bind mount below — requires
+      # the project folder path to have no spaces:
+      # - ./apps/web:/app
+      - web_node_modules:/app/node_modules
+      - web_next:/app/.next
+    command: npm run dev
+
+volumes:
+  postgres_data:
+  web_node_modules:
+  web_next:

@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Colour tokens referenced by components */
+    --color-brand: theme("colors.brand.500");
+    --color-brand-dark: theme("colors.brand.600");
+    --color-surface-bg: theme("colors.surface.50");
+    --color-surface-card: theme("colors.white");
+    --color-text-primary: theme("colors.surface.900");
+    --color-text-muted: theme("colors.surface.500");
+    --color-border: theme("colors.surface.200");
+    --color-error: theme("colors.red.600");
+    --color-warning: theme("colors.amber.500");
+    --color-success: theme("colors.brand.500");
+  }
+
+  /* Respect reduced-motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-surface-50 text-surface-900;
+  }
+
+  /* Visible focus ring for keyboard navigation */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500 rounded-sm;
+  }
+}
+
+@layer components {
+  /* Skip navigation link for screen readers */
+  .skip-nav {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50
+           focus:px-4 focus:py-2 focus:bg-brand-500 focus:text-white focus:rounded-md
+           focus:font-medium;
+  }
+}

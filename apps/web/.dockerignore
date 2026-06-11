@@ -1,0 +1,7 @@
+node_modules
+.next
+.env
+.env.local
+*.md
+# Empty stub — all pages live in src/app, not this directory
+app
