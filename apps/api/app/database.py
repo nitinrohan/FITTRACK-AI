@@ -44,6 +44,11 @@ def _get_engine() -> Engine:
     return _engine
 
 
+def get_session_factory() -> sessionmaker[Session]:
+    """Return the SQLAlchemy session factory (public alias for scripts/seeds)."""
+    return _get_session_factory()
+
+
 def _get_session_factory() -> sessionmaker[Session]:
     global _SessionLocal
     if _SessionLocal is None:

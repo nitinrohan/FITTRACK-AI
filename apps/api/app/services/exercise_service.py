@@ -14,7 +14,7 @@ import uuid
 
 from sqlalchemy.orm import Session
 
-from app.exceptions import ConflictError, ForbiddenError, NotFoundError
+from app.exceptions import ForbiddenError, NotFoundError
 from app.models.exercise import Exercise
 from app.repositories import exercise_repository
 from app.schemas.exercises import ExerciseResponse

@@ -51,7 +51,9 @@ class CreateExerciseRequest(BaseModel):
     def validate_muscle_groups(cls, v: object) -> list[str]:
         if isinstance(v, str):
             return [m.strip() for m in v.split(",") if m.strip()]
-        return list(v) if v else []
+        if isinstance(v, list | tuple):
+            return [str(item).strip() for item in v if str(item).strip()]
+        return []
 
     @field_validator("name")
     @classmethod
@@ -74,7 +76,9 @@ class UpdateExerciseRequest(BaseModel):
             return None
         if isinstance(v, str):
             return [m.strip() for m in v.split(",") if m.strip()]
-        return list(v)
+        if isinstance(v, list | tuple):
+            return [str(item).strip() for item in v if str(item).strip()]
+        return []
 
 
 # ── Responses ─────────────────────────────────────────────────────────────────
@@ -95,7 +99,7 @@ class ExerciseResponse(BaseModel):
     model_config = {"from_attributes": True}
 
     @classmethod
-    def from_orm_with_groups(cls, obj: object) -> "ExerciseResponse":
+    def from_orm_with_groups(cls, obj: object) -> ExerciseResponse:
         """Build response, converting CSV muscle_groups to list."""
         from app.models.exercise import Exercise as ExerciseModel
 

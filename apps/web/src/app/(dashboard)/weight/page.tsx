@@ -312,7 +312,7 @@ function EntryRow({ entry, onDelete }: EntryRowProps) {
             <span>{entry.body_fat_pct.toFixed(1)}% body fat</span>
           )}
           {entry.notes && (
-            <span className="truncate italic">"{entry.notes}"</span>
+            <span className="truncate italic">&ldquo;{entry.notes}&rdquo;</span>
           )}
         </div>
       </div>

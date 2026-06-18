@@ -25,7 +25,10 @@ from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 if TYPE_CHECKING:
     from app.models.exercise import Exercise
     from app.models.goal import Goal
+    from app.models.measurement import BodyMeasurement
+    from app.models.nutrition import Food, FoodLog, WaterLog
     from app.models.weight_entry import WeightEntry
+    from app.models.workout import Workout, WorkoutTemplate
 
 
 class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
@@ -76,6 +79,42 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     )
     exercises: Mapped[list[Exercise]] = relationship(
         "Exercise",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    workout_templates: Mapped[list[WorkoutTemplate]] = relationship(
+        "WorkoutTemplate",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    workouts: Mapped[list[Workout]] = relationship(
+        "Workout",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    foods: Mapped[list[Food]] = relationship(
+        "Food",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    food_logs: Mapped[list[FoodLog]] = relationship(
+        "FoodLog",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    water_logs: Mapped[list[WaterLog]] = relationship(
+        "WaterLog",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    body_measurements: Mapped[list[BodyMeasurement]] = relationship(
+        "BodyMeasurement",
         back_populates="user",
         cascade="all, delete-orphan",
         lazy="dynamic",

@@ -10,6 +10,7 @@ System exercises (is_system=True) are global and visible to all users.
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from sqlalchemy.orm import Session
 
@@ -17,7 +18,7 @@ from app.repositories import exercise_repository
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_EXERCISES: list[dict] = [
+SYSTEM_EXERCISES: list[dict[str, Any]] = [
     # ── Strength — Chest ──────────────────────────────────────────────
     {
         "name": "Barbell Bench Press",
@@ -41,7 +42,7 @@ SYSTEM_EXERCISES: list[dict] = [
         "equipment": "barbell",
         "muscle_groups": ["upper chest", "triceps", "shoulders"],
         "description": "Upper-chest focused bench press variation.",
-        "instructions": "Set bench to 30–45°. Grip bar slightly wider than shoulders and press with focus on upper chest.",
+        "instructions": "Set bench to 30-45 degrees. Grip bar slightly wider than shoulders and press with focus on upper chest.",
     },
     {
         "name": "Push-Up",
@@ -319,7 +320,7 @@ SYSTEM_EXERCISES: list[dict] = [
         "equipment": "none",
         "muscle_groups": ["quads", "hamstrings", "calves", "glutes"],
         "description": "Outdoor or treadmill running.",
-        "instructions": "Maintain an upright posture, relaxed arms, and a cadence of 170–180 steps/min.",
+        "instructions": "Maintain an upright posture, relaxed arms, and a cadence of 170-180 steps/min.",
     },
     {
         "name": "Cycling",
@@ -474,9 +475,10 @@ def seed_exercises(db: Session) -> int:
 if __name__ == "__main__":
     import logging
 
-    from app.database import SessionLocal
+    from app.database import get_session_factory
 
     logging.basicConfig(level=logging.INFO)
+    SessionLocal = get_session_factory()
     with SessionLocal() as session:
         n = seed_exercises(session)
         print(f"Done — {n} exercises inserted.")

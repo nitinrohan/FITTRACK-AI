@@ -6,16 +6,24 @@ The MVP is designed for one user and built to expand into a multi-user platform 
 
 ---
 
-## Features (Phase 1 — Foundation)
+## What's Built
 
-- Clean project structure with frontend, backend, and infrastructure separation
-- FastAPI backend with health + readiness endpoints, structured logging, and OpenAPI docs
-- Next.js 14 App Router frontend with TypeScript strict mode and Tailwind CSS
-- PostgreSQL with SQLAlchemy 2.0 and Alembic migrations
-- Docker Compose for local development
-- Environment-based configuration with no hard-coded secrets
-- Backend tests with pytest (18 passing), ruff lint (clean), mypy type-checking
-- GitHub Actions CI pipeline
+**Phases 1–10 complete.** 362 backend tests passing, ruff clean, mypy 0 errors, tsc 0 errors.
+
+| Feature | Details |
+|---|---|
+| **Foundation** | FastAPI + Next.js + PostgreSQL + Docker Compose + GitHub Actions CI |
+| **Authentication** | JWT + bcrypt, register/login/logout/refresh, HTTP-only cookies, route protection |
+| **Onboarding** | Multi-step wizard, unit preferences (metric/imperial), timezone, fitness level |
+| **Goals** | Create/track fitness goals with progress calculation |
+| **Exercise library** | 60-exercise seed, category + equipment filters, search |
+| **Workout templates** | Create reusable templates with ordered exercises |
+| **Workout logging** | Active workout timer, set/rep/weight/duration logging, personal record detection |
+| **Workout history** | Full history with filter tabs, volume calculations |
+| **Nutrition tracking** | Food database, meal logging, daily macro totals (calories, protein, carbs, fat) |
+| **Body measurements** | Weight entries + body measurements (chest, waist, hips, etc.) with trend tracking |
+| **Dashboard** | Summary widgets: recent workouts, weight trend, goal progress, macro summary |
+| **AI summaries** | Provider-independent AI service, weekly summary generation, usage logging with cost tracking |
 
 ---
 
@@ -166,26 +174,35 @@ npm run dev   # http://localhost:3000
 ```
 fittrack-ai/
 ├── apps/
-│   ├── api/                  # FastAPI backend
+│   ├── api/                      # FastAPI backend
 │   │   ├── app/
-│   │   │   ├── main.py       # App factory, middleware, router wiring
-│   │   │   ├── config.py     # Settings (pydantic-settings)
-│   │   │   ├── database.py   # SQLAlchemy engine and session
-│   │   │   ├── logging_config.py
-│   │   │   ├── exceptions.py # Custom exceptions + handlers
-│   │   │   ├── models/       # SQLAlchemy ORM models
-│   │   │   ├── schemas/      # Pydantic request/response schemas
-│   │   │   ├── routers/      # FastAPI route handlers
-│   │   │   └── core/         # Shared utilities (pagination etc.)
-│   │   ├── alembic/          # Database migrations
-│   │   └── tests/            # pytest test suite
-│   └── web/                  # Next.js 14 frontend
+│   │   │   ├── main.py           # App factory, middleware, router wiring
+│   │   │   ├── config.py         # Settings (pydantic-settings)
+│   │   │   ├── database.py       # SQLAlchemy engine and session
+│   │   │   ├── models/           # ORM models: user, goal, exercise, workout,
+│   │   │   │                     #   nutrition, measurement, weight_entry, ai_log
+│   │   │   ├── schemas/          # Pydantic request/response schemas
+│   │   │   ├── repositories/     # Data-access layer (query logic)
+│   │   │   ├── services/         # Business logic (calculations, AI, summaries)
+│   │   │   ├── routers/          # Route handlers: auth, users, goals, exercises,
+│   │   │   │                     #   workouts, nutrition, measurements, weight,
+│   │   │   │                     #   dashboard, ai, health
+│   │   │   ├── seeds/            # Development seed data (60 exercises)
+│   │   │   └── core/             # Shared utilities (pagination, security)
+│   │   ├── alembic/              # 8 versioned migrations
+│   │   └── tests/                # 362-test pytest suite
+│   └── web/                      # Next.js 15 frontend
 │       └── src/
-│           ├── app/          # App Router pages and layouts
-│           ├── components/   # Reusable UI components
-│           └── lib/          # API client, utilities, types
-├── docs/                     # Architecture and design documentation
-├── .github/workflows/        # GitHub Actions CI
+│           ├── app/
+│           │   ├── (auth)/       # Login + register pages
+│           │   └── (dashboard)/  # Dashboard, goals, workouts, templates,
+│           │                     #   nutrition, measurements, weight pages
+│           ├── components/       # Reusable UI components
+│           ├── features/         # Domain hooks (workouts, nutrition, etc.)
+│           ├── lib/              # API client wrappers per domain
+│           └── types/            # TypeScript interfaces per domain
+├── docs/                         # Architecture, decisions, data model, security, AI
+├── .github/workflows/            # GitHub Actions CI
 ├── docker-compose.yml
 ├── .env.example
 └── Makefile
@@ -195,7 +212,7 @@ fittrack-ai/
 
 ## Running Tests Manually
 
-### Backend (all 18 passing)
+### Backend (362 tests)
 
 ```bash
 cd apps/api
@@ -206,12 +223,18 @@ export JWT_SECRET_KEY="test-jwt-secret"
 pytest tests/ -v
 ```
 
-### Lint
+### Lint and type-checking
 
 ```bash
 cd apps/api
-ruff check app tests   # Should report: All checks passed!
+ruff check app tests   # All checks passed!
+mypy app               # 0 errors
+
+cd apps/web
+npx tsc --noEmit       # 0 errors
 ```
+
+> **Note:** Jest crashes with a Bus error in some sandbox environments (pre-existing Docker/Node issue). Use `tsc --noEmit` as the reliable frontend check until the environment is resolved.
 
 ---
 
@@ -246,13 +269,18 @@ Ensure the source volumes are mounted (check `docker-compose.yml`). Restart with
 
 | Phase | Focus | Status |
 |---|---|---|
-| 0 | Workspace audit | ✅ Complete |
-| 1 | Foundation | ✅ Complete |
+| 1 | Project foundation | ✅ Complete |
 | 2 | Authentication and user profiles | ✅ Complete |
-| 3 | Exercise library | ✅ Complete |
-| 4 | Workout templates | 🔜 Next |
-| 5 | Workout logging and history | Planned |
-| 6 | Nutrition and wellness | Planned |
-| 7 | Measurements, goals, dashboard | Planned |
-| 8 | AI assistant | Planned |
-| 9 | Privacy, export, polish | Planned |
+| 3 | Onboarding and user preferences | ✅ Complete |
+| 4 | Goals | ✅ Complete |
+| 5 | Exercise library + weight entries | ✅ Complete |
+| 6 | Workout templates + logging | ✅ Complete |
+| 7 | Workout history and PR detection | ✅ Complete |
+| 8 | Nutrition tracking | ✅ Complete |
+| 9 | Body measurements | ✅ Complete |
+| 10 | Dashboard + AI summaries | ✅ Complete |
+| 11 | Water, sleep, steps, and wellness | 🔜 Next |
+| 12 | Habits | Planned |
+| 13 | Progress charts | Planned |
+| 14 | Privacy, export, and account deletion | Planned |
+| 15 | Integrations and platform features | Planned |

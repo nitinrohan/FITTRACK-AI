@@ -22,7 +22,6 @@ from fastapi.testclient import TestClient
 from app.core.security import create_access_token
 from app.models.exercise import Exercise
 
-
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 def _make_user() -> MagicMock:
@@ -356,26 +355,22 @@ class TestExerciseService:
         requester_id = uuid.uuid4()
         exercise = _make_exercise(user_id=owner_id, is_system=False)
 
-        with patch(
-            "app.repositories.exercise_repository.get_by_id",
-            return_value=exercise,
+        with (
+            patch("app.repositories.exercise_repository.get_by_id", return_value=exercise),
+            pytest.raises(NotFoundError),
         ):
-            with pytest.raises(NotFoundError):
-                exercise_service.get_exercise(MagicMock(), exercise.id, requester_id)
+            exercise_service.get_exercise(MagicMock(), exercise.id, requester_id)
 
     def test_update_exercise_raises_forbidden_for_system(self) -> None:
         from app.exceptions import ForbiddenError
         from app.services import exercise_service
 
         exercise = _make_exercise(is_system=True)
-        with patch(
-            "app.repositories.exercise_repository.get_by_id",
-            return_value=exercise,
+        with (
+            patch("app.repositories.exercise_repository.get_by_id", return_value=exercise),
+            pytest.raises(ForbiddenError),
         ):
-            with pytest.raises(ForbiddenError):
-                exercise_service.update_exercise(
-                    MagicMock(), exercise.id, uuid.uuid4(), name="New"
-                )
+            exercise_service.update_exercise(MagicMock(), exercise.id, uuid.uuid4(), name="New")
 
     def test_delete_exercise_raises_forbidden_for_other_user(self) -> None:
         from app.exceptions import ForbiddenError
@@ -383,28 +378,22 @@ class TestExerciseService:
 
         owner_id = uuid.uuid4()
         exercise = _make_exercise(user_id=owner_id, is_system=False)
-        with patch(
-            "app.repositories.exercise_repository.get_by_id",
-            return_value=exercise,
+        with (
+            patch("app.repositories.exercise_repository.get_by_id", return_value=exercise),
+            pytest.raises(ForbiddenError),
         ):
-            with pytest.raises(ForbiddenError):
-                exercise_service.delete_exercise(
-                    MagicMock(), exercise.id, uuid.uuid4()
-                )
+            exercise_service.delete_exercise(MagicMock(), exercise.id, uuid.uuid4())
 
     def test_delete_exercise_raises_forbidden_for_system(self) -> None:
         from app.exceptions import ForbiddenError
         from app.services import exercise_service
 
         exercise = _make_exercise(is_system=True)
-        with patch(
-            "app.repositories.exercise_repository.get_by_id",
-            return_value=exercise,
+        with (
+            patch("app.repositories.exercise_repository.get_by_id", return_value=exercise),
+            pytest.raises(ForbiddenError),
         ):
-            with pytest.raises(ForbiddenError):
-                exercise_service.delete_exercise(
-                    MagicMock(), exercise.id, uuid.uuid4()
-                )
+            exercise_service.delete_exercise(MagicMock(), exercise.id, uuid.uuid4())
 
 
 # ── Seed helper tests ──────────────────────────────────────────────────────────
