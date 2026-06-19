@@ -12,12 +12,88 @@
  * was present but expired) it redirects to /auth/login.
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/use-auth";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { cn } from "@/lib/utils";
+
+// ── Theme toggle ──────────────────────────────────────────────────────────────
+
+function useTheme() {
+  const [isDark, setIsDark] = useState(false);
+
+  // On mount: read saved preference, then apply it.
+  useEffect(() => {
+    const saved = localStorage.getItem("fittrack-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const dark = saved ? saved === "dark" : prefersDark;
+    setIsDark(dark);
+    document.documentElement.classList.toggle("dark", dark);
+  }, []);
+
+  function toggle() {
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("fittrack-theme", next ? "dark" : "light");
+  }
+
+  return { isDark, toggle };
+}
+
+function ThemeToggle() {
+  const { isDark, toggle } = useTheme();
+  return (
+    <button
+      onClick={toggle}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Light mode" : "Dark mode"}
+      className={cn(
+        "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
+        "text-surface-500 hover:bg-surface-100 hover:text-surface-700",
+        "dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500",
+      )}
+    >
+      {isDark ? (
+        // Sun icon
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-4 w-4"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+        </svg>
+      ) : (
+        // Moon icon
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-4 w-4"
+          aria-hidden="true"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
+// ── Layout ────────────────────────────────────────────────────────────────────
 
 export default function DashboardLayout({
   children,
@@ -32,33 +108,25 @@ export default function DashboardLayout({
     if (!user) {
       router.replace("/auth/login");
     } else if (needsOnboarding) {
-      // New user: redirect to the onboarding wizard before showing the dashboard.
       router.replace("/onboarding");
     }
   }, [isInitialized, user, needsOnboarding, router]);
 
-  // Show full-screen loader during initial session restore.
   if (!isInitialized || isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-surface-50">
+      <div className="flex min-h-screen items-center justify-center bg-surface-50 dark:bg-surface-900">
         <LoadingSpinner size="lg" label="Loading your account…" />
       </div>
     );
   }
 
-  // Avoid rendering children if we know the user isn't authenticated
-  // or needs onboarding. The useEffect above will trigger the redirect.
   if (!user || needsOnboarding) {
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-surface-50">
-      {/*
-       * Navigation shell — placeholder until Phase 5 (Dashboard).
-       * A real nav with user menu, links, and mobile drawer will be built then.
-       */}
-      <header className="border-b border-surface-200 bg-white">
+    <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
+      <header className="border-b border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
             <Link
@@ -84,16 +152,18 @@ export default function DashboardLayout({
                   <line x1="14" y1="1" x2="14" y2="4" />
                 </svg>
               </div>
-              <span className="font-semibold text-surface-900">FitTrack AI</span>
+              <span className="font-semibold text-surface-900 dark:text-surface-50">
+                FitTrack AI
+              </span>
             </Link>
             <NavLinks />
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-surface-500 sm:block">
+          <div className="flex items-center gap-2">
+            <span className="hidden text-sm text-surface-500 dark:text-surface-400 sm:block">
               {user.profile?.display_name ?? user.email}
             </span>
-            {/* Sign-out button — placeholder, will be in proper nav in Phase 5 */}
+            <ThemeToggle />
             <SignOutButton />
           </div>
         </div>
@@ -104,6 +174,8 @@ export default function DashboardLayout({
   );
 }
 
+// ── Nav links ─────────────────────────────────────────────────────────────────
+
 const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/dashboard/goals", label: "Goals" },
@@ -112,6 +184,7 @@ const NAV_LINKS = [
   { href: "/dashboard/workouts", label: "Workouts" },
   { href: "/dashboard/nutrition", label: "Nutrition" },
   { href: "/dashboard/measurements", label: "Measurements" },
+  { href: "/dashboard/wellness", label: "Wellness" },
 ] as const;
 
 function NavLinks() {
@@ -133,8 +206,8 @@ function NavLinks() {
                   "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500",
                   active
-                    ? "bg-brand-50 text-brand-700"
-                    : "text-surface-600 hover:bg-surface-100 hover:text-surface-900"
+                    ? "bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300"
+                    : "text-surface-600 hover:bg-surface-100 hover:text-surface-900 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-100"
                 )}
               >
                 {label}
@@ -146,6 +219,8 @@ function NavLinks() {
     </nav>
   );
 }
+
+// ── Sign-out ──────────────────────────────────────────────────────────────────
 
 function SignOutButton() {
   const router = useRouter();
@@ -160,7 +235,12 @@ function SignOutButton() {
   return (
     <button
       onClick={handleSignOut}
-      className="rounded-lg px-3 py-1.5 text-sm text-surface-600 hover:bg-surface-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+      className={cn(
+        "rounded-lg px-3 py-1.5 text-sm transition-colors",
+        "text-surface-600 hover:bg-surface-100",
+        "dark:text-surface-400 dark:hover:bg-surface-700",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500",
+      )}
     >
       Sign out
     </button>

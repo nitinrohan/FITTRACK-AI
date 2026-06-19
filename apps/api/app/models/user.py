@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from app.models.measurement import BodyMeasurement
     from app.models.nutrition import Food, FoodLog, WaterLog
     from app.models.weight_entry import WeightEntry
+    from app.models.wellness import DailySteps, SleepLog, WellnessLog
     from app.models.workout import Workout, WorkoutTemplate
 
 
@@ -115,6 +116,24 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     )
     body_measurements: Mapped[list[BodyMeasurement]] = relationship(
         "BodyMeasurement",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    sleep_logs: Mapped[list[SleepLog]] = relationship(
+        "SleepLog",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    daily_steps: Mapped[list[DailySteps]] = relationship(
+        "DailySteps",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    wellness_logs: Mapped[list[WellnessLog]] = relationship(
+        "WellnessLog",
         back_populates="user",
         cascade="all, delete-orphan",
         lazy="dynamic",

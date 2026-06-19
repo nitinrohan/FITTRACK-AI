@@ -114,6 +114,8 @@ def log_weight(
         measured_at=body.measured_at,
         notes=body.notes,
     )
+    db.commit()
+    db.refresh(entry)
     return _to_response(entry, height_cm)
 
 
@@ -152,6 +154,8 @@ def update_entry(
 
     fields.update(raw)
     entry = weight_repository.update_entry(db, entry, **fields)
+    db.commit()
+    db.refresh(entry)
     return _to_response(entry, height_cm)
 
 
@@ -164,6 +168,7 @@ def delete_entry(
     if entry is None:
         raise NotFoundError("Weight entry not found")
     weight_repository.delete_entry(db, entry)
+    db.commit()
 
 
 def list_entries(

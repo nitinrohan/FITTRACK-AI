@@ -44,6 +44,7 @@ from app.routers import (
     nutrition,
     users,
     weight,
+    wellness,
     workouts,
 )
 
@@ -143,6 +144,9 @@ def create_app() -> FastAPI:
 
     # ai router — weekly summary and user decision recording.
     app.include_router(ai.router)
+
+    # wellness router — sleep, steps, and wellness check-in.
+    app.include_router(wellness.router)
 
     return app
 

@@ -17,6 +17,20 @@
     --color-success: theme("colors.brand.500");
   }
 
+  /* Dark mode overrides — applied when <html class="dark"> is set */
+  .dark {
+    --color-brand: theme("colors.brand.400");
+    --color-brand-dark: theme("colors.brand.500");
+    --color-surface-bg: theme("colors.surface.900");
+    --color-surface-card: theme("colors.surface.800");
+    --color-text-primary: theme("colors.surface.50");
+    --color-text-muted: theme("colors.surface.400");
+    --color-border: theme("colors.surface.700");
+    --color-error: theme("colors.red.400");
+    --color-warning: theme("colors.amber.400");
+    --color-success: theme("colors.brand.400");
+  }
+
   /* Respect reduced-motion preference */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -34,7 +48,7 @@
   }
 
   body {
-    @apply bg-surface-50 text-surface-900;
+    @apply bg-surface-50 text-surface-900 dark:bg-surface-900 dark:text-surface-50;
   }
 
   /* Visible focus ring for keyboard navigation */

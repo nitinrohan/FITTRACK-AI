@@ -24,7 +24,16 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 # Import all models so Alembic's autogenerate detects them.
 # As new models are added, import them here.
-from app.models import ai_log, exercise, goal, measurement, nutrition, user, weight_entry, workout  # noqa: F401
+from app.models import (  # noqa: F401
+    ai_log,
+    exercise,
+    goal,
+    measurement,
+    nutrition,
+    user,
+    weight_entry,
+    workout,
+)
 from app.models.base import Base
 
 # Interpret the config file for Python logging.
