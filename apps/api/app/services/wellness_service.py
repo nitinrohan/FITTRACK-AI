@@ -60,9 +60,7 @@ def _wellness_response(entry: WellnessLog) -> WellnessLogResponse:
 # ── Sleep ─────────────────────────────────────────────────────────────────────
 
 
-def log_sleep(
-    db: Session, user_id: uuid.UUID, payload: LogSleepRequest
-) -> SleepLogResponse:
+def log_sleep(db: Session, user_id: uuid.UUID, payload: LogSleepRequest) -> SleepLogResponse:
     duration = payload.duration_minutes
     if duration is None and payload.bedtime and payload.wake_time:
         duration = _compute_duration(payload.bedtime, payload.wake_time)
@@ -103,9 +101,7 @@ def list_sleep_logs(
     )
 
 
-def get_sleep_log(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> SleepLogResponse:
+def get_sleep_log(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> SleepLogResponse:
     entry = wellness_repository.get_sleep_log_by_id(db, entry_id, user_id)
     if not entry:
         raise NotFoundError("Sleep log entry not found.")
@@ -137,9 +133,7 @@ def update_sleep_log(
     return _sleep_response(fetched)
 
 
-def delete_sleep_log(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> bool:
+def delete_sleep_log(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> bool:
     entry = wellness_repository.get_sleep_log_by_id(db, entry_id, user_id)
     if not entry:
         return False
@@ -151,9 +145,7 @@ def delete_sleep_log(
 # ── Steps ─────────────────────────────────────────────────────────────────────
 
 
-def log_steps(
-    db: Session, user_id: uuid.UUID, payload: LogStepsRequest
-) -> StepsLogResponse:
+def log_steps(db: Session, user_id: uuid.UUID, payload: LogStepsRequest) -> StepsLogResponse:
     entry = wellness_repository.create_steps_log(
         db,
         user_id=user_id,
@@ -190,9 +182,7 @@ def list_steps_logs(
     )
 
 
-def get_steps_log(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> StepsLogResponse:
+def get_steps_log(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> StepsLogResponse:
     entry = wellness_repository.get_steps_log_by_id(db, entry_id, user_id)
     if not entry:
         raise NotFoundError("Steps log entry not found.")
@@ -208,18 +198,14 @@ def update_steps_log(
     entry = wellness_repository.get_steps_log_by_id(db, entry_id, user_id)
     if not entry:
         raise NotFoundError("Steps log entry not found.")
-    wellness_repository.update_steps_log_fields(
-        db, entry, **payload.model_dump(exclude_unset=True)
-    )
+    wellness_repository.update_steps_log_fields(db, entry, **payload.model_dump(exclude_unset=True))
     db.commit()
     fetched = wellness_repository.get_steps_log_by_id(db, entry_id, user_id)
     assert fetched is not None
     return _steps_response(fetched)
 
 
-def delete_steps_log(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> bool:
+def delete_steps_log(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> bool:
     entry = wellness_repository.get_steps_log_by_id(db, entry_id, user_id)
     if not entry:
         return False
@@ -269,9 +255,7 @@ def list_wellness_logs(
     )
 
 
-def get_wellness_log(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> WellnessLogResponse:
+def get_wellness_log(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> WellnessLogResponse:
     entry = wellness_repository.get_wellness_log_by_id(db, entry_id, user_id)
     if not entry:
         raise NotFoundError("Wellness log entry not found.")
@@ -299,9 +283,7 @@ def update_wellness_log(
     return _wellness_response(fetched)
 
 
-def delete_wellness_log(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> bool:
+def delete_wellness_log(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> bool:
     entry = wellness_repository.get_wellness_log_by_id(db, entry_id, user_id)
     if not entry:
         return False
@@ -313,9 +295,7 @@ def delete_wellness_log(
 # ── Daily snapshot ────────────────────────────────────────────────────────────
 
 
-def get_daily_snapshot(
-    db: Session, user_id: uuid.UUID, for_date: date
-) -> DailyWellnessSnapshot:
+def get_daily_snapshot(db: Session, user_id: uuid.UUID, for_date: date) -> DailyWellnessSnapshot:
     """Assemble a combined daily snapshot for the given date.
 
     Pulls:

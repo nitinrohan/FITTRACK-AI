@@ -74,9 +74,7 @@ class WorkoutTemplate(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     is_system: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # ── Relationships ──────────────────────────────────────────────────────
-    user: Mapped[User | None] = relationship(
-        "User", back_populates="workout_templates"
-    )
+    user: Mapped[User | None] = relationship("User", back_populates="workout_templates")
     template_exercises: Mapped[list[WorkoutTemplateExercise]] = relationship(
         "WorkoutTemplateExercise",
         back_populates="template",
@@ -88,9 +86,7 @@ class WorkoutTemplate(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         back_populates="template",
     )
 
-    __table_args__ = (
-        Index("ix_workout_templates_user_id", "user_id"),
-    )
+    __table_args__ = (Index("ix_workout_templates_user_id", "user_id"),)
 
     def __repr__(self) -> str:
         return f"<WorkoutTemplate id={self.id} name={self.name!r}>"
@@ -171,9 +167,7 @@ class Workout(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
     # UTC timestamps for the actual session
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
-    completed_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=False), nullable=True
-    )
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=False), nullable=True)
 
     # Derived at completion: sum(weight_kg * reps) where both are present
     total_volume_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
@@ -284,9 +278,7 @@ class WorkoutSet(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     is_pr: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # When this set was completed (UTC); defaults to row creation time
-    completed_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=False), nullable=True
-    )
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=False), nullable=True)
 
     # ── Relationships ──────────────────────────────────────────────────────
     workout_exercise: Mapped[WorkoutExercise] = relationship(

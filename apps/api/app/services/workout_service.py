@@ -217,8 +217,7 @@ def _build_template_response(template: WorkoutTemplate) -> TemplateResponse:
         description=template.description,
         is_system=template.is_system,
         exercises=[
-            _build_template_exercise_response(te)
-            for te in (template.template_exercises or [])
+            _build_template_exercise_response(te) for te in (template.template_exercises or [])
         ],
         created_at=template.created_at,
         updated_at=template.updated_at,
@@ -233,9 +232,7 @@ def create_template(
     user_id: uuid.UUID,
     payload: CreateTemplateRequest,
 ) -> TemplateResponse:
-    template = workout_repository.create_template(
-        db, user_id, payload.name, payload.description
-    )
+    template = workout_repository.create_template(db, user_id, payload.name, payload.description)
     for ex_in in payload.exercises:
         workout_repository.add_template_exercise(
             db,
@@ -322,9 +319,7 @@ def update_template(
     return _build_template_response(refreshed)  # type: ignore[arg-type]
 
 
-def delete_template(
-    db: Session, user_id: uuid.UUID, template_id: uuid.UUID
-) -> bool:
+def delete_template(db: Session, user_id: uuid.UUID, template_id: uuid.UUID) -> bool:
     template = workout_repository.get_template_for_user(db, template_id, user_id)
     if template is None or template.is_system:
         return False
@@ -346,9 +341,7 @@ def start_workout(
     # If a template is supplied, inherit its name and pre-populate exercises
     template: WorkoutTemplate | None = None
     if payload.template_id is not None:
-        template = workout_repository.get_template_for_user(
-            db, payload.template_id, user_id
-        )
+        template = workout_repository.get_template_for_user(db, payload.template_id, user_id)
         if template is not None and not payload.name:
             name = template.name
 
@@ -397,9 +390,7 @@ def list_workouts(
     )
 
 
-def get_workout(
-    db: Session, user_id: uuid.UUID, workout_id: uuid.UUID
-) -> WorkoutResponse | None:
+def get_workout(db: Session, user_id: uuid.UUID, workout_id: uuid.UUID) -> WorkoutResponse | None:
     workout = workout_repository.get_workout_for_user(db, workout_id, user_id)
     if workout is None:
         return None
@@ -458,9 +449,7 @@ def update_workout(
     return _build_workout_response(workout)
 
 
-def delete_workout(
-    db: Session, user_id: uuid.UUID, workout_id: uuid.UUID
-) -> bool:
+def delete_workout(db: Session, user_id: uuid.UUID, workout_id: uuid.UUID) -> bool:
     workout = workout_repository.get_workout_for_user(db, workout_id, user_id)
     if workout is None:
         return False
@@ -526,9 +515,7 @@ def log_set(
 
     # Strength PR check
     if payload.weight_kg is not None and payload.reps is not None:
-        pr = is_strength_pr(
-            db, user_id, exercise_id, payload.weight_kg, payload.reps
-        )
+        pr = is_strength_pr(db, user_id, exercise_id, payload.weight_kg, payload.reps)
     # Duration PR check (only if not already a strength PR)
     elif payload.duration_seconds is not None:
         pr = is_duration_pr(db, user_id, exercise_id, payload.duration_seconds)
@@ -576,9 +563,7 @@ def update_set(
     return _build_set_response(ws)
 
 
-def delete_set(
-    db: Session, user_id: uuid.UUID, set_id: uuid.UUID
-) -> bool:
+def delete_set(db: Session, user_id: uuid.UUID, set_id: uuid.UUID) -> bool:
     ws = workout_repository.get_set(db, set_id, user_id)
     if ws is None:
         return False

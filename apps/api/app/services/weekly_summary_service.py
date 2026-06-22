@@ -60,22 +60,17 @@ def _gather_snapshot(
     weight_count = len(weight_entries)
     avg_weight_kg: float | None = None
     if weight_count > 0:
-        avg_weight_kg = round(
-            sum(e.weight_kg for e in weight_entries) / weight_count, 1
-        )
+        avg_weight_kg = round(sum(e.weight_kg for e in weight_entries) / weight_count, 1)
 
     # Workouts (completed only, started in the window)
     from sqlalchemy import select
 
     from app.models.workout import Workout
 
-    stmt = (
-        select(Workout)
-        .where(
-            Workout.user_id == user_id,
-            Workout.completed_at.isnot(None),
-            Workout.started_at >= week_start.isoformat(),
-        )
+    stmt = select(Workout).where(
+        Workout.user_id == user_id,
+        Workout.completed_at.isnot(None),
+        Workout.started_at >= week_start.isoformat(),
     )
     workouts = list(db.execute(stmt).scalars())
     workout_count = len(workouts)
@@ -93,33 +88,30 @@ def _gather_snapshot(
 
     from app.models.nutrition import FoodLog, WaterLog
 
-    food_day_stmt = (
-        select(func.count(func.distinct(FoodLog.logged_date)))
-        .where(
-            FoodLog.user_id == user_id,
-            FoodLog.logged_date >= week_start,
-            FoodLog.logged_date <= today,
-        )
+    food_day_stmt = select(func.count(func.distinct(FoodLog.logged_date))).where(
+        FoodLog.user_id == user_id,
+        FoodLog.logged_date >= week_start,
+        FoodLog.logged_date <= today,
     )
     food_log_days: int = db.execute(food_day_stmt).scalar_one() or 0
 
-    water_day_stmt = (
-        select(func.count(func.distinct(WaterLog.logged_date)))
-        .where(
-            WaterLog.user_id == user_id,
-            WaterLog.logged_date >= week_start,
-            WaterLog.logged_date <= today,
-        )
+    water_day_stmt = select(func.count(func.distinct(WaterLog.logged_date))).where(
+        WaterLog.user_id == user_id,
+        WaterLog.logged_date >= week_start,
+        WaterLog.logged_date <= today,
     )
     water_log_days: int = db.execute(water_day_stmt).scalar_one() or 0
 
     # Active goals
     from app.models.goal import Goal
+
     goal_stmt = select(func.count()).select_from(
-        select(Goal).where(
+        select(Goal)
+        .where(
             Goal.user_id == user_id,
             Goal.status == "active",
-        ).subquery()
+        )
+        .subquery()
     )
     active_goals: int = db.execute(goal_stmt).scalar_one() or 0
 
@@ -293,18 +285,12 @@ def get_weekly_summary(db: Session, *, user_id: uuid.UUID) -> WeeklySummaryRespo
 
     try:
         prompt = _build_prompt(snapshot, extended)
-        text, provider, model_id, inp_tok, out_tok = ai_service.call_ai(
-            prompt, max_tokens=512
-        )
+        text, provider, model_id, inp_tok, out_tok = ai_service.call_ai(prompt, max_tokens=512)
 
         parsed = ai_service.parse_json_reply(text)
 
-        highlights: list[str] = [
-            str(h) for h in parsed.get("highlights", []) if h
-        ][:4]
-        suggestions: list[str] = [
-            str(s) for s in parsed.get("suggestions", []) if s
-        ][:3]
+        highlights: list[str] = [str(h) for h in parsed.get("highlights", []) if h][:4]
+        suggestions: list[str] = [str(s) for s in parsed.get("suggestions", []) if s][:3]
         encouragement: str = str(parsed.get("encouragement", "")).strip()
 
         if not highlights and not encouragement:
@@ -355,9 +341,7 @@ def get_weekly_summary(db: Session, *, user_id: uuid.UUID) -> WeeklySummaryRespo
         return _rule_based_summary(snapshot)
 
 
-def record_user_decision(
-    db: Session, *, log_id: str, accepted: bool
-) -> bool:
+def record_user_decision(db: Session, *, log_id: str, accepted: bool) -> bool:
     """Record whether the user accepted or dismissed a summary.
 
     Returns True if the log entry was found and updated, False otherwise.
@@ -378,9 +362,11 @@ def record_user_decision(
 
 def _get_configured_provider() -> str:
     from app.config import get_settings
+
     return get_settings().ai_provider
 
 
 def _get_configured_model() -> str:
     from app.config import get_settings
+
     return get_settings().ai_model

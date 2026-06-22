@@ -112,9 +112,7 @@ def update_sleep_log(
     current_user: User = Depends(get_current_user),
 ) -> SleepLogResponse:
     try:
-        return wellness_service.update_sleep_log(
-            db, entry_id, current_user.id, payload
-        )
+        return wellness_service.update_sleep_log(db, entry_id, current_user.id, payload)
     except NotFoundError as exc:
         raise exc
 
@@ -191,9 +189,7 @@ def update_steps_log(
     current_user: User = Depends(get_current_user),
 ) -> StepsLogResponse:
     try:
-        return wellness_service.update_steps_log(
-            db, entry_id, current_user.id, payload
-        )
+        return wellness_service.update_steps_log(db, entry_id, current_user.id, payload)
     except NotFoundError as exc:
         raise exc
 
@@ -258,6 +254,7 @@ def get_daily_snapshot(
 ) -> DailyWellnessSnapshot:
     """Return a combined daily snapshot.  Defaults to today when no date given."""
     from datetime import date as date_type
+
     target = snapshot_date or date_type.today()
     return wellness_service.get_daily_snapshot(db, current_user.id, target)
 
@@ -282,9 +279,7 @@ def update_wellness_log(
     current_user: User = Depends(get_current_user),
 ) -> WellnessLogResponse:
     try:
-        return wellness_service.update_wellness_log(
-            db, entry_id, current_user.id, payload
-        )
+        return wellness_service.update_wellness_log(db, entry_id, current_user.id, payload)
     except NotFoundError as exc:
         raise exc
 

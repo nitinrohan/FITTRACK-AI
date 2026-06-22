@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field
 
 # ── Profile ───────────────────────────────────────────────────────────────────
 
+
 class UpdateProfileRequest(BaseModel):
     display_name: str | None = Field(default=None, max_length=100)
     bio: str | None = Field(default=None, max_length=500)
@@ -48,6 +49,7 @@ class UserProfileResponse(BaseModel):
 
 # ── Preferences ───────────────────────────────────────────────────────────────
 
+
 class UpdatePreferencesRequest(BaseModel):
     unit_system: Literal["metric", "imperial"] | None = None
     timezone: str | None = Field(
@@ -79,6 +81,7 @@ class UserPreferencesResponse(BaseModel):
 
 
 # ── Onboarding ────────────────────────────────────────────────────────────────
+
 
 class CompleteOnboardingStepRequest(BaseModel):
     """Advance the onboarding step counter.

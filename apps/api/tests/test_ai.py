@@ -237,9 +237,7 @@ class TestRuleBasedSummary:
 
 
 class TestWeeklySummaryEndpoint:
-    def test_returns_200_with_rule_based_fallback(
-        self, client: TestClient
-    ) -> None:
+    def test_returns_200_with_rule_based_fallback(self, client: TestClient) -> None:
         user = _make_user()
         expected = _summary_response()
         with (

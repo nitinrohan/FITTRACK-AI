@@ -40,15 +40,9 @@ def get_goal_by_id(db: Session, goal_id: uuid.UUID) -> Goal | None:
     return db.query(Goal).filter(Goal.id == goal_id).first()
 
 
-def get_goal_for_user(
-    db: Session, goal_id: uuid.UUID, user_id: uuid.UUID
-) -> Goal | None:
+def get_goal_for_user(db: Session, goal_id: uuid.UUID, user_id: uuid.UUID) -> Goal | None:
     """Return a goal only if it belongs to the given user."""
-    return (
-        db.query(Goal)
-        .filter(Goal.id == goal_id, Goal.user_id == user_id)
-        .first()
-    )
+    return db.query(Goal).filter(Goal.id == goal_id, Goal.user_id == user_id).first()
 
 
 def list_goals_for_user(
@@ -69,12 +63,7 @@ def list_goals_for_user(
         query = query.filter(Goal.goal_type == goal_type)
 
     total = query.count()
-    goals = (
-        query.order_by(Goal.created_at.desc())
-        .offset(offset)
-        .limit(limit)
-        .all()
-    )
+    goals = query.order_by(Goal.created_at.desc()).offset(offset).limit(limit).all()
     return goals, total
 
 

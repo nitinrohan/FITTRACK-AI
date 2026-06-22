@@ -168,10 +168,8 @@ def get_workout_by_id(db: Session, workout_id: uuid.UUID) -> Workout | None:
     return (
         db.query(Workout)
         .options(
-            joinedload(Workout.exercises)
-            .joinedload(WorkoutExercise.exercise),
-            joinedload(Workout.exercises)
-            .joinedload(WorkoutExercise.sets),
+            joinedload(Workout.exercises).joinedload(WorkoutExercise.exercise),
+            joinedload(Workout.exercises).joinedload(WorkoutExercise.sets),
             joinedload(Workout.template),
         )
         .filter(Workout.id == workout_id)
@@ -179,16 +177,12 @@ def get_workout_by_id(db: Session, workout_id: uuid.UUID) -> Workout | None:
     )
 
 
-def get_workout_for_user(
-    db: Session, workout_id: uuid.UUID, user_id: uuid.UUID
-) -> Workout | None:
+def get_workout_for_user(db: Session, workout_id: uuid.UUID, user_id: uuid.UUID) -> Workout | None:
     return (
         db.query(Workout)
         .options(
-            joinedload(Workout.exercises)
-            .joinedload(WorkoutExercise.exercise),
-            joinedload(Workout.exercises)
-            .joinedload(WorkoutExercise.sets),
+            joinedload(Workout.exercises).joinedload(WorkoutExercise.exercise),
+            joinedload(Workout.exercises).joinedload(WorkoutExercise.sets),
             joinedload(Workout.template),
         )
         .filter(Workout.id == workout_id, Workout.user_id == user_id)
@@ -215,9 +209,7 @@ def list_workouts_for_user(
     if completed_only:
         query = query.filter(Workout.completed_at.isnot(None))
     total = query.count()
-    workouts = (
-        query.order_by(Workout.started_at.desc()).offset(offset).limit(limit).all()
-    )
+    workouts = query.order_by(Workout.started_at.desc()).offset(offset).limit(limit).all()
     return workouts, total
 
 
@@ -236,9 +228,7 @@ def complete_workout(
     return workout
 
 
-def update_workout_fields(
-    db: Session, workout: Workout, **fields: Any
-) -> Workout:
+def update_workout_fields(db: Session, workout: Workout, **fields: Any) -> Workout:
     for key, value in fields.items():
         setattr(workout, key, value)
     db.flush()
@@ -325,9 +315,7 @@ def log_set(
     return ws
 
 
-def get_set(
-    db: Session, set_id: uuid.UUID, user_id: uuid.UUID
-) -> WorkoutSet | None:
+def get_set(db: Session, set_id: uuid.UUID, user_id: uuid.UUID) -> WorkoutSet | None:
     """Return a WorkoutSet only if the owning workout belongs to user."""
     return (
         db.query(WorkoutSet)
@@ -338,9 +326,7 @@ def get_set(
     )
 
 
-def update_set_fields(
-    db: Session, ws: WorkoutSet, **fields: Any
-) -> WorkoutSet:
+def update_set_fields(db: Session, ws: WorkoutSet, **fields: Any) -> WorkoutSet:
     for key, value in fields.items():
         setattr(ws, key, value)
     db.flush()
@@ -372,9 +358,7 @@ def get_best_set_for_exercise(
             WorkoutSet.weight_kg.isnot(None),
             WorkoutSet.reps.isnot(None),
         )
-        .order_by(
-            (WorkoutSet.weight_kg * WorkoutSet.reps).desc()
-        )
+        .order_by((WorkoutSet.weight_kg * WorkoutSet.reps).desc())
         .first()
     )
 

@@ -312,9 +312,7 @@ class TestAuthService:
 
         db = MagicMock()
         with (
-            patch(
-                "app.services.auth_service.user_repository.get_user_by_email", return_value=None
-            ),
+            patch("app.services.auth_service.user_repository.get_user_by_email", return_value=None),
             pytest.raises(UnauthorizedError),
         ):
             auth_service.login(db, "nobody@example.com", "pass")

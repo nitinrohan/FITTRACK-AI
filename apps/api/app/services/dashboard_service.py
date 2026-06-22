@@ -41,16 +41,16 @@ from app.services import nutrition_service
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+
 def _today_utc() -> date:
     return date.today()
 
 
 # ── Per-section builders ──────────────────────────────────────────────────────
 
+
 def _build_weight_trend(db: Session, user_id: uuid.UUID) -> WeightTrendSection | None:
-    entries, _ = weight_repository.list_entries_for_user(
-        db, user_id, offset=0, limit=30
-    )
+    entries, _ = weight_repository.list_entries_for_user(db, user_id, offset=0, limit=30)
     if not entries:
         return None
 
@@ -79,9 +79,7 @@ def _build_weight_trend(db: Session, user_id: uuid.UUID) -> WeightTrendSection |
     )
 
 
-def _build_workout_frequency(
-    db: Session, user_id: uuid.UUID
-) -> WorkoutFrequencySection | None:
+def _build_workout_frequency(db: Session, user_id: uuid.UUID) -> WorkoutFrequencySection | None:
     today = _today_utc()
     cutoff = today - timedelta(days=27)  # 28-day window inclusive
 
@@ -129,9 +127,7 @@ def _build_workout_frequency(
     )
 
 
-def _build_today_nutrition(
-    db: Session, user_id: uuid.UUID
-) -> TodayNutritionSection | None:
+def _build_today_nutrition(db: Session, user_id: uuid.UUID) -> TodayNutritionSection | None:
     today = _today_utc()
     summary = nutrition_service.get_daily_nutrition(db, user_id, today)
 
@@ -185,9 +181,7 @@ def _build_goals(db: Session, user_id: uuid.UUID) -> GoalsSummarySection | None:
     )
 
 
-def _build_latest_measurement(
-    db: Session, user_id: uuid.UUID
-) -> LatestMeasurementSection | None:
+def _build_latest_measurement(db: Session, user_id: uuid.UUID) -> LatestMeasurementSection | None:
     entry = measurement_repository.get_latest_measurement(db, user_id)
     if entry is None:
         return None
@@ -209,6 +203,7 @@ def _build_latest_measurement(
 
 
 # ── Public API ─────────────────────────────────────────────────────────────────
+
 
 def get_dashboard_summary(db: Session, *, user_id: uuid.UUID) -> DashboardSummary:
     """Aggregate all dashboard data in a single call."""

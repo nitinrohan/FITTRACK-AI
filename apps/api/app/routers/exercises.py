@@ -52,7 +52,9 @@ def list_exercises(
         page_size=page_size,
     )
     pages = max(1, math.ceil(total / page_size))
-    return ExerciseListResponse(items=items, total=total, page=page, page_size=page_size, pages=pages)
+    return ExerciseListResponse(
+        items=items, total=total, page=page, page_size=page_size, pages=pages
+    )
 
 
 @router.post(

@@ -21,6 +21,7 @@ from app.core.security import create_access_token
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
+
 def _make_user(
     email: str = "user@example.com",
     onboarding_completed: bool = True,
@@ -69,6 +70,7 @@ def _auth_cookies(user: MagicMock) -> dict[str, str]:
 
 # ── GET /me ───────────────────────────────────────────────────────────────────
 
+
 class TestGetMe:
     def test_returns_200_with_user(self, client: TestClient) -> None:
         user = _make_user()
@@ -86,6 +88,7 @@ class TestGetMe:
 
 
 # ── PUT /me/profile ───────────────────────────────────────────────────────────
+
 
 class TestUpdateProfile:
     def test_valid_update_returns_200(self, client: TestClient) -> None:
@@ -107,11 +110,19 @@ class TestUpdateProfile:
 
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.user_service.user_repository.update_user_profile", return_value=updated_profile),
+            patch(
+                "app.services.user_service.user_repository.update_user_profile",
+                return_value=updated_profile,
+            ),
         ):
             resp = client.put(
                 "/api/v1/users/me/profile",
-                json={"display_name": "New Name", "height_cm": 175.0, "experience_level": "intermediate", "country_code": "US"},
+                json={
+                    "display_name": "New Name",
+                    "height_cm": 175.0,
+                    "experience_level": "intermediate",
+                    "country_code": "US",
+                },
                 cookies=_auth_cookies(user),
             )
         assert resp.status_code == 200
@@ -124,7 +135,10 @@ class TestUpdateProfile:
         user = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.user_service.user_repository.update_user_profile", return_value=user.profile),
+            patch(
+                "app.services.user_service.user_repository.update_user_profile",
+                return_value=user.profile,
+            ),
         ):
             resp = client.put(
                 "/api/v1/users/me/profile",
@@ -170,6 +184,7 @@ class TestUpdateProfile:
 
 # ── PUT /me/preferences ───────────────────────────────────────────────────────
 
+
 class TestUpdatePreferences:
     def test_valid_update_returns_200(self, client: TestClient) -> None:
         user = _make_user()
@@ -186,11 +201,18 @@ class TestUpdatePreferences:
 
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.user_service.user_repository.update_user_preferences", return_value=updated_prefs),
+            patch(
+                "app.services.user_service.user_repository.update_user_preferences",
+                return_value=updated_prefs,
+            ),
         ):
             resp = client.put(
                 "/api/v1/users/me/preferences",
-                json={"unit_system": "imperial", "timezone": "America/New_York", "first_day_of_week": 0},
+                json={
+                    "unit_system": "imperial",
+                    "timezone": "America/New_York",
+                    "first_day_of_week": 0,
+                },
                 cookies=_auth_cookies(user),
             )
         assert resp.status_code == 200
@@ -213,7 +235,10 @@ class TestUpdatePreferences:
         user = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.user_service.user_repository.update_user_preferences", return_value=user.preferences),
+            patch(
+                "app.services.user_service.user_repository.update_user_preferences",
+                return_value=user.preferences,
+            ),
         ):
             resp = client.put(
                 "/api/v1/users/me/preferences",
@@ -229,6 +254,7 @@ class TestUpdatePreferences:
 
 # ── POST /me/onboarding ───────────────────────────────────────────────────────
 
+
 class TestOnboarding:
     def test_advances_step(self, client: TestClient) -> None:
         user = _make_user(onboarding_completed=False)
@@ -238,7 +264,10 @@ class TestOnboarding:
 
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.user_service.user_repository.update_user_profile", return_value=profile_after),
+            patch(
+                "app.services.user_service.user_repository.update_user_profile",
+                return_value=profile_after,
+            ),
         ):
             resp = client.post(
                 "/api/v1/users/me/onboarding",
@@ -258,7 +287,10 @@ class TestOnboarding:
 
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.user_service.user_repository.update_user_profile", return_value=profile_after),
+            patch(
+                "app.services.user_service.user_repository.update_user_profile",
+                return_value=profile_after,
+            ),
         ):
             resp = client.post(
                 "/api/v1/users/me/onboarding",
@@ -277,7 +309,10 @@ class TestOnboarding:
 
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.user_service.user_repository.update_user_profile", return_value=profile_after) as mock_update,
+            patch(
+                "app.services.user_service.user_repository.update_user_profile",
+                return_value=profile_after,
+            ) as mock_update,
         ):
             resp = client.post(
                 "/api/v1/users/me/onboarding",
@@ -300,8 +335,14 @@ class TestOnboarding:
 
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.user_service.user_repository.update_user_profile", return_value=profile_after),
-            patch("app.services.user_service.user_repository.update_user_preferences", return_value=user.preferences) as mock_prefs,
+            patch(
+                "app.services.user_service.user_repository.update_user_profile",
+                return_value=profile_after,
+            ),
+            patch(
+                "app.services.user_service.user_repository.update_user_preferences",
+                return_value=user.preferences,
+            ) as mock_prefs,
         ):
             resp = client.post(
                 "/api/v1/users/me/onboarding",
@@ -331,6 +372,7 @@ class TestOnboarding:
 
 
 # ── User service unit tests ───────────────────────────────────────────────────
+
 
 class TestUserService:
     def test_update_preferences_rejects_invalid_timezone(self) -> None:

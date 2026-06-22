@@ -7,10 +7,8 @@ services:
   - type: web
     name: fittrack-api
     runtime: docker
-    dockerfilePath: ./apps/api/Dockerfile
-    dockerContext: ./apps/api
-    # The production stage runs start.sh: alembic upgrade head && uvicorn
-    dockerTarget: production
+    rootDir: apps/api
+    # Dockerfile lives at apps/api/Dockerfile; rootDir makes it discoverable.
     healthCheckPath: /health
     envVars:
       - key: APP_ENV
@@ -24,7 +22,7 @@ services:
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: BACKEND_CORS_ORIGINS
-        # Update this to your actual Vercel URL after deploying the frontend.
+        # Update to your actual Vercel URL after deploying the frontend.
         value: '["https://fittrack-ai.vercel.app","http://localhost:3000"]'
 
 databases:

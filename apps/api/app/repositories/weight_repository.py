@@ -16,6 +16,7 @@ from app.models.weight_entry import WeightEntry
 
 # ── Write ─────────────────────────────────────────────────────────────────────
 
+
 def create_entry(
     db: Session,
     *,
@@ -44,8 +45,12 @@ def create_entry(
 def update_entry(db: Session, entry: WeightEntry, **fields: object) -> WeightEntry:
     """Apply a whitelist of fields to an existing entry."""
     allowed = {
-        "weight_kg", "display_unit", "body_fat_pct", "muscle_mass_kg",
-        "measured_at", "notes",
+        "weight_kg",
+        "display_unit",
+        "body_fat_pct",
+        "muscle_mass_kg",
+        "measured_at",
+        "notes",
     }
     for key, value in fields.items():
         if key in allowed:
@@ -61,13 +66,12 @@ def delete_entry(db: Session, entry: WeightEntry) -> None:
 
 # ── Read ──────────────────────────────────────────────────────────────────────
 
+
 def get_entry_by_id(db: Session, entry_id: uuid.UUID) -> WeightEntry | None:
     return db.get(WeightEntry, entry_id)
 
 
-def get_entry_for_user(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> WeightEntry | None:
+def get_entry_for_user(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> WeightEntry | None:
     """Fetch a single entry, returning None if it doesn't belong to user_id."""
     stmt = select(WeightEntry).where(
         WeightEntry.id == entry_id,
@@ -104,9 +108,7 @@ def list_entries_for_user(
     return entries, total
 
 
-def get_recent_entries(
-    db: Session, user_id: uuid.UUID, *, limit: int = 7
-) -> list[WeightEntry]:
+def get_recent_entries(db: Session, user_id: uuid.UUID, *, limit: int = 7) -> list[WeightEntry]:
     """Fetch the N most-recent entries (used for moving average)."""
     stmt = (
         select(WeightEntry)

@@ -32,6 +32,7 @@ router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
 # ── Current user ──────────────────────────────────────────────────────────────
 
+
 @router.get(
     "/me",
     response_model=UserResponse,
@@ -47,6 +48,7 @@ def get_me(
 
 
 # ── Profile ───────────────────────────────────────────────────────────────────
+
 
 @router.put(
     "/me/profile",
@@ -64,6 +66,7 @@ def update_profile(
 
 # ── Preferences ───────────────────────────────────────────────────────────────
 
+
 @router.put(
     "/me/preferences",
     response_model=UserPreferencesResponse,
@@ -79,6 +82,7 @@ def update_preferences(
 
 
 # ── Onboarding ────────────────────────────────────────────────────────────────
+
 
 @router.post(
     "/me/onboarding",

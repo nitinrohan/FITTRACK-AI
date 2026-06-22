@@ -117,9 +117,7 @@ def _sum_macros(entries: list[FoodLogResponse]) -> MacroTotals:
 # ── Food CRUD ─────────────────────────────────────────────────────────────────
 
 
-def create_food(
-    db: Session, user_id: uuid.UUID, payload: CreateFoodRequest
-) -> FoodResponse:
+def create_food(db: Session, user_id: uuid.UUID, payload: CreateFoodRequest) -> FoodResponse:
     food = nutrition_repository.create_food(
         db,
         user_id=user_id,
@@ -162,9 +160,7 @@ def list_foods(
     )
 
 
-def get_food(
-    db: Session, food_id: uuid.UUID, user_id: uuid.UUID
-) -> FoodResponse:
+def get_food(db: Session, food_id: uuid.UUID, user_id: uuid.UUID) -> FoodResponse:
     food = nutrition_repository.get_food_by_id(db, food_id)
     if food is None or not food.is_active:
         raise NotFoundError("Food not found.")
@@ -197,9 +193,7 @@ def update_food(
     return _build_food_response(refreshed)
 
 
-def delete_food(
-    db: Session, food_id: uuid.UUID, user_id: uuid.UUID
-) -> bool:
+def delete_food(db: Session, food_id: uuid.UUID, user_id: uuid.UUID) -> bool:
     food = nutrition_repository.get_food_by_id(db, food_id)
     if food is None or not food.is_active:
         return False
@@ -215,9 +209,7 @@ def delete_food(
 # ── FoodLog CRUD ──────────────────────────────────────────────────────────────
 
 
-def log_food(
-    db: Session, user_id: uuid.UUID, payload: LogFoodRequest
-) -> FoodLogResponse:
+def log_food(db: Session, user_id: uuid.UUID, payload: LogFoodRequest) -> FoodLogResponse:
     # Verify food exists and is accessible
     food = nutrition_repository.get_food_by_id(db, payload.food_id)
     if food is None or not food.is_active:
@@ -258,9 +250,7 @@ def update_food_log(
     return _build_food_log_response(refreshed)
 
 
-def delete_food_log(
-    db: Session, log_id: uuid.UUID, user_id: uuid.UUID
-) -> bool:
+def delete_food_log(db: Session, log_id: uuid.UUID, user_id: uuid.UUID) -> bool:
     log = nutrition_repository.get_food_log_by_id(db, log_id, user_id)
     if log is None:
         return False
@@ -272,9 +262,7 @@ def delete_food_log(
 # ── WaterLog CRUD ─────────────────────────────────────────────────────────────
 
 
-def log_water(
-    db: Session, user_id: uuid.UUID, payload: LogWaterRequest
-) -> WaterLogResponse:
+def log_water(db: Session, user_id: uuid.UUID, payload: LogWaterRequest) -> WaterLogResponse:
     log = nutrition_repository.create_water_log(
         db,
         user_id=user_id,
@@ -306,9 +294,7 @@ def update_water_log(
     return _build_water_log_response(refreshed)
 
 
-def delete_water_log(
-    db: Session, log_id: uuid.UUID, user_id: uuid.UUID
-) -> bool:
+def delete_water_log(db: Session, log_id: uuid.UUID, user_id: uuid.UUID) -> bool:
     log = nutrition_repository.get_water_log_by_id(db, log_id, user_id)
     if log is None:
         return False
@@ -324,12 +310,8 @@ def get_daily_nutrition(
     db: Session, user_id: uuid.UUID, target_date: date
 ) -> DailyNutritionResponse:
     """Aggregate all food and water logs for a user on a given date."""
-    food_logs = nutrition_repository.list_food_logs_for_date(
-        db, user_id, target_date
-    )
-    water_logs = nutrition_repository.list_water_logs_for_date(
-        db, user_id, target_date
-    )
+    food_logs = nutrition_repository.list_food_logs_for_date(db, user_id, target_date)
+    water_logs = nutrition_repository.list_water_logs_for_date(db, user_id, target_date)
 
     log_responses = [_build_food_log_response(fl) for fl in food_logs]
     water_responses = [_build_water_log_response(wl) for wl in water_logs]

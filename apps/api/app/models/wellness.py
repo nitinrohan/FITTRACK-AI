@@ -72,12 +72,8 @@ class SleepLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     date: Mapped[date] = mapped_column(Date, nullable=False)
 
     # ── Times (optional — may log duration directly) ──────────────────────────
-    bedtime: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=False), nullable=True
-    )
-    wake_time: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=False), nullable=True
-    )
+    bedtime: Mapped[datetime | None] = mapped_column(DateTime(timezone=False), nullable=True)
+    wake_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=False), nullable=True)
 
     # ── Duration (canonical) ──────────────────────────────────────────────────
     duration_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -91,14 +87,11 @@ class SleepLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # ── Relationship ───────────────────────────────────────────────────────────
     user: Mapped[User] = relationship("User", back_populates="sleep_logs")
 
-    __table_args__ = (
-        Index("ix_sleep_logs_user_id_date", "user_id", "date"),
-    )
+    __table_args__ = (Index("ix_sleep_logs_user_id_date", "user_id", "date"),)
 
     def __repr__(self) -> str:
         return (
-            f"<SleepLog user={self.user_id} date={self.date} "
-            f"minutes={self.duration_minutes}>"
+            f"<SleepLog user={self.user_id} date={self.date} " f"minutes={self.duration_minutes}>"
         )
 
 
@@ -139,15 +132,10 @@ class DailySteps(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # ── Relationship ───────────────────────────────────────────────────────────
     user: Mapped[User] = relationship("User", back_populates="daily_steps")
 
-    __table_args__ = (
-        Index("ix_daily_steps_user_id_date", "user_id", "date"),
-    )
+    __table_args__ = (Index("ix_daily_steps_user_id_date", "user_id", "date"),)
 
     def __repr__(self) -> str:
-        return (
-            f"<DailySteps user={self.user_id} date={self.date} "
-            f"steps={self.steps}>"
-        )
+        return f"<DailySteps user={self.user_id} date={self.date} " f"steps={self.steps}>"
 
 
 # ── WellnessLog ───────────────────────────────────────────────────────────────
@@ -190,9 +178,7 @@ class WellnessLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # ── Relationship ───────────────────────────────────────────────────────────
     user: Mapped[User] = relationship("User", back_populates="wellness_logs")
 
-    __table_args__ = (
-        Index("ix_wellness_logs_user_id_date", "user_id", "date"),
-    )
+    __table_args__ = (Index("ix_wellness_logs_user_id_date", "user_id", "date"),)
 
     def __repr__(self) -> str:
         return (

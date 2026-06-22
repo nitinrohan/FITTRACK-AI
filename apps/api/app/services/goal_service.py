@@ -64,9 +64,7 @@ def _to_response(goal: Goal) -> GoalResponse:
 # ── CRUD ──────────────────────────────────────────────────────────────────────
 
 
-def create_goal(
-    db: Session, user_id: uuid.UUID, body: CreateGoalRequest
-) -> GoalResponse:
+def create_goal(db: Session, user_id: uuid.UUID, body: CreateGoalRequest) -> GoalResponse:
     fields = body.model_dump(exclude={"goal_type", "title"}, exclude_none=True)
     goal = goal_repository.create_goal(
         db,
@@ -78,9 +76,7 @@ def create_goal(
     return _to_response(goal)
 
 
-def get_goal(
-    db: Session, goal_id: uuid.UUID, user_id: uuid.UUID
-) -> GoalResponse:
+def get_goal(db: Session, goal_id: uuid.UUID, user_id: uuid.UUID) -> GoalResponse:
     goal = goal_repository.get_goal_for_user(db, goal_id, user_id)
     if goal is None:
         raise NotFoundError("Goal not found")
@@ -133,15 +129,14 @@ def update_goal(
         # Auto-set completed_at when marking complete.
         if new_status == "completed" and goal.status != "completed":
             from datetime import datetime, timezone
+
             fields["completed_at"] = datetime.now(timezone.utc).replace(tzinfo=None)
 
     goal = goal_repository.update_goal(db, goal, **fields)
     return _to_response(goal)
 
 
-def delete_goal(
-    db: Session, goal_id: uuid.UUID, user_id: uuid.UUID
-) -> None:
+def delete_goal(db: Session, goal_id: uuid.UUID, user_id: uuid.UUID) -> None:
     goal = goal_repository.get_goal_for_user(db, goal_id, user_id)
     if goal is None:
         raise NotFoundError("Goal not found")
@@ -151,10 +146,10 @@ def delete_goal(
 # ── Status transitions ────────────────────────────────────────────────────────
 
 _ALLOWED_TRANSITIONS: dict[str, set[str]] = {
-    "active":    {"completed", "paused", "cancelled"},
-    "paused":    {"active", "cancelled"},
-    "completed": set(),   # terminal
-    "cancelled": set(),   # terminal
+    "active": {"completed", "paused", "cancelled"},
+    "paused": {"active", "cancelled"},
+    "completed": set(),  # terminal
+    "cancelled": set(),  # terminal
 }
 
 

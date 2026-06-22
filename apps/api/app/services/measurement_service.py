@@ -33,9 +33,7 @@ from app.schemas.measurement import (
 
 def _count_recorded(entry: BodyMeasurement) -> int:
     """Count how many measurement fields are non-None."""
-    return sum(
-        1 for field in MEASUREMENT_FIELDS if getattr(entry, field) is not None
-    )
+    return sum(1 for field in MEASUREMENT_FIELDS if getattr(entry, field) is not None)
 
 
 def _build_response(entry: BodyMeasurement) -> MeasurementResponse:
@@ -79,9 +77,7 @@ def log_measurement(
     Raises ValidationError if no measurement field is provided.
     """
     if not _has_any_measurement(payload):
-        raise ValidationError(
-            "At least one measurement field must be provided."
-        )
+        raise ValidationError("At least one measurement field must be provided.")
 
     entry = measurement_repository.create_measurement(
         db,
@@ -109,9 +105,7 @@ def log_measurement(
     return _build_response(refreshed)
 
 
-def get_measurement(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> MeasurementResponse:
+def get_measurement(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> MeasurementResponse:
     entry = measurement_repository.get_measurement_by_id(db, entry_id, user_id)
     if entry is None:
         raise NotFoundError("Measurement entry not found.")
@@ -128,7 +122,8 @@ def list_measurements(
     page_size: int = 30,
 ) -> MeasurementListResponse:
     entries, total = measurement_repository.list_measurements(
-        db, user_id,
+        db,
+        user_id,
         date_from=date_from,
         date_to=date_to,
         page=page,
@@ -164,9 +159,7 @@ def update_measurement(
     return _build_response(refreshed)
 
 
-def delete_measurement(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> bool:
+def delete_measurement(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> bool:
     entry = measurement_repository.get_measurement_by_id(db, entry_id, user_id)
     if entry is None:
         return False

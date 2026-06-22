@@ -69,19 +69,14 @@ def list_foods(
     page_size: int = 50,
 ) -> tuple[list[Food], int]:
     """Return foods visible to the user: system foods + their own custom ones."""
-    stmt = (
-        select(Food)
-        .where(
-            Food.is_active == True,  # noqa: E712
-            or_(Food.is_system == True, Food.user_id == user_id),  # noqa: E712
-        )
+    stmt = select(Food).where(
+        Food.is_active == True,  # noqa: E712
+        or_(Food.is_system == True, Food.user_id == user_id),  # noqa: E712
     )
     if search:
         stmt = stmt.where(Food.name.ilike(f"%{search}%"))
 
-    total_stmt = stmt.with_only_columns(
-        Food.id
-    ).order_by(None)
+    total_stmt = stmt.with_only_columns(Food.id).order_by(None)
     total = len(db.execute(total_stmt).all())
 
     offset = (page - 1) * page_size
@@ -129,9 +124,7 @@ def create_food_log(
     return log
 
 
-def get_food_log_by_id(
-    db: Session, log_id: uuid.UUID, user_id: uuid.UUID
-) -> FoodLog | None:
+def get_food_log_by_id(db: Session, log_id: uuid.UUID, user_id: uuid.UUID) -> FoodLog | None:
     stmt = (
         select(FoodLog)
         .options(joinedload(FoodLog.food))
@@ -140,9 +133,7 @@ def get_food_log_by_id(
     return db.scalars(stmt).first()
 
 
-def list_food_logs_for_date(
-    db: Session, user_id: uuid.UUID, logged_date: date
-) -> list[FoodLog]:
+def list_food_logs_for_date(db: Session, user_id: uuid.UUID, logged_date: date) -> list[FoodLog]:
     stmt = (
         select(FoodLog)
         .options(joinedload(FoodLog.food))
@@ -152,9 +143,7 @@ def list_food_logs_for_date(
     return list(db.scalars(stmt).all())
 
 
-def update_food_log_fields(
-    db: Session, log: FoodLog, **fields: object
-) -> FoodLog:
+def update_food_log_fields(db: Session, log: FoodLog, **fields: object) -> FoodLog:
     for key, val in fields.items():
         setattr(log, key, val)
     db.flush()
@@ -188,18 +177,12 @@ def create_water_log(
     return log
 
 
-def get_water_log_by_id(
-    db: Session, log_id: uuid.UUID, user_id: uuid.UUID
-) -> WaterLog | None:
-    stmt = select(WaterLog).where(
-        WaterLog.id == log_id, WaterLog.user_id == user_id
-    )
+def get_water_log_by_id(db: Session, log_id: uuid.UUID, user_id: uuid.UUID) -> WaterLog | None:
+    stmt = select(WaterLog).where(WaterLog.id == log_id, WaterLog.user_id == user_id)
     return db.scalars(stmt).first()
 
 
-def list_water_logs_for_date(
-    db: Session, user_id: uuid.UUID, logged_date: date
-) -> list[WaterLog]:
+def list_water_logs_for_date(db: Session, user_id: uuid.UUID, logged_date: date) -> list[WaterLog]:
     stmt = (
         select(WaterLog)
         .where(WaterLog.user_id == user_id, WaterLog.logged_date == logged_date)
@@ -208,9 +191,7 @@ def list_water_logs_for_date(
     return list(db.scalars(stmt).all())
 
 
-def update_water_log_fields(
-    db: Session, log: WaterLog, **fields: object
-) -> WaterLog:
+def update_water_log_fields(db: Session, log: WaterLog, **fields: object) -> WaterLog:
     for key, val in fields.items():
         setattr(log, key, val)
     db.flush()

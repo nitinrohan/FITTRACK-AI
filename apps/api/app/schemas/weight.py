@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field, model_validator
 
 # ── Requests ──────────────────────────────────────────────────────────────────
 
+
 class LogWeightRequest(BaseModel):
     """Log a weight measurement.
 
@@ -44,15 +45,9 @@ class LogWeightRequest(BaseModel):
         """Muscle mass must be less than weight."""
         if self.muscle_mass_kg is not None:
             # Convert weight to kg for comparison
-            weight_kg = (
-                self.weight * 0.453592
-                if self.display_unit == "lbs"
-                else self.weight
-            )
+            weight_kg = self.weight * 0.453592 if self.display_unit == "lbs" else self.weight
             if self.muscle_mass_kg >= weight_kg:
-                raise ValueError(
-                    "muscle_mass_kg must be less than weight in kg"
-                )
+                raise ValueError("muscle_mass_kg must be less than weight in kg")
         return self
 
 
@@ -68,6 +63,7 @@ class UpdateWeightEntryRequest(BaseModel):
 
 
 # ── Response ──────────────────────────────────────────────────────────────────
+
 
 class WeightEntryResponse(BaseModel):
     model_config = {"from_attributes": True}
@@ -94,7 +90,7 @@ class WeightListStats(BaseModel):
     count: int
     latest_kg: float | None
     earliest_kg: float | None
-    change_kg: float | None     # latest - earliest (negative = lost weight)
+    change_kg: float | None  # latest - earliest (negative = lost weight)
     min_kg: float | None
     max_kg: float | None
     # 7-day moving average of the most-recent 7 entries

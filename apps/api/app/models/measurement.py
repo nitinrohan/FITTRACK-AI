@@ -84,7 +84,4 @@ class BodyMeasurement(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     )
 
     def __repr__(self) -> str:
-        return (
-            f"<BodyMeasurement user_id={self.user_id} "
-            f"date={self.measured_at}>"
-        )
+        return f"<BodyMeasurement user_id={self.user_id} " f"date={self.measured_at}>"

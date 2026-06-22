@@ -326,7 +326,10 @@ class TestCreateTemplate:
         with (
             _override_db(),
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.workout_service.workout_repository.create_template", return_value=template),
+            patch(
+                "app.services.workout_service.workout_repository.create_template",
+                return_value=template,
+            ),
             patch("app.services.workout_service.workout_repository.add_template_exercise"),
             # db.refresh(template) will be called on the mock session, not on the template
         ):
@@ -451,7 +454,10 @@ class TestUpdateTemplate:
                 # First call: fetch for mutation check; second call: re-fetch after commit
                 side_effect=[template, updated],
             ),
-            patch("app.services.workout_service.workout_repository.update_template_fields", return_value=updated),
+            patch(
+                "app.services.workout_service.workout_repository.update_template_fields",
+                return_value=updated,
+            ),
             patch("app.services.workout_service.workout_repository.delete_template_exercises"),
         ):
             resp = client.put(
@@ -494,9 +500,7 @@ class TestDeleteTemplate:
             ),
             patch("app.services.workout_service.workout_repository.delete_template"),
         ):
-            resp = client.delete(
-                f"/api/v1/templates/{template.id}", cookies=_auth(user)
-            )
+            resp = client.delete(f"/api/v1/templates/{template.id}", cookies=_auth(user))
         assert resp.status_code == 204
 
     def test_returns_404_for_missing(self, client: TestClient) -> None:
@@ -508,9 +512,7 @@ class TestDeleteTemplate:
                 return_value=None,
             ),
         ):
-            resp = client.delete(
-                f"/api/v1/templates/{uuid.uuid4()}", cookies=_auth(user)
-            )
+            resp = client.delete(f"/api/v1/templates/{uuid.uuid4()}", cookies=_auth(user))
         assert resp.status_code == 404
 
     def test_requires_auth(self, client: TestClient) -> None:
@@ -649,7 +651,10 @@ class TestCompleteWorkout:
                 "app.services.workout_service.workout_repository.get_workout_for_user",
                 side_effect=[workout, completed],
             ),
-            patch("app.services.workout_service.workout_repository.complete_workout", return_value=completed),
+            patch(
+                "app.services.workout_service.workout_repository.complete_workout",
+                return_value=completed,
+            ),
         ):
             resp = client.post(
                 f"/api/v1/workouts/{workout.id}/complete",
@@ -708,7 +713,10 @@ class TestUpdateWorkout:
                 "app.services.workout_service.workout_repository.get_workout_for_user",
                 side_effect=[workout, updated],
             ),
-            patch("app.services.workout_service.workout_repository.update_workout_fields", return_value=updated),
+            patch(
+                "app.services.workout_service.workout_repository.update_workout_fields",
+                return_value=updated,
+            ),
         ):
             resp = client.patch(
                 f"/api/v1/workouts/{workout.id}",
@@ -772,7 +780,10 @@ class TestAddExercise:
                 "app.services.workout_service.workout_repository.get_workout_for_user",
                 return_value=workout,
             ),
-            patch("app.services.workout_service.workout_repository.add_workout_exercise", return_value=we),
+            patch(
+                "app.services.workout_service.workout_repository.add_workout_exercise",
+                return_value=we,
+            ),
         ):
             resp = client.post(
                 f"/api/v1/workouts/{workout.id}/exercises",
@@ -850,21 +861,35 @@ class TestRemoveExercise:
 
 
 class TestLogSet:
-    def _log(
-        self, client: TestClient, user: MagicMock, we_id: uuid.UUID, body: dict
-    ) -> object:
+    def _log(self, client: TestClient, user: MagicMock, we_id: uuid.UUID, body: dict) -> object:
         we = MagicMock()
         we.exercise_id = uuid.uuid4()
-        set_kwargs = {k: body.get(k) for k in ("reps", "weight_kg", "duration_seconds", "distance_meters") if k in body}
+        set_kwargs = {
+            k: body.get(k)
+            for k in ("reps", "weight_kg", "duration_seconds", "distance_meters")
+            if k in body
+        }
         ws = _make_set(**set_kwargs)  # type: ignore[arg-type]
         ws.is_pr = False
         with (
             _override_db(),
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.workout_service.workout_repository.get_workout_exercise", return_value=we),
-            patch("app.services.workout_service.workout_repository.get_best_set_for_exercise", return_value=None),
-            patch("app.services.workout_service.workout_repository.get_best_duration_for_exercise", return_value=None),
-            patch("app.services.workout_service.workout_repository.get_best_distance_for_exercise", return_value=None),
+            patch(
+                "app.services.workout_service.workout_repository.get_workout_exercise",
+                return_value=we,
+            ),
+            patch(
+                "app.services.workout_service.workout_repository.get_best_set_for_exercise",
+                return_value=None,
+            ),
+            patch(
+                "app.services.workout_service.workout_repository.get_best_duration_for_exercise",
+                return_value=None,
+            ),
+            patch(
+                "app.services.workout_service.workout_repository.get_best_distance_for_exercise",
+                return_value=None,
+            ),
             patch("app.services.workout_service.workout_repository.log_set", return_value=ws),
             patch("app.services.workout_service.workout_repository.get_set", return_value=ws),
         ):
@@ -877,7 +902,9 @@ class TestLogSet:
     def test_logs_strength_set_201(self, client: TestClient) -> None:
         user = _make_user()
         resp = self._log(
-            client, user, uuid.uuid4(),
+            client,
+            user,
+            uuid.uuid4(),
             {"set_number": 1, "reps": 8, "weight_kg": 80.0},
         )
         assert resp.status_code == 201  # type: ignore[union-attr]
@@ -885,7 +912,9 @@ class TestLogSet:
     def test_logs_cardio_set(self, client: TestClient) -> None:
         user = _make_user()
         resp = self._log(
-            client, user, uuid.uuid4(),
+            client,
+            user,
+            uuid.uuid4(),
             {"set_number": 1, "distance_meters": 5000.0},
         )
         assert resp.status_code == 201  # type: ignore[union-attr]
@@ -893,7 +922,9 @@ class TestLogSet:
     def test_logs_timed_set(self, client: TestClient) -> None:
         user = _make_user()
         resp = self._log(
-            client, user, uuid.uuid4(),
+            client,
+            user,
+            uuid.uuid4(),
             {"set_number": 1, "duration_seconds": 60},
         )
         assert resp.status_code == 201  # type: ignore[union-attr]
@@ -950,8 +981,14 @@ class TestLogSet:
         with (
             _override_db(),
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch("app.services.workout_service.workout_repository.get_workout_exercise", return_value=we),
-            patch("app.services.workout_service.workout_repository.get_best_set_for_exercise", return_value=None),
+            patch(
+                "app.services.workout_service.workout_repository.get_workout_exercise",
+                return_value=we,
+            ),
+            patch(
+                "app.services.workout_service.workout_repository.get_best_set_for_exercise",
+                return_value=None,
+            ),
             patch("app.services.workout_service.workout_repository.log_set", return_value=ws),
             patch("app.services.workout_service.workout_repository.get_set", return_value=ws),
         ):
@@ -975,7 +1012,9 @@ class TestUpdateSet:
             _override_db(),
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
             patch("app.services.workout_service.workout_repository.get_set", return_value=ws),
-            patch("app.services.workout_service.workout_repository.update_set_fields", return_value=ws),
+            patch(
+                "app.services.workout_service.workout_repository.update_set_fields", return_value=ws
+            ),
         ):
             resp = client.patch(
                 f"/api/v1/workouts/{uuid.uuid4()}/exercises/{uuid.uuid4()}/sets/{ws.id}",

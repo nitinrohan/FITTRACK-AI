@@ -56,16 +56,12 @@ class WeightEntry(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     measured_at: Mapped[date] = mapped_column(Date, nullable=False)
 
     # ── Context ────────────────────────────────────────────────────────────
-    notes: Mapped[str | None] = mapped_column(
-        Text, nullable=True
-    )
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # ── Display unit hint ──────────────────────────────────────────────────
     # The unit the user entered the value in, for round-trip display without
     # visible precision loss.  "kg" or "lbs".  Does NOT affect stored value.
-    display_unit: Mapped[str] = mapped_column(
-        String(4), nullable=False, default="kg"
-    )
+    display_unit: Mapped[str] = mapped_column(String(4), nullable=False, default="kg")
 
     # ── Relationship ───────────────────────────────────────────────────────
     user: Mapped[User] = relationship("User", back_populates="weight_entries")
@@ -77,6 +73,5 @@ class WeightEntry(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
     def __repr__(self) -> str:
         return (
-            f"<WeightEntry user_id={self.user_id} "
-            f"date={self.measured_at} kg={self.weight_kg}>"
+            f"<WeightEntry user_id={self.user_id} " f"date={self.measured_at} kg={self.weight_kg}>"
         )

@@ -90,9 +90,7 @@ def list_templates(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> TemplateListResponse:
-    return workout_service.list_templates(
-        db, current_user.id, page=page, page_size=page_size
-    )
+    return workout_service.list_templates(db, current_user.id, page=page, page_size=page_size)
 
 
 @template_router.get(
@@ -263,9 +261,7 @@ def add_exercise(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> WorkoutResponse:
-    result = workout_service.add_exercise_to_workout(
-        db, current_user.id, workout_id, body
-    )
+    result = workout_service.add_exercise_to_workout(db, current_user.id, workout_id, body)
     if result is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workout not found.")
     return result
@@ -283,9 +279,7 @@ def remove_exercise(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> None:
-    deleted = workout_service.remove_exercise_from_workout(
-        db, current_user.id, workout_exercise_id
-    )
+    deleted = workout_service.remove_exercise_from_workout(db, current_user.id, workout_exercise_id)
     if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found in workout."

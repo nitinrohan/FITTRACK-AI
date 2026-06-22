@@ -35,6 +35,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 # ── Shared validators ─────────────────────────────────────────────────────────
 
+
 def _validate_rating(v: Optional[int], field_name: str) -> int | None:
     if v is not None and not (1 <= v <= 5):
         raise ValueError(f"{field_name} must be between 1 and 5.")
@@ -64,9 +65,7 @@ class LogSleepRequest(BaseModel):
         has_duration = self.duration_minutes is not None
         has_times = self.bedtime is not None and self.wake_time is not None
         if not has_duration and not has_times:
-            raise ValueError(
-                "Provide either duration_minutes or both bedtime and wake_time."
-            )
+            raise ValueError("Provide either duration_minutes or both bedtime and wake_time.")
         if self.bedtime and self.wake_time and self.wake_time <= self.bedtime:
             raise ValueError("wake_time must be after bedtime.")
         return self
@@ -187,9 +186,7 @@ class LogWellnessRequest(BaseModel):
     @model_validator(mode="after")
     def at_least_one_metric(self) -> LogWellnessRequest:
         if self.mood is None and self.energy is None and self.stress is None:
-            raise ValueError(
-                "Provide at least one of mood, energy, or stress."
-            )
+            raise ValueError("Provide at least one of mood, energy, or stress.")
         return self
 
 

@@ -23,6 +23,7 @@ GoalStatus = Literal["active", "completed", "paused", "cancelled"]
 
 # ── Requests ──────────────────────────────────────────────────────────────────
 
+
 class CreateGoalRequest(BaseModel):
     goal_type: GoalType
     title: str = Field(min_length=1, max_length=200)
@@ -40,13 +41,10 @@ class CreateGoalRequest(BaseModel):
     @model_validator(mode="after")
     def numeric_fields_consistent(self) -> CreateGoalRequest:
         has_value = any(
-            v is not None
-            for v in (self.starting_value, self.target_value, self.current_value)
+            v is not None for v in (self.starting_value, self.target_value, self.current_value)
         )
         if has_value and not self.target_unit:
-            raise ValueError(
-                "target_unit is required when any numeric value is provided"
-            )
+            raise ValueError("target_unit is required when any numeric value is provided")
         return self
 
 
@@ -65,6 +63,7 @@ class UpdateGoalRequest(BaseModel):
 
 
 # ── Response ──────────────────────────────────────────────────────────────────
+
 
 class GoalResponse(BaseModel):
     model_config = {"from_attributes": True}

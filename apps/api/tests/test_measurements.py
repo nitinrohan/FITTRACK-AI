@@ -132,9 +132,19 @@ class TestCountRecorded:
         entry = _make_entry(user_id=user_id)
         # set every field
         for field in [
-            "waist_cm", "chest_cm", "hips_cm", "shoulders_cm", "abdomen_cm",
-            "left_arm_cm", "right_arm_cm", "left_forearm_cm", "right_forearm_cm",
-            "left_thigh_cm", "right_thigh_cm", "left_calf_cm", "right_calf_cm",
+            "waist_cm",
+            "chest_cm",
+            "hips_cm",
+            "shoulders_cm",
+            "abdomen_cm",
+            "left_arm_cm",
+            "right_arm_cm",
+            "left_forearm_cm",
+            "right_forearm_cm",
+            "left_thigh_cm",
+            "right_thigh_cm",
+            "left_calf_cm",
+            "right_calf_cm",
             "neck_cm",
         ]:
             setattr(entry, field, 50.0)
@@ -277,6 +287,7 @@ class TestListMeasurements:
             captured["date_from"] = date_from
             captured["date_to"] = date_to
             from app.schemas.measurement import MeasurementListResponse
+
             return MeasurementListResponse(
                 entries=[], total=0, page=1, page_size=30, has_next=False
             )
@@ -359,9 +370,7 @@ class TestGetMeasurement:
                 side_effect=NotFoundError("Measurement entry not found."),
             ),
         ):
-            resp = client.get(
-                f"/api/v1/measurements/{uuid.uuid4()}", cookies=_auth(user)
-            )
+            resp = client.get(f"/api/v1/measurements/{uuid.uuid4()}", cookies=_auth(user))
         assert resp.status_code == 404
 
     def test_requires_auth(self, client: TestClient) -> None:
@@ -411,9 +420,7 @@ class TestUpdateMeasurement:
         assert resp.status_code == 404
 
     def test_requires_auth(self, client: TestClient) -> None:
-        resp = client.patch(
-            f"/api/v1/measurements/{uuid.uuid4()}", json={"waist_cm": 80.0}
-        )
+        resp = client.patch(f"/api/v1/measurements/{uuid.uuid4()}", json={"waist_cm": 80.0})
         assert resp.status_code == 401
 
 
@@ -430,9 +437,7 @@ class TestDeleteMeasurement:
                 return_value=True,
             ),
         ):
-            resp = client.delete(
-                f"/api/v1/measurements/{uuid.uuid4()}", cookies=_auth(user)
-            )
+            resp = client.delete(f"/api/v1/measurements/{uuid.uuid4()}", cookies=_auth(user))
         assert resp.status_code == 204
 
     def test_not_found_returns_404(self, client: TestClient) -> None:
@@ -444,9 +449,7 @@ class TestDeleteMeasurement:
                 return_value=False,
             ),
         ):
-            resp = client.delete(
-                f"/api/v1/measurements/{uuid.uuid4()}", cookies=_auth(user)
-            )
+            resp = client.delete(f"/api/v1/measurements/{uuid.uuid4()}", cookies=_auth(user))
         assert resp.status_code == 404
 
     def test_requires_auth(self, client: TestClient) -> None:
@@ -499,9 +502,7 @@ class TestMeasurementOwnership:
             "app.repositories.measurement_repository.get_measurement_by_id",
             return_value=None,
         ):
-            result = measurement_service.delete_measurement(
-                MagicMock(), uuid.uuid4(), uuid.uuid4()
-            )
+            result = measurement_service.delete_measurement(MagicMock(), uuid.uuid4(), uuid.uuid4())
         assert result is False
 
 
@@ -511,15 +512,18 @@ class TestMeasurementOwnership:
 class TestCmToInches:
     def test_known_conversion(self) -> None:
         from app.schemas.measurement import cm_to_inches
+
         # 25.4 cm = 10 inches (exactly)
         assert cm_to_inches(25.4) == 10.0
 
     def test_rounds_to_one_decimal(self) -> None:
         from app.schemas.measurement import cm_to_inches
+
         # 80 cm ÷ 2.54 = 31.496... → 31.5
         assert cm_to_inches(80.0) == 31.5
 
     def test_waist_typical_value(self) -> None:
         from app.schemas.measurement import cm_to_inches
+
         # 76 cm ÷ 2.54 = 29.921 → 29.9
         assert cm_to_inches(76.0) == 29.9

@@ -36,6 +36,7 @@ _LBS_TO_KG = 0.453592
 
 # ── Calculations ──────────────────────────────────────────────────────────────
 
+
 def compute_bmi(weight_kg: float, height_cm: float | None) -> float | None:
     """Return BMI rounded to 1 decimal, or None if height is unavailable.
 
@@ -45,7 +46,7 @@ def compute_bmi(weight_kg: float, height_cm: float | None) -> float | None:
     if not height_cm or height_cm <= 0:
         return None
     height_m = height_cm / 100.0
-    return round(weight_kg / (height_m ** 2), 1)
+    return round(weight_kg / (height_m**2), 1)
 
 
 def compute_moving_average(entries: list[WeightEntry]) -> float | None:
@@ -86,6 +87,7 @@ def compute_stats(entries: list[WeightEntry], recent_7: list[WeightEntry]) -> We
 
 # ── Response builder ──────────────────────────────────────────────────────────
 
+
 def _to_response(entry: WeightEntry, height_cm: float | None = None) -> WeightEntryResponse:
     resp = WeightEntryResponse.model_validate(entry)
     resp.weight_lbs = round(entry.weight_kg / _LBS_TO_KG, 1)
@@ -95,15 +97,14 @@ def _to_response(entry: WeightEntry, height_cm: float | None = None) -> WeightEn
 
 # ── CRUD ──────────────────────────────────────────────────────────────────────
 
+
 def log_weight(
     db: Session,
     user_id: uuid.UUID,
     body: LogWeightRequest,
     height_cm: float | None = None,
 ) -> WeightEntryResponse:
-    weight_kg = (
-        body.weight * _LBS_TO_KG if body.display_unit == "lbs" else body.weight
-    )
+    weight_kg = body.weight * _LBS_TO_KG if body.display_unit == "lbs" else body.weight
     entry = weight_repository.create_entry(
         db,
         user_id=user_id,

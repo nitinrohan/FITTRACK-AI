@@ -179,13 +179,19 @@ def call_ai(
 
     if provider == "anthropic":
         text, inp, out = _call_anthropic(
-            prompt, model_id, settings.anthropic_api_key,
-            max_tokens=max_tokens, timeout=timeout,
+            prompt,
+            model_id,
+            settings.anthropic_api_key,
+            max_tokens=max_tokens,
+            timeout=timeout,
         )
     elif provider == "openai":
         text, inp, out = _call_openai(
-            prompt, model_id, settings.openai_api_key,
-            max_tokens=max_tokens, timeout=timeout,
+            prompt,
+            model_id,
+            settings.openai_api_key,
+            max_tokens=max_tokens,
+            timeout=timeout,
         )
     else:
         raise AIUnavailableError(f"Unknown AI provider: {provider!r}")
@@ -204,7 +210,7 @@ def parse_json_reply(text: str) -> dict[str, Any]:
     stripped = text.strip()
     for fence in ("```json", "```"):
         if stripped.startswith(fence):
-            stripped = stripped[len(fence):]
+            stripped = stripped[len(fence) :]
             break
     if stripped.endswith("```"):
         stripped = stripped[:-3]

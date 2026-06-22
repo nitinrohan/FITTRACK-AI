@@ -88,9 +88,7 @@ def update_measurement(
     current_user: User = Depends(get_current_user),
 ) -> MeasurementResponse:
     try:
-        return measurement_service.update_measurement(
-            db, entry_id, current_user.id, payload
-        )
+        return measurement_service.update_measurement(db, entry_id, current_user.id, payload)
     except NotFoundError as exc:
         raise exc
 

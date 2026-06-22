@@ -242,8 +242,13 @@ class TestSumMacros:
 
     def test_two_entries_summed(self) -> None:
         user_id = uuid.uuid4()
-        food = _make_food(user_id=user_id, calories_per_100g=100.0, protein_per_100g=10.0,
-                          carbs_per_100g=20.0, fat_per_100g=5.0)
+        food = _make_food(
+            user_id=user_id,
+            calories_per_100g=100.0,
+            protein_per_100g=10.0,
+            carbs_per_100g=20.0,
+            fat_per_100g=5.0,
+        )
         log1 = _make_food_log(user_id=user_id, food=food, quantity_g=100.0)
         log2 = _make_food_log(user_id=user_id, food=food, quantity_g=200.0)
         entries = [_food_log_response(log1), _food_log_response(log2)]
@@ -257,6 +262,7 @@ class TestSumMacros:
 class TestDailyNutrition:
     def test_empty_day(self) -> None:
         from app.services.nutrition_service import get_daily_nutrition
+
         db = MagicMock()
         user_id = uuid.uuid4()
         with (
@@ -276,6 +282,7 @@ class TestDailyNutrition:
 
     def test_single_meal_section(self) -> None:
         from app.services.nutrition_service import get_daily_nutrition
+
         db = MagicMock()
         user_id = uuid.uuid4()
         food = _make_food(user_id=user_id)
@@ -297,6 +304,7 @@ class TestDailyNutrition:
 
     def test_meals_in_standard_order(self) -> None:
         from app.services.nutrition_service import get_daily_nutrition
+
         db = MagicMock()
         user_id = uuid.uuid4()
         food = _make_food(user_id=user_id)
@@ -319,6 +327,7 @@ class TestDailyNutrition:
 
     def test_water_total_aggregated(self) -> None:
         from app.services.nutrition_service import get_daily_nutrition
+
         db = MagicMock()
         user_id = uuid.uuid4()
         wl1 = _make_water_log(user_id=user_id, amount_ml=250)
@@ -339,18 +348,20 @@ class TestDailyNutrition:
 
     def test_day_totals_sum_all_meals(self) -> None:
         from app.services.nutrition_service import get_daily_nutrition
+
         db = MagicMock()
         user_id = uuid.uuid4()
         food = _make_food(
-            user_id=user_id, calories_per_100g=100.0, protein_per_100g=10.0,
-            carbs_per_100g=10.0, fat_per_100g=5.0
+            user_id=user_id,
+            calories_per_100g=100.0,
+            protein_per_100g=10.0,
+            carbs_per_100g=10.0,
+            fat_per_100g=5.0,
         )
         breakfast_log = _make_food_log(
             user_id=user_id, food=food, meal_type="breakfast", quantity_g=100.0
         )
-        lunch_log = _make_food_log(
-            user_id=user_id, food=food, meal_type="lunch", quantity_g=200.0
-        )
+        lunch_log = _make_food_log(user_id=user_id, food=food, meal_type="lunch", quantity_g=200.0)
         with (
             patch(
                 "app.repositories.nutrition_repository.list_food_logs_for_date",
@@ -440,9 +451,8 @@ class TestListFoods:
         user = _make_user()
         food = _make_food(is_system=True)
         from app.schemas.nutrition import FoodListResponse
-        resp_data = FoodListResponse(
-            foods=[_food_response(food)], total=1, page=1, page_size=50
-        )
+
+        resp_data = FoodListResponse(foods=[_food_response(food)], total=1, page=1, page_size=50)
 
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
@@ -464,6 +474,7 @@ class TestListFoods:
         def fake_list(db, uid, *, search=None, **kwargs):  # type: ignore
             captured["search"] = search
             from app.schemas.nutrition import FoodListResponse
+
             return FoodListResponse(foods=[], total=0, page=1, page_size=50)
 
         with (
@@ -682,6 +693,7 @@ class TestLogFood:
 class TestGetDailyNutrition:
     def _empty_day(self) -> object:
         from app.schemas.nutrition import DailyNutritionResponse
+
         return DailyNutritionResponse(
             date=TODAY,
             meals=[],
@@ -728,6 +740,7 @@ class TestGetDailyNutrition:
         log_resp = _food_log_response(log)
 
         from app.schemas.nutrition import DailyNutritionResponse, MealSection, WaterLogResponse
+
         water_id = uuid.uuid4()
         day = DailyNutritionResponse(
             date=TODAY,
@@ -863,6 +876,7 @@ class TestDeleteFoodLog:
 class TestLogWater:
     def _make_water_resp(self, user_id: uuid.UUID, amount_ml: int = 250) -> object:
         from app.schemas.nutrition import WaterLogResponse
+
         return WaterLogResponse(
             id=uuid.uuid4(),
             logged_date=TODAY,
@@ -924,9 +938,9 @@ class TestUpdateWaterLog:
     def test_updates_amount(self, client: TestClient) -> None:
         user = _make_user()
         from app.schemas.nutrition import WaterLogResponse
+
         resp_data = WaterLogResponse(
-            id=uuid.uuid4(), logged_date=TODAY, amount_ml=500,
-            notes=None, created_at=_now()
+            id=uuid.uuid4(), logged_date=TODAY, amount_ml=500, notes=None, created_at=_now()
         )
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),

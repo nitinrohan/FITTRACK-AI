@@ -201,7 +201,7 @@ class WorkoutResponse(BaseModel):
     started_at: datetime
     completed_at: datetime | None
     total_volume_kg: float | None
-    duration_seconds: int | None   # computed: completed_at - started_at
+    duration_seconds: int | None  # computed: completed_at - started_at
     exercises: list[WorkoutExerciseResponse]
     created_at: datetime
 

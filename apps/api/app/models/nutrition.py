@@ -147,9 +147,7 @@ class FoodLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # ── When / which meal ─────────────────────────────────────────────────
     logged_date: Mapped[date] = mapped_column(Date, nullable=False)
     # breakfast | lunch | dinner | snack | other
-    meal_type: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="other"
-    )
+    meal_type: Mapped[str] = mapped_column(String(20), nullable=False, default="other")
 
     # ── Amount ────────────────────────────────────────────────────────────
     quantity_g: Mapped[float] = mapped_column(Float, nullable=False)
@@ -199,12 +197,7 @@ class WaterLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # ── Relationship ───────────────────────────────────────────────────────
     user: Mapped[User] = relationship("User", back_populates="water_logs")
 
-    __table_args__ = (
-        Index("ix_water_logs_user_id_logged_date", "user_id", "logged_date"),
-    )
+    __table_args__ = (Index("ix_water_logs_user_id_logged_date", "user_id", "logged_date"),)
 
     def __repr__(self) -> str:
-        return (
-            f"<WaterLog user={self.user_id} date={self.logged_date} "
-            f"ml={self.amount_ml}>"
-        )
+        return f"<WaterLog user={self.user_id} date={self.logged_date} " f"ml={self.amount_ml}>"

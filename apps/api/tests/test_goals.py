@@ -24,6 +24,7 @@ from app.services.goal_service import compute_progress_pct
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
+
 def _make_user() -> MagicMock:
     user = MagicMock()
     user.id = uuid.uuid4()
@@ -67,6 +68,7 @@ def _make_goal(
 
 # ── Progress calculation ───────────────────────────────────────────────────────
 
+
 class TestComputeProgressPct:
     def test_returns_none_when_target_missing(self) -> None:
         assert compute_progress_pct(80.0, None, 78.0) is None
@@ -108,6 +110,7 @@ class TestComputeProgressPct:
 
 # ── POST /api/v1/goals ────────────────────────────────────────────────────────
 
+
 class TestCreateGoal:
     def test_valid_goal_returns_201(self, client: TestClient) -> None:
         user = _make_user()
@@ -136,9 +139,15 @@ class TestCreateGoal:
 
     def test_qualitative_goal_no_numeric_fields(self, client: TestClient) -> None:
         user = _make_user()
-        goal = _make_goal(user.id, title="Run a 5K", goal_type="endurance",
-                          starting_value=None, target_value=None,
-                          current_value=None, target_unit=None)
+        goal = _make_goal(
+            user.id,
+            title="Run a 5K",
+            goal_type="endurance",
+            starting_value=None,
+            target_value=None,
+            current_value=None,
+            target_unit=None,
+        )
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
             patch("app.services.goal_service.goal_repository.create_goal", return_value=goal),
@@ -156,8 +165,11 @@ class TestCreateGoal:
         with patch("app.dependencies.user_repository.get_user_by_id", return_value=user):
             resp = client.post(
                 "/api/v1/goals",
-                json={"goal_type": "weight_loss", "title": "Lose weight",
-                      "target_value": 75.0},  # missing target_unit
+                json={
+                    "goal_type": "weight_loss",
+                    "title": "Lose weight",
+                    "target_value": 75.0,
+                },  # missing target_unit
                 cookies=_auth(user),
             )
         assert resp.status_code == 422
@@ -191,6 +203,7 @@ class TestCreateGoal:
 
 
 # ── GET /api/v1/goals ─────────────────────────────────────────────────────────
+
 
 class TestListGoals:
     def test_returns_goal_list(self, client: TestClient) -> None:
@@ -230,6 +243,7 @@ class TestListGoals:
 
 # ── GET /api/v1/goals/{id} ────────────────────────────────────────────────────
 
+
 class TestGetGoal:
     def test_returns_goal(self, client: TestClient) -> None:
         user = _make_user()
@@ -263,6 +277,7 @@ class TestGetGoal:
 
 # ── PUT /api/v1/goals/{id} ────────────────────────────────────────────────────
 
+
 class TestUpdateGoal:
     def test_updates_title(self, client: TestClient) -> None:
         user = _make_user()
@@ -288,7 +303,9 @@ class TestUpdateGoal:
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
             patch("app.services.goal_service.goal_repository.get_goal_for_user", return_value=goal),
-            patch("app.services.goal_service.goal_repository.update_goal", return_value=completed_goal),
+            patch(
+                "app.services.goal_service.goal_repository.update_goal", return_value=completed_goal
+            ),
         ):
             resp = client.put(
                 f"/api/v1/goals/{goal.id}",
@@ -333,6 +350,7 @@ class TestUpdateGoal:
 
 # ── DELETE /api/v1/goals/{id} ─────────────────────────────────────────────────
 
+
 class TestDeleteGoal:
     def test_returns_204(self, client: TestClient) -> None:
         user = _make_user()
@@ -361,31 +379,38 @@ class TestDeleteGoal:
 
 # ── Status transition unit tests ──────────────────────────────────────────────
 
+
 class TestStatusTransitions:
     def test_active_to_paused_allowed(self) -> None:
         from app.services.goal_service import _validate_status_transition
+
         _validate_status_transition("active", "paused")  # should not raise
 
     def test_active_to_cancelled_allowed(self) -> None:
         from app.services.goal_service import _validate_status_transition
+
         _validate_status_transition("active", "cancelled")
 
     def test_paused_to_active_allowed(self) -> None:
         from app.services.goal_service import _validate_status_transition
+
         _validate_status_transition("paused", "active")
 
     def test_completed_to_active_forbidden(self) -> None:
         from app.exceptions import ValidationError
         from app.services.goal_service import _validate_status_transition
+
         with pytest.raises(ValidationError):
             _validate_status_transition("completed", "active")
 
     def test_cancelled_to_active_forbidden(self) -> None:
         from app.exceptions import ValidationError
         from app.services.goal_service import _validate_status_transition
+
         with pytest.raises(ValidationError):
             _validate_status_transition("cancelled", "active")
 
     def test_same_status_is_noop(self) -> None:
         from app.services.goal_service import _validate_status_transition
+
         _validate_status_transition("active", "active")  # should not raise

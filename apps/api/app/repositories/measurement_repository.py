@@ -91,18 +91,20 @@ def list_measurements(
     total = len(db.execute(total_stmt).all())
 
     offset = (page - 1) * page_size
-    stmt = stmt.order_by(
-        BodyMeasurement.measured_at.desc(),
-        BodyMeasurement.created_at.desc(),
-    ).offset(offset).limit(page_size)
+    stmt = (
+        stmt.order_by(
+            BodyMeasurement.measured_at.desc(),
+            BodyMeasurement.created_at.desc(),
+        )
+        .offset(offset)
+        .limit(page_size)
+    )
 
     entries = list(db.scalars(stmt).all())
     return entries, total
 
 
-def get_latest_measurement(
-    db: Session, user_id: uuid.UUID
-) -> BodyMeasurement | None:
+def get_latest_measurement(db: Session, user_id: uuid.UUID) -> BodyMeasurement | None:
     """Return the most-recent entry for a user, or None."""
     stmt = (
         select(BodyMeasurement)

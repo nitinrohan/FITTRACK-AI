@@ -24,6 +24,7 @@ from app.models.exercise import Exercise
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
+
 def _make_user() -> MagicMock:
     user = MagicMock()
     user.id = uuid.uuid4()
@@ -81,6 +82,7 @@ def _exercise_response(e: MagicMock):  # type: ignore[return]
 
 
 # ── POST /api/v1/exercises ─────────────────────────────────────────────────────
+
 
 class TestCreateExercise:
     def test_returns_201_with_valid_data(self, client: TestClient) -> None:
@@ -149,6 +151,7 @@ class TestCreateExercise:
 
 # ── GET /api/v1/exercises ──────────────────────────────────────────────────────
 
+
 class TestListExercises:
     def test_returns_list(self, client: TestClient) -> None:
         user = _make_user()
@@ -205,6 +208,7 @@ class TestListExercises:
 
 # ── GET /api/v1/exercises/{id} ─────────────────────────────────────────────────
 
+
 class TestGetExercise:
     def test_returns_exercise(self, client: TestClient) -> None:
         user = _make_user()
@@ -243,6 +247,7 @@ class TestGetExercise:
 
 
 # ── PATCH /api/v1/exercises/{id} ───────────────────────────────────────────────
+
 
 class TestUpdateExercise:
     def test_updates_name(self, client: TestClient) -> None:
@@ -290,6 +295,7 @@ class TestUpdateExercise:
 
 
 # ── DELETE /api/v1/exercises/{id} ─────────────────────────────────────────────
+
 
 class TestDeleteExercise:
     def test_returns_204(self, client: TestClient) -> None:
@@ -345,6 +351,7 @@ class TestDeleteExercise:
 
 # ── Service unit tests ─────────────────────────────────────────────────────────
 
+
 class TestExerciseService:
     def test_get_exercise_raises_not_found_for_other_users_custom(self) -> None:
         """A user cannot fetch another user's custom exercise."""
@@ -398,6 +405,7 @@ class TestExerciseService:
 
 # ── Seed helper tests ──────────────────────────────────────────────────────────
 
+
 class TestSeedExercises:
     def test_skips_when_already_seeded(self) -> None:
         from app.seeds.exercises import seed_exercises
@@ -440,6 +448,7 @@ class TestSeedExercises:
 
 
 # ── Schema unit tests ──────────────────────────────────────────────────────────
+
 
 class TestExerciseSchemas:
     def test_muscle_groups_string_parsed_to_list(self) -> None:

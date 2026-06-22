@@ -28,6 +28,7 @@ from app.services.weight_service import (
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
+
 def _make_user(height_cm: float | None = None) -> MagicMock:
     user = MagicMock()
     user.id = uuid.uuid4()
@@ -68,6 +69,7 @@ def _make_entry(
 
 # ── Calculation unit tests ─────────────────────────────────────────────────────
 
+
 class TestComputeBmi:
     def test_typical_value(self) -> None:
         # 70 kg, 175 cm → BMI ≈ 22.9
@@ -86,7 +88,7 @@ class TestComputeBmi:
     def test_rounds_to_one_decimal(self) -> None:
         result = compute_bmi(80.0, 180.0)
         assert result is not None
-        assert result == round(80.0 / (1.80 ** 2), 1)
+        assert result == round(80.0 / (1.80**2), 1)
 
 
 class TestComputeMovingAverage:
@@ -97,10 +99,7 @@ class TestComputeMovingAverage:
 
     def test_multiple_entries(self) -> None:
         user_id = uuid.uuid4()
-        entries = [
-            _make_entry(user_id, weight_kg=w)
-            for w in [74.0, 75.0, 76.0]
-        ]
+        entries = [_make_entry(user_id, weight_kg=w) for w in [74.0, 75.0, 76.0]]
         assert compute_moving_average(entries) == 75.0
 
     def test_empty_returns_none(self) -> None:
@@ -140,6 +139,7 @@ class TestComputeStats:
 
 
 # ── POST /api/v1/weight ───────────────────────────────────────────────────────
+
 
 class TestLogWeight:
     def test_returns_201_with_kg(self, client: TestClient) -> None:
@@ -233,6 +233,7 @@ class TestLogWeight:
 
 # ── GET /api/v1/weight ────────────────────────────────────────────────────────
 
+
 class TestListEntries:
     def test_returns_list_with_stats(self, client: TestClient) -> None:
         user = _make_user()
@@ -282,6 +283,7 @@ class TestListEntries:
 
 # ── GET /api/v1/weight/{id} ────────────────────────────────────────────────────
 
+
 class TestGetEntry:
     def test_returns_entry(self, client: TestClient) -> None:
         user = _make_user()
@@ -314,6 +316,7 @@ class TestGetEntry:
 
 
 # ── PUT /api/v1/weight/{id} ────────────────────────────────────────────────────
+
 
 class TestUpdateEntry:
     def test_updates_notes(self, client: TestClient) -> None:
@@ -361,6 +364,7 @@ class TestUpdateEntry:
 
 
 # ── DELETE /api/v1/weight/{id} ────────────────────────────────────────────────
+
 
 class TestDeleteEntry:
     def test_returns_204(self, client: TestClient) -> None:

@@ -29,9 +29,18 @@ logger = logging.getLogger(__name__)
 # keeping it up to date as zones are added; this is a reasonable compromise.
 
 _KNOWN_TZ_PREFIXES = {
-    "Africa", "America", "Antarctica", "Arctic", "Asia",
-    "Atlantic", "Australia", "Europe", "Indian", "Pacific",
-    "UTC", "Etc",
+    "Africa",
+    "America",
+    "Antarctica",
+    "Arctic",
+    "Asia",
+    "Atlantic",
+    "Australia",
+    "Europe",
+    "Indian",
+    "Pacific",
+    "UTC",
+    "Etc",
 }
 
 
@@ -48,6 +57,7 @@ def _validate_timezone(tz: str) -> None:
 
 
 # ── Profile ───────────────────────────────────────────────────────────────────
+
 
 def update_profile(db: Session, user_id: object, body: UpdateProfileRequest) -> UserProfile:
     """Update the user's profile fields.  Returns the updated UserProfile."""
@@ -67,6 +77,7 @@ def update_profile(db: Session, user_id: object, body: UpdateProfileRequest) -> 
 
 
 # ── Preferences ───────────────────────────────────────────────────────────────
+
 
 def update_preferences(
     db: Session, user_id: object, body: UpdatePreferencesRequest
@@ -91,6 +102,7 @@ def update_preferences(
 
 
 # ── Onboarding ────────────────────────────────────────────────────────────────
+
 
 def complete_onboarding_step(
     db: Session, user_id: object, body: CompleteOnboardingStepRequest

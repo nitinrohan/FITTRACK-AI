@@ -35,7 +35,7 @@ class WeeklyDataSnapshot(BaseModel):
     week_end: date
     weight_entries: int
     workouts_completed: int
-    food_log_days: int          # distinct days with at least one food log entry
+    food_log_days: int  # distinct days with at least one food log entry
     water_log_days: int
     active_goals: int
 
@@ -62,10 +62,10 @@ class WeeklySummaryResponse(BaseModel):
     # ── Metadata ──────────────────────────────────────────────────────────
     data_snapshot: WeeklyDataSnapshot
     ai_available: bool
-    provider: str | None = None       # "anthropic" | "openai" | None
+    provider: str | None = None  # "anthropic" | "openai" | None
     model_id: str | None = None
     prompt_version: str | None = None
-    log_id: str | None = None         # AIUsageLog.id for future accept/dismiss
+    log_id: str | None = None  # AIUsageLog.id for future accept/dismiss
 
 
 class AcceptSummaryRequest(BaseModel):

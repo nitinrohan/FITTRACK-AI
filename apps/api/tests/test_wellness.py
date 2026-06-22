@@ -344,9 +344,7 @@ class TestSleepEndpoints:
     def test_list_sleep_logs(self, client: TestClient) -> None:
         user = _make_user()
         entry = _make_sleep(user_id=user.id)
-        page = SleepListResponse(
-            items=[_sleep_resp(entry)], total=1, page=1, page_size=30
-        )
+        page = SleepListResponse(items=[_sleep_resp(entry)], total=1, page=1, page_size=30)
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
             patch("app.services.wellness_service.list_sleep_logs", return_value=page),
@@ -374,6 +372,7 @@ class TestSleepEndpoints:
 
     def test_get_sleep_log_not_found(self, client: TestClient) -> None:
         from app.exceptions import NotFoundError
+
         user = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
@@ -427,6 +426,7 @@ class TestSleepEndpoints:
 
     def test_sleep_ownership_isolation(self, client: TestClient) -> None:
         from app.exceptions import NotFoundError
+
         user_b = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user_b),
@@ -476,9 +476,7 @@ class TestStepsEndpoints:
     def test_list_steps(self, client: TestClient) -> None:
         user = _make_user()
         entry = _make_steps(user_id=user.id)
-        page = StepsListResponse(
-            items=[_steps_resp(entry)], total=1, page=1, page_size=30
-        )
+        page = StepsListResponse(items=[_steps_resp(entry)], total=1, page=1, page_size=30)
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
             patch("app.services.wellness_service.list_steps_logs", return_value=page),
@@ -489,6 +487,7 @@ class TestStepsEndpoints:
 
     def test_get_steps_not_found(self, client: TestClient) -> None:
         from app.exceptions import NotFoundError
+
         user = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
@@ -527,6 +526,7 @@ class TestStepsEndpoints:
 
     def test_steps_ownership_isolation(self, client: TestClient) -> None:
         from app.exceptions import NotFoundError
+
         user = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
@@ -585,9 +585,7 @@ class TestWellnessEndpoints:
     def test_list_wellness_logs(self, client: TestClient) -> None:
         user = _make_user()
         entry = _make_wellness(user_id=user.id)
-        page = WellnessListResponse(
-            items=[_wellness_resp(entry)], total=1, page=1, page_size=30
-        )
+        page = WellnessListResponse(items=[_wellness_resp(entry)], total=1, page=1, page_size=30)
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
             patch("app.services.wellness_service.list_wellness_logs", return_value=page),
@@ -639,6 +637,7 @@ class TestWellnessEndpoints:
 
     def test_get_wellness_not_found(self, client: TestClient) -> None:
         from app.exceptions import NotFoundError
+
         user = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
@@ -670,9 +669,7 @@ class TestWellnessEndpoints:
         user = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch(
-                "app.services.wellness_service.delete_wellness_log", return_value=True
-            ),
+            patch("app.services.wellness_service.delete_wellness_log", return_value=True),
         ):
             r = client.delete(f"/api/v1/wellness/{uuid.uuid4()}", cookies=_auth(user))
         assert r.status_code == 204
@@ -681,15 +678,14 @@ class TestWellnessEndpoints:
         user = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),
-            patch(
-                "app.services.wellness_service.delete_wellness_log", return_value=False
-            ),
+            patch("app.services.wellness_service.delete_wellness_log", return_value=False),
         ):
             r = client.delete(f"/api/v1/wellness/{uuid.uuid4()}", cookies=_auth(user))
         assert r.status_code == 404
 
     def test_wellness_ownership_isolation(self, client: TestClient) -> None:
         from app.exceptions import NotFoundError
+
         user = _make_user()
         with (
             patch("app.dependencies.user_repository.get_user_by_id", return_value=user),

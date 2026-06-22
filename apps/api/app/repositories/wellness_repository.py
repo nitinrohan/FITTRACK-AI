@@ -24,9 +24,7 @@ def create_sleep_log(db: Session, **kwargs: object) -> SleepLog:
     return entry
 
 
-def get_sleep_log_by_id(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> SleepLog | None:
+def get_sleep_log_by_id(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> SleepLog | None:
     stmt = select(SleepLog).where(
         SleepLog.id == entry_id,
         SleepLog.user_id == user_id,
@@ -62,9 +60,7 @@ def list_sleep_logs(
     return entries, total
 
 
-def get_latest_sleep_for_date(
-    db: Session, user_id: uuid.UUID, for_date: date
-) -> SleepLog | None:
+def get_latest_sleep_for_date(db: Session, user_id: uuid.UUID, for_date: date) -> SleepLog | None:
     stmt = (
         select(SleepLog)
         .where(SleepLog.user_id == user_id, SleepLog.date == for_date)
@@ -74,9 +70,7 @@ def get_latest_sleep_for_date(
     return db.scalars(stmt).first()
 
 
-def update_sleep_log_fields(
-    db: Session, entry: SleepLog, **fields: object
-) -> SleepLog:
+def update_sleep_log_fields(db: Session, entry: SleepLog, **fields: object) -> SleepLog:
     for key, val in fields.items():
         setattr(entry, key, val)
     db.flush()
@@ -98,9 +92,7 @@ def create_steps_log(db: Session, **kwargs: object) -> DailySteps:
     return entry
 
 
-def get_steps_log_by_id(
-    db: Session, entry_id: uuid.UUID, user_id: uuid.UUID
-) -> DailySteps | None:
+def get_steps_log_by_id(db: Session, entry_id: uuid.UUID, user_id: uuid.UUID) -> DailySteps | None:
     stmt = select(DailySteps).where(
         DailySteps.id == entry_id,
         DailySteps.user_id == user_id,
@@ -123,9 +115,7 @@ def list_steps_logs(
     if date_to:
         stmt = stmt.where(DailySteps.date <= date_to)
 
-    total = len(
-        db.execute(stmt.with_only_columns(DailySteps.id).order_by(None)).all()
-    )
+    total = len(db.execute(stmt.with_only_columns(DailySteps.id).order_by(None)).all())
 
     offset = (page - 1) * page_size
     entries = list(
@@ -138,9 +128,7 @@ def list_steps_logs(
     return entries, total
 
 
-def get_latest_steps_for_date(
-    db: Session, user_id: uuid.UUID, for_date: date
-) -> DailySteps | None:
+def get_latest_steps_for_date(db: Session, user_id: uuid.UUID, for_date: date) -> DailySteps | None:
     stmt = (
         select(DailySteps)
         .where(DailySteps.user_id == user_id, DailySteps.date == for_date)
@@ -150,9 +138,7 @@ def get_latest_steps_for_date(
     return db.scalars(stmt).first()
 
 
-def update_steps_log_fields(
-    db: Session, entry: DailySteps, **fields: object
-) -> DailySteps:
+def update_steps_log_fields(db: Session, entry: DailySteps, **fields: object) -> DailySteps:
     for key, val in fields.items():
         setattr(entry, key, val)
     db.flush()
@@ -199,9 +185,7 @@ def list_wellness_logs(
     if date_to:
         stmt = stmt.where(WellnessLog.date <= date_to)
 
-    total = len(
-        db.execute(stmt.with_only_columns(WellnessLog.id).order_by(None)).all()
-    )
+    total = len(db.execute(stmt.with_only_columns(WellnessLog.id).order_by(None)).all())
 
     offset = (page - 1) * page_size
     entries = list(
@@ -226,9 +210,7 @@ def get_latest_wellness_for_date(
     return db.scalars(stmt).first()
 
 
-def update_wellness_log_fields(
-    db: Session, entry: WellnessLog, **fields: object
-) -> WellnessLog:
+def update_wellness_log_fields(db: Session, entry: WellnessLog, **fields: object) -> WellnessLog:
     for key, val in fields.items():
         setattr(entry, key, val)
     db.flush()

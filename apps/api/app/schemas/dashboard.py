@@ -12,10 +12,11 @@ from pydantic import BaseModel
 
 # ── Weight trend ──────────────────────────────────────────────────────────────
 
+
 class WeightTrendPoint(BaseModel):
     """One data point on the weight trend line."""
 
-    date: str           # YYYY-MM-DD
+    date: str  # YYYY-MM-DD
     weight_kg: float
 
 
@@ -30,10 +31,11 @@ class WeightTrendSection(BaseModel):
 
 # ── Workout frequency ─────────────────────────────────────────────────────────
 
+
 class WorkoutFrequencyPoint(BaseModel):
     """One bar in the workout-frequency chart."""
 
-    date: str           # YYYY-MM-DD
+    date: str  # YYYY-MM-DD
     count: int
 
 
@@ -47,6 +49,7 @@ class WorkoutFrequencySection(BaseModel):
 
 # ── Today's nutrition ─────────────────────────────────────────────────────────
 
+
 class TodayNutritionSection(BaseModel):
     """Macro totals for today."""
 
@@ -58,6 +61,7 @@ class TodayNutritionSection(BaseModel):
 
 
 # ── Active goals ──────────────────────────────────────────────────────────────
+
 
 class GoalSummaryItem(BaseModel):
     """One active goal with its progress percentage."""
@@ -78,6 +82,7 @@ class GoalsSummarySection(BaseModel):
 
 # ── Latest measurements ───────────────────────────────────────────────────────
 
+
 class LatestMeasurementSection(BaseModel):
     """Most-recent body measurement snapshot (values in cm)."""
 
@@ -94,6 +99,7 @@ class LatestMeasurementSection(BaseModel):
 
 
 # ── Top-level response ────────────────────────────────────────────────────────
+
 
 class DashboardSummary(BaseModel):
     """Full dashboard summary for the /api/v1/dashboard/summary endpoint."""

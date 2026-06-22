@@ -39,7 +39,7 @@ class AIUsageLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     feature: Mapped[str] = mapped_column(String(64), nullable=False)
 
     # Provider / model details
-    provider: Mapped[str] = mapped_column(String(64), nullable=False)   # "anthropic"|"openai"
+    provider: Mapped[str] = mapped_column(String(64), nullable=False)  # "anthropic"|"openai"
     model_id: Mapped[str] = mapped_column(String(128), nullable=False)
     prompt_version: Mapped[str] = mapped_column(String(64), nullable=False)
 

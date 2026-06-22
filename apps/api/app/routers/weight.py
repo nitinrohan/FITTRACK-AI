@@ -52,9 +52,7 @@ def log_weight(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> WeightEntryResponse:
-    return weight_service.log_weight(
-        db, current_user.id, body, height_cm=_height_cm(current_user)
-    )
+    return weight_service.log_weight(db, current_user.id, body, height_cm=_height_cm(current_user))
 
 
 @router.get(
