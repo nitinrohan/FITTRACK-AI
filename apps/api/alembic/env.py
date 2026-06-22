@@ -32,6 +32,7 @@ from app.models import (  # noqa: F401
     nutrition,
     user,
     weight_entry,
+    wellness,
     workout,
 )
 from app.models.base import Base
