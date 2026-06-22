@@ -1,0 +1,34 @@
+# Render Blueprint — deploys FastAPI backend + PostgreSQL database.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Deploy: render.com → New → Blueprint → select this repo → Apply
+
+services:
+  - type: web
+    name: fittrack-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: ./apps/api
+    # The production stage runs start.sh: alembic upgrade head && uvicorn
+    dockerTarget: production
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fittrack-db
+          property: connectionString
+      - key: APP_SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: BACKEND_CORS_ORIGINS
+        # Update this to your actual Vercel URL after deploying the frontend.
+        value: '["https://fittrack-ai.vercel.app","http://localhost:3000"]'
+
+databases:
+  - name: fittrack-db
+    plan: free
+    databaseName: fittrack
+    user: fittrack

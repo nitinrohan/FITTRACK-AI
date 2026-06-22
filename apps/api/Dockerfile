@@ -29,11 +29,12 @@ FROM base AS production
 
 COPY . .
 
+RUN chmod +x /app/start.sh
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-# In production, migrations are applied by a separate init container or
-# pre-deployment hook, not by the application process itself.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+# start.sh runs: alembic upgrade head && uvicorn (with $PORT from Render env).
+CMD ["/app/start.sh"]

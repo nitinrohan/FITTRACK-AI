@@ -13,7 +13,7 @@
  *   - All states: loading, empty, error
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNutrition, useFoodSearch } from "@/features/nutrition/use-nutrition";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { cn } from "@/lib/utils";

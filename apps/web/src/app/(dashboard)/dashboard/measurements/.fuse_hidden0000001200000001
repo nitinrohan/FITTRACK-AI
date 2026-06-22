@@ -20,6 +20,7 @@ import {
   MEASUREMENT_FIELD_KEYS,
   MEASUREMENT_GROUPS,
   MEASUREMENT_LABELS,
+  cmToInches,
   formatMeasurement,
 } from "@/types/measurements";
 
