@@ -23,6 +23,9 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
+        # Treat empty string env vars as None so fields fall back to their defaults.
+        # Prevents pydantic_settings from crashing on BACKEND_CORS_ORIGINS="" etc.
+        env_parse_none_str="",
     )
 
     # ── Application ─────────────────────────────────────────────────────

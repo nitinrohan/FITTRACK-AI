@@ -9,18 +9,12 @@ if [ -z "$DB_URL" ]; then
   exit 1
 fi
 
-# Extract host and port from DATABASE_URL for readiness check.
-# Format: postgresql://user:pass@host:port/dbname
-DB_HOST=$(echo "$DB_URL" | sed -E 's|.*@([^:/]+).*|\1|')
-DB_PORT=$(echo "$DB_URL" | sed -E 's|.*:([0-9]+)/.*|\1|')
-DB_PORT="${DB_PORT:-5432}"
-
-echo "==> Waiting for PostgreSQL at ${DB_HOST}:${DB_PORT}..."
+echo "==> Waiting for database to be ready..."
 RETRIES=30
 until python -c "
-import psycopg2, sys
+import psycopg2, sys, os
 try:
-    psycopg2.connect('${DB_URL}')
+    psycopg2.connect(os.environ['DATABASE_URL'])
     sys.exit(0)
 except Exception as e:
     print(f'  not ready: {e}')
@@ -39,4 +33,5 @@ echo "==> Running database migrations..."
 alembic upgrade head
 
 echo "==> Starting FitTrack API..."
-exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}" --workers 4
+# 1 worker on Render free tier (512 MB RAM). Upgrade instance for more workers.
+exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}" --workers 1
