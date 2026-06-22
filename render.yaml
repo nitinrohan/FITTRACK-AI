@@ -23,7 +23,7 @@ services:
         generateValue: true
       - key: BACKEND_CORS_ORIGINS
         # Update to your actual Vercel URL after deploying the frontend.
-        value: '["https://fittrack-ai.vercel.app","http://localhost:3000"]'
+        value: '["https://fittrack-ai-ashen.vercel.app","http://localhost:3000"]'
 
 databases:
   - name: fittrack-db
