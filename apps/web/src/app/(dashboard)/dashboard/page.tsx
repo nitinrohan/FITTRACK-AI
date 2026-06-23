@@ -82,7 +82,7 @@ function Widget({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-surface-200 bg-white p-5 flex flex-col gap-3">
+    <div className="flex min-h-[180px] flex-col gap-3 rounded-xl border border-surface-200 bg-white p-5">
       <p className="text-xs font-semibold uppercase tracking-wide text-surface-500">
         {title}
       </p>
@@ -722,7 +722,9 @@ function QuickActions() {
 
 function EmptyWidgetState({ message }: { message: string }) {
   return (
-    <p className="py-6 text-center text-sm text-surface-500 italic">{message}</p>
+    <p className="flex flex-1 items-center justify-center py-8 text-center text-sm text-surface-500 italic">
+      {message}
+    </p>
   );
 }
 
