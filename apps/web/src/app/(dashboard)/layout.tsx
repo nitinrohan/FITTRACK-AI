@@ -125,7 +125,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
+    <div className="flex min-h-screen flex-col bg-surface-50 dark:bg-surface-900">
       <header className="relative border-b border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
@@ -172,7 +172,14 @@ export default function DashboardLayout({
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
+
+      <footer className="border-t border-surface-200 dark:border-surface-700">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-1 px-4 py-5 text-sm text-surface-500 dark:text-surface-400 sm:flex-row">
+          <p>&copy; {new Date().getFullYear()} FitTrack AI</p>
+          <p>Your personal fitness companion.</p>
+        </div>
+      </footer>
     </div>
   );
 }
