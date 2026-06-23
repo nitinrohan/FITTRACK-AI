@@ -80,8 +80,8 @@ export default function NutritionPage() {
       {/* Page header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-surface-900">Nutrition</h1>
-          <p className="mt-0.5 text-sm text-surface-500">
+          <h1 className="text-2xl font-semibold text-surface-900 dark:text-surface-50">Nutrition</h1>
+          <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
             Track your food and water intake
           </p>
         </div>
@@ -198,7 +198,7 @@ function MacroSummaryBar({ totals }: { totals: MacroTotals }) {
             </div>
             <div className="text-xl font-semibold text-surface-900">
               {value}
-              <span className="ml-0.5 text-xs font-normal text-surface-400">{unit}</span>
+              <span className="ml-0.5 text-xs font-normal text-surface-500">{unit}</span>
             </div>
           </div>
         ))}
@@ -242,7 +242,7 @@ function MealSectionCard({
             {MEAL_TYPE_LABELS[mealType]}
           </h2>
           {totals && entries.length > 0 && (
-            <span className="text-xs text-surface-400">
+            <span className="text-xs text-surface-500">
               {Math.round(totals.calories)} kcal
             </span>
           )}
@@ -274,7 +274,7 @@ function MealSectionCard({
 
       {/* Entries */}
       {entries.length === 0 && !showAdd ? (
-        <p className="px-4 py-4 text-sm text-surface-400 italic">
+        <p className="px-4 py-4 text-sm text-surface-500 italic">
           Nothing logged yet — add a food above.
         </p>
       ) : (
@@ -329,7 +329,7 @@ function FoodLogRow({
         <p className="truncate text-sm font-medium text-surface-900">
           {entry.food_name}
           {entry.food_brand && (
-            <span className="ml-1 text-xs font-normal text-surface-400">
+            <span className="ml-1 text-xs font-normal text-surface-500">
               {entry.food_brand}
             </span>
           )}
@@ -360,7 +360,7 @@ function FoodLogRow({
           <button
             onClick={() => setConfirm(true)}
             aria-label={`Remove ${entry.food_name}`}
-            className="rounded p-1 text-surface-400 hover:text-red-500 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 transition-colors"
+            className="rounded p-1 text-surface-500 hover:text-red-500 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 transition-colors"
           >
             <TrashIcon />
           </button>
@@ -445,7 +445,7 @@ function AddFoodForm({ onAdd, onCancel }: AddFoodFormProps) {
           className="w-full rounded-lg border border-surface-200 bg-white px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
         />
         {isSearching && (
-          <span className="absolute right-3 top-8 text-xs text-surface-400">Searching…</span>
+          <span className="absolute right-3 top-8 text-xs text-surface-500">Searching…</span>
         )}
 
         {/* Search results dropdown */}
@@ -465,7 +465,7 @@ function AddFoodForm({ onAdd, onCancel }: AddFoodFormProps) {
                   <span>
                     <span className="font-medium text-surface-900">{food.name}</span>
                     {food.brand && (
-                      <span className="ml-1 text-xs text-surface-400">{food.brand}</span>
+                      <span className="ml-1 text-xs text-surface-500">{food.brand}</span>
                     )}
                     {food.is_system && (
                       <span className="ml-1 rounded bg-surface-100 px-1 py-0.5 text-[10px] text-surface-500">
@@ -473,7 +473,7 @@ function AddFoodForm({ onAdd, onCancel }: AddFoodFormProps) {
                       </span>
                     )}
                   </span>
-                  <span className="ml-3 shrink-0 text-xs text-surface-400">
+                  <span className="ml-3 shrink-0 text-xs text-surface-500">
                     {food.calories_per_100g} kcal/100g
                   </span>
                 </button>
@@ -505,7 +505,7 @@ function AddFoodForm({ onAdd, onCancel }: AddFoodFormProps) {
             required
             className="w-28 rounded-lg border border-surface-200 bg-white px-3 py-2 text-sm text-surface-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
           />
-          <span className="ml-2 text-xs text-surface-400">grams</span>
+          <span className="ml-2 text-xs text-surface-500">grams</span>
         </div>
       )}
 
@@ -583,7 +583,7 @@ function WaterTracker({
           <WaterIcon />
           <h2 className="font-medium text-surface-900">Water</h2>
           {totalMl > 0 && (
-            <span className="text-xs text-surface-400">{totalL} L today</span>
+            <span className="text-xs text-surface-500">{totalL} L today</span>
           )}
         </div>
       </div>
@@ -642,7 +642,7 @@ function WaterTracker({
 
       {/* Entries */}
       {entries.length === 0 ? (
-        <p className="px-4 py-4 text-sm text-surface-400 italic">
+        <p className="px-4 py-4 text-sm text-surface-500 italic">
           No water logged yet.
         </p>
       ) : (
@@ -684,9 +684,9 @@ function WaterLogRow({
     <li className="flex items-center justify-between px-4 py-2.5">
       <div className="text-sm text-surface-700">
         <span className="font-medium">{entry.amount_ml} ml</span>
-        <span className="ml-2 text-xs text-surface-400">{time}</span>
+        <span className="ml-2 text-xs text-surface-500">{time}</span>
         {entry.notes && (
-          <span className="ml-2 text-xs text-surface-400 italic">{entry.notes}</span>
+          <span className="ml-2 text-xs text-surface-500 italic">{entry.notes}</span>
         )}
       </div>
 
@@ -711,7 +711,7 @@ function WaterLogRow({
           <button
             onClick={() => setConfirm(true)}
             aria-label="Remove water entry"
-            className="rounded p-1 text-surface-400 hover:text-red-500 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 transition-colors"
+            className="rounded p-1 text-surface-500 hover:text-red-500 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 transition-colors"
           >
             <TrashIcon />
           </button>

@@ -142,7 +142,7 @@ function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
                 type="button"
                 aria-label={`Edit goal: ${goal.title}`}
                 onClick={() => onEdit(goal)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-400 hover:bg-surface-100 hover:text-surface-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-500 hover:bg-surface-100 hover:text-surface-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -163,7 +163,7 @@ function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
                 type="button"
                 aria-label={`Delete goal: ${goal.title}`}
                 onClick={() => onDelete(goal)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-400 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-500 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -188,7 +188,7 @@ function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
               type="button"
               aria-label={`View goal: ${goal.title}`}
               onClick={() => onEdit(goal)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-400 hover:bg-surface-100 hover:text-surface-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-500 hover:bg-surface-100 hover:text-surface-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -257,7 +257,7 @@ function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
           <p
             className={cn(
               "text-xs",
-              deadlinePast ? "font-medium text-red-600" : "text-surface-400"
+              deadlinePast ? "font-medium text-red-600" : "text-surface-500"
             )}
           >
             {deadlinePast ? "⚠ Deadline passed: " : "Due: "}
@@ -394,8 +394,8 @@ export default function GoalsPage() {
       {/* Page header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-surface-900">Goals</h1>
-          <p className="mt-0.5 text-sm text-surface-500">
+          <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-50">Goals</h1>
+          <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
             Set and track your fitness targets.
           </p>
         </div>
@@ -418,7 +418,7 @@ export default function GoalsPage() {
       <div
         role="tablist"
         aria-label="Filter goals by status"
-        className="mb-5 flex gap-1 rounded-xl border border-surface-200 bg-surface-50 p-1"
+        className="mb-5 flex gap-1 overflow-x-auto rounded-xl border border-surface-200 bg-surface-50 p-1 dark:border-surface-700 dark:bg-surface-800"
       >
         {FILTERS.map(({ label, value }) => (
           <button
@@ -427,11 +427,11 @@ export default function GoalsPage() {
             aria-selected={activeFilter === value}
             onClick={() => setActiveFilter(value)}
             className={cn(
-              "flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+              "flex-1 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
               "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500",
               activeFilter === value
-                ? "bg-white text-surface-900 shadow-sm"
-                : "text-surface-500 hover:text-surface-700"
+                ? "bg-white text-surface-900 shadow-sm dark:bg-surface-700 dark:text-surface-50"
+                : "text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200"
             )}
           >
             {label}
@@ -441,7 +441,7 @@ export default function GoalsPage() {
 
       {/* Accessible list summary */}
       {listSummary && (
-        <p className="mb-3 text-xs text-surface-400" aria-live="polite">
+        <p className="mb-3 text-xs text-surface-500" aria-live="polite">
           {listSummary}
         </p>
       )}
@@ -494,7 +494,7 @@ export default function GoalsPage() {
               ? "No goals yet"
               : `No ${activeFilter} goals`}
           </h2>
-          <p className="mt-1 max-w-xs text-sm text-surface-400">
+          <p className="mt-1 max-w-xs text-sm text-surface-500">
             {activeFilter === "all"
               ? "Create your first goal to start tracking progress toward your fitness targets."
               : `You don't have any ${activeFilter} goals right now.`}

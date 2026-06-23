@@ -59,10 +59,10 @@ export default function MeasurementsPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-surface-900">
+          <h1 className="text-2xl font-semibold text-surface-900 dark:text-surface-50">
             Body Measurements
           </h1>
-          <p className="mt-0.5 text-sm text-surface-500">
+          <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
             Track circumference measurements over time
           </p>
         </div>
@@ -197,13 +197,13 @@ function SnapshotCard({
     <div className="rounded-xl border border-surface-200 bg-white p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-medium text-surface-900">Current measurements</h2>
-        <span className="text-xs text-surface-400">
+        <span className="text-xs text-surface-500">
           {formatDate(entry.measured_at)}
         </span>
       </div>
 
       {populated.length === 0 ? (
-        <p className="text-sm text-surface-400 italic">No values recorded.</p>
+        <p className="text-sm text-surface-500 italic">No values recorded.</p>
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
           {MEASUREMENT_GROUPS.map((group) => {
@@ -213,7 +213,7 @@ function SnapshotCard({
             if (groupFields.length === 0) return null;
             return (
               <div key={group.label} className="col-span-full">
-                <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-surface-400">
+                <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-surface-500">
                   {group.label}
                 </p>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -280,7 +280,7 @@ function EntryCard({
         <div className="min-w-0">
           <p className="text-sm font-medium text-surface-700">
             {formatDate(entry.measured_at)}
-            <span className="ml-2 text-xs font-normal text-surface-400">
+            <span className="ml-2 text-xs font-normal text-surface-500">
               {entry.recorded_count} measurement
               {entry.recorded_count !== 1 ? "s" : ""}
             </span>
@@ -309,7 +309,7 @@ function EntryCard({
             {expanded && populated.length > 4 && (
               <button
                 onClick={() => setExpanded(false)}
-                className="text-xs text-surface-400 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+                className="text-xs text-surface-500 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
               >
                 Show less
               </button>
@@ -317,7 +317,7 @@ function EntryCard({
           </div>
 
           {entry.notes && (
-            <p className="mt-1 text-xs text-surface-400 italic">{entry.notes}</p>
+            <p className="mt-1 text-xs text-surface-500 italic">{entry.notes}</p>
           )}
         </div>
 
@@ -343,7 +343,7 @@ function EntryCard({
             <button
               onClick={() => setConfirm(true)}
               aria-label="Delete entry"
-              className="rounded p-1 text-surface-400 hover:text-red-500 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 transition-colors"
+              className="rounded p-1 text-surface-500 hover:text-red-500 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 transition-colors"
             >
               <TrashIcon />
             </button>
@@ -461,7 +461,7 @@ function LogForm({ unit, onSubmit, onCancel }: LogFormProps) {
       <div className="space-y-4">
         {MEASUREMENT_GROUPS.map((group) => (
           <div key={group.label}>
-            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-surface-400">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-surface-500">
               {group.label}
             </p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -472,7 +472,7 @@ function LogForm({ unit, onSubmit, onCancel }: LogFormProps) {
                     className="mb-1 block text-xs font-medium text-surface-600"
                   >
                     {MEASUREMENT_LABELS[field]}
-                    <span className="ml-1 text-surface-400">({unit})</span>
+                    <span className="ml-1 text-surface-500">({unit})</span>
                   </label>
                   <input
                     id={`meas-${field}`}
@@ -528,7 +528,7 @@ function EmptyState({ onLog }: { onLog: () => void }) {
       <h3 className="text-sm font-medium text-surface-700">
         No measurements yet
       </h3>
-      <p className="mt-1 text-sm text-surface-400">
+      <p className="mt-1 text-sm text-surface-500">
         Log your first set to start tracking progress.
       </p>
       <button
@@ -565,7 +565,7 @@ function TrashIcon() {
 
 function RulerIcon() {
   return (
-    <svg className="h-6 w-6 text-surface-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className="h-6 w-6 text-surface-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M21.3 8.7 8.7 21.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15.3 2.7c1-1 2.5-1 3.4 0l2.6 2.6c1 1 1 2.5 0 3.4z" />
       <path d="m7.5 10.5 2 2" />
       <path d="m10.5 7.5 2 2" />

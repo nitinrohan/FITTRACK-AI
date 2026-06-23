@@ -91,7 +91,7 @@ function WorkoutCard({ workout, onDelete }: WorkoutCardProps) {
             <h3 className="truncate text-sm font-semibold text-surface-900">
               {workout.name}
             </h3>
-            <p className="text-xs text-surface-400">
+            <p className="text-xs text-surface-500">
               {formatDate(workout.started_at)}
             </p>
           </div>
@@ -101,7 +101,7 @@ function WorkoutCard({ workout, onDelete }: WorkoutCardProps) {
             type="button"
             aria-label={`Delete workout: ${workout.name}`}
             onClick={() => onDelete(workout)}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-surface-400 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-surface-500 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500"
           >
             <svg
               viewBox="0 0 24 24"
@@ -123,19 +123,19 @@ function WorkoutCard({ workout, onDelete }: WorkoutCardProps) {
         {/* Stats row */}
         <dl className="grid grid-cols-3 gap-2 text-center">
           <div className="rounded-lg bg-surface-50 px-2 py-1.5">
-            <dt className="text-xs text-surface-400">Exercises</dt>
+            <dt className="text-xs text-surface-500">Exercises</dt>
             <dd className="text-sm font-semibold text-surface-800">
               {workout.exercise_count}
             </dd>
           </div>
           <div className="rounded-lg bg-surface-50 px-2 py-1.5">
-            <dt className="text-xs text-surface-400">Sets</dt>
+            <dt className="text-xs text-surface-500">Sets</dt>
             <dd className="text-sm font-semibold text-surface-800">
               {workout.set_count}
             </dd>
           </div>
           <div className="rounded-lg bg-surface-50 px-2 py-1.5">
-            <dt className="text-xs text-surface-400">Duration</dt>
+            <dt className="text-xs text-surface-500">Duration</dt>
             <dd className="text-sm font-semibold text-surface-800">
               {formatDuration(workout.duration_seconds)}
             </dd>
@@ -144,7 +144,7 @@ function WorkoutCard({ workout, onDelete }: WorkoutCardProps) {
 
         {/* Volume */}
         {workout.total_volume_kg !== null && (
-          <p className="text-xs text-surface-400">
+          <p className="text-xs text-surface-500">
             Total volume:{" "}
             <span className="font-medium text-surface-700">
               {formatVolume(workout.total_volume_kg)}
@@ -275,8 +275,8 @@ export default function WorkoutsPage() {
       {/* Page header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-surface-900">Workouts</h1>
-          <p className="mt-0.5 text-sm text-surface-500">
+          <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-50">Workouts</h1>
+          <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
             Log sessions and track your training history.
           </p>
         </div>
@@ -317,7 +317,7 @@ export default function WorkoutsPage() {
       <div
         role="tablist"
         aria-label="Filter workouts"
-        className="mb-5 flex gap-1 rounded-xl border border-surface-200 bg-surface-50 p-1"
+        className="mb-5 flex gap-1 overflow-x-auto rounded-xl border border-surface-200 bg-surface-50 p-1 dark:border-surface-700 dark:bg-surface-800"
       >
         {FILTERS.map(({ label, value }) => (
           <button
@@ -326,11 +326,11 @@ export default function WorkoutsPage() {
             aria-selected={activeFilter === value}
             onClick={() => setActiveFilter(value)}
             className={cn(
-              "flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+              "flex-1 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
               "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500",
               activeFilter === value
-                ? "bg-white text-surface-900 shadow-sm"
-                : "text-surface-500 hover:text-surface-700"
+                ? "bg-white text-surface-900 shadow-sm dark:bg-surface-700 dark:text-surface-50"
+                : "text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200"
             )}
           >
             {label}
@@ -340,7 +340,7 @@ export default function WorkoutsPage() {
 
       {/* List summary */}
       {listSummary && (
-        <p className="mb-3 text-xs text-surface-400" aria-live="polite">
+        <p className="mb-3 text-xs text-surface-500" aria-live="polite">
           {listSummary}
         </p>
       )}
@@ -386,7 +386,7 @@ export default function WorkoutsPage() {
               ? "No workouts logged yet"
               : `No ${activeFilter.replace("_", " ")} workouts`}
           </h2>
-          <p className="mt-1 max-w-xs text-sm text-surface-400">
+          <p className="mt-1 max-w-xs text-sm text-surface-500">
             {activeFilter === "all"
               ? "Start your first workout or pick a template to get going."
               : `You don't have any ${activeFilter.replace("_", " ")} workouts right now.`}

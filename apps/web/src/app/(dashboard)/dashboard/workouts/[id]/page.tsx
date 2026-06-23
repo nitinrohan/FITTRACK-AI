@@ -93,13 +93,13 @@ function SetRow({ set, inProgress, onDelete }: SetRowProps) {
   return (
     <div className="flex items-center justify-between gap-2 rounded-lg bg-surface-50 px-3 py-2 text-sm">
       <div className="flex items-center gap-2">
-        <span className="w-5 text-right text-xs text-surface-400">
+        <span className="w-5 text-right text-xs text-surface-500">
           {set.set_number}
         </span>
         <span className="text-surface-800">{parts.join(" · ")}</span>
         {set.is_pr && <PRBadge />}
         {set.rpe !== null && (
-          <span className="text-xs text-surface-400">RPE {set.rpe}</span>
+          <span className="text-xs text-surface-500">RPE {set.rpe}</span>
         )}
       </div>
       {inProgress && onDelete && (
@@ -312,7 +312,7 @@ function ExerciseBlock({
             type="button"
             aria-label={`Remove ${ex.exercise_name} from workout`}
             onClick={() => onRemoveExercise(ex.id)}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-surface-400 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-400"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-surface-500 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-400"
           >
             <svg
               viewBox="0 0 24 24"
@@ -347,7 +347,7 @@ function ExerciseBlock({
       )}
 
       {ex.sets.length === 0 && inProgress && (
-        <p className="mb-3 text-xs text-surface-400">
+        <p className="mb-3 text-xs text-surface-500">
           No sets logged yet. Add your first set below.
         </p>
       )}
@@ -397,7 +397,7 @@ function AddExercisePanel({ onAdd, isAdding }: AddExercisePanelProps) {
       <h3 className="mb-3 text-sm font-medium text-surface-700">
         Add exercise
       </h3>
-      <p className="mb-3 text-xs text-surface-400">
+      <p className="mb-3 text-xs text-surface-500">
         Enter the exercise ID from the exercise library. A full exercise search
         picker will be available in a future update.
       </p>
@@ -637,8 +637,8 @@ export default function WorkoutDetailPage() {
               </span>
             )}
           </div>
-          <h1 className="text-2xl font-bold text-surface-900">{workout.name}</h1>
-          <p className="mt-0.5 text-sm text-surface-400">
+          <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-50">{workout.name}</h1>
+          <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
             {formatDate(workout.started_at)}
           </p>
         </div>
@@ -669,19 +669,19 @@ export default function WorkoutDetailPage() {
       {!inProgress && (
         <dl className="mb-6 grid grid-cols-3 gap-3 rounded-xl border border-surface-200 bg-surface-50 p-4">
           <div className="text-center">
-            <dt className="text-xs text-surface-400">Duration</dt>
+            <dt className="text-xs text-surface-500">Duration</dt>
             <dd className="mt-0.5 text-lg font-bold text-surface-800">
               {formatDuration(workout.duration_seconds)}
             </dd>
           </div>
           <div className="text-center">
-            <dt className="text-xs text-surface-400">Exercises</dt>
+            <dt className="text-xs text-surface-500">Exercises</dt>
             <dd className="mt-0.5 text-lg font-bold text-surface-800">
               {workout.exercises.length}
             </dd>
           </div>
           <div className="text-center">
-            <dt className="text-xs text-surface-400">Volume</dt>
+            <dt className="text-xs text-surface-500">Volume</dt>
             <dd className="mt-0.5 text-lg font-bold text-surface-800">
               {formatVolume(workout.total_volume_kg)}
             </dd>
@@ -691,7 +691,7 @@ export default function WorkoutDetailPage() {
 
       {/* Exercises */}
       {workout.exercises.length === 0 && inProgress && (
-        <p className="mb-4 text-sm text-surface-400">
+        <p className="mb-4 text-sm text-surface-500">
           No exercises added yet. Use the form below to add your first exercise.
         </p>
       )}

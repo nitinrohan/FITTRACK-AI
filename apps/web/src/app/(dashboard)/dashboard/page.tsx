@@ -83,7 +83,7 @@ function Widget({
 }) {
   return (
     <div className="rounded-xl border border-surface-200 bg-white p-5 flex flex-col gap-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-surface-400">
+      <p className="text-xs font-semibold uppercase tracking-wide text-surface-500">
         {title}
       </p>
       <div className="flex-1">{children}</div>
@@ -131,9 +131,9 @@ function WeightTrendWidget({ data }: { data: WeightTrendSection }) {
         <>
           <div className="mb-2 flex items-baseline gap-3">
             {data.latest_kg !== null && (
-              <span className="text-2xl font-bold text-surface-900">
+              <span className="text-2xl font-bold text-surface-900 dark:text-surface-50">
                 {data.latest_kg.toFixed(1)}{" "}
-                <span className="text-sm font-medium text-surface-400">kg</span>
+                <span className="text-sm font-medium text-surface-500">kg</span>
               </span>
             )}
             {data.change_kg !== null && (
@@ -143,7 +143,7 @@ function WeightTrendWidget({ data }: { data: WeightTrendSection }) {
                     ? "text-xs font-medium text-emerald-600"
                     : data.change_kg > 0.1
                       ? "text-xs font-medium text-red-500"
-                      : "text-xs font-medium text-surface-400"
+                      : "text-xs font-medium text-surface-500"
                 }
               >
                 {data.change_kg > 0 ? "+" : ""}
@@ -151,7 +151,7 @@ function WeightTrendWidget({ data }: { data: WeightTrendSection }) {
               </span>
             )}
             {data.moving_avg_7d_kg !== null && (
-              <span className="text-xs text-surface-400">
+              <span className="text-xs text-surface-500">
                 7d avg {data.moving_avg_7d_kg.toFixed(1)} kg
               </span>
             )}
@@ -222,12 +222,12 @@ function WorkoutFrequencyWidget({ data }: { data: WorkoutFrequencySection }) {
       linkLabel="View workouts"
     >
       <div className="mb-2 flex items-baseline gap-3">
-        <span className="text-2xl font-bold text-surface-900">
+        <span className="text-2xl font-bold text-surface-900 dark:text-surface-50">
           {data.total_28d}
         </span>
-        <span className="text-xs text-surface-400">completed</span>
+        <span className="text-xs text-surface-500">completed</span>
         {data.last_workout_date && (
-          <span className="text-xs text-surface-400">
+          <span className="text-xs text-surface-500">
             last: {formatDate(data.last_workout_date)}
           </span>
         )}
@@ -317,10 +317,10 @@ function TodayNutritionWidget({ data }: { data: TodayNutritionSection }) {
       linkLabel="Open nutrition log"
     >
       <div className="mb-3 flex items-baseline gap-2">
-        <span className="text-2xl font-bold text-surface-900">
+        <span className="text-2xl font-bold text-surface-900 dark:text-surface-50">
           {data.calories_kcal.toFixed(0)}
         </span>
-        <span className="text-xs text-surface-400">kcal</span>
+        <span className="text-xs text-surface-500">kcal</span>
       </div>
 
       <div className="space-y-2">
@@ -389,10 +389,10 @@ function GoalsWidget({ data }: { data: GoalsSummarySection }) {
       linkLabel="View all goals"
     >
       <div className="mb-3 flex items-baseline gap-2">
-        <span className="text-2xl font-bold text-surface-900">{data.count}</span>
-        <span className="text-xs text-surface-400">active</span>
+        <span className="text-2xl font-bold text-surface-900 dark:text-surface-50">{data.count}</span>
+        <span className="text-xs text-surface-500">active</span>
         {data.avg_progress_pct !== null && (
-          <span className="text-xs text-surface-400">
+          <span className="text-xs text-surface-500">
             · {data.avg_progress_pct.toFixed(0)}% avg
           </span>
         )}
@@ -441,14 +441,14 @@ function LatestMeasurementWidget({
       href="/dashboard/measurements"
       linkLabel="View all"
     >
-      <p className="mb-3 text-xs text-surface-400">{formatDate(data.date)}</p>
+      <p className="mb-3 text-xs text-surface-500">{formatDate(data.date)}</p>
       {recorded.length === 0 ? (
-        <p className="text-sm text-surface-400 italic">No values recorded.</p>
+        <p className="text-sm text-surface-500 italic">No values recorded.</p>
       ) : (
         <div className="grid grid-cols-2 gap-2">
           {recorded.map((k) => (
             <div key={k as string} className="rounded-lg bg-surface-50 px-3 py-2">
-              <p className="text-[11px] text-surface-400">
+              <p className="text-[11px] text-surface-500">
                 {MEAS_LABELS[k]}
               </p>
               <p className="text-sm font-semibold text-surface-800">
@@ -539,7 +539,7 @@ function AIInsightsWidget() {
         {state.status === "done" && !state.dismissed && (
           <button
             onClick={() => void generate()}
-            className="text-xs text-surface-400 hover:text-surface-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 rounded"
+            className="text-xs text-surface-500 hover:text-surface-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 rounded"
           >
             Regenerate
           </button>
@@ -548,7 +548,7 @@ function AIInsightsWidget() {
 
       {/* Idle */}
       {state.status === "idle" && (
-        <p className="mt-3 text-sm text-surface-400">
+        <p className="mt-3 text-sm text-surface-500">
           Get a personalised review of your last 7 days — workouts, nutrition,
           weight, and goals.
         </p>
@@ -588,7 +588,7 @@ function AIInsightsWidget() {
           {/* Highlights */}
           {state.data.highlights.length > 0 && (
             <div>
-              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-surface-400">
+              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-surface-500">
                 Highlights
               </p>
               <ul className="space-y-1.5">
@@ -605,7 +605,7 @@ function AIInsightsWidget() {
           {/* Suggestions */}
           {state.data.suggestions.length > 0 && (
             <div>
-              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-surface-400">
+              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-surface-500">
                 Suggestions for next week
               </p>
               <ul className="space-y-1.5">
@@ -620,7 +620,7 @@ function AIInsightsWidget() {
           )}
 
           {/* Data snapshot */}
-          <details className="text-xs text-surface-400">
+          <details className="text-xs text-surface-500">
             <summary className="cursor-pointer hover:text-surface-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 rounded">
               Data used
             </summary>
@@ -660,7 +660,7 @@ function AIInsightsWidget() {
 
       {/* Accepted / dismissed confirmation */}
       {state.status === "done" && state.dismissed && (
-        <p className="mt-3 text-sm text-surface-400">
+        <p className="mt-3 text-sm text-surface-500">
           Summary dismissed.{" "}
           <button
             onClick={() => void generate()}
@@ -722,7 +722,7 @@ function QuickActions() {
 
 function EmptyWidgetState({ message }: { message: string }) {
   return (
-    <p className="py-6 text-center text-sm text-surface-400 italic">{message}</p>
+    <p className="py-6 text-center text-sm text-surface-500 italic">{message}</p>
   );
 }
 
@@ -739,8 +739,8 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">{greeting}</h1>
-        <p className="mt-0.5 text-sm text-surface-500">
+        <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-50">{greeting}</h1>
+        <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
           Here&rsquo;s your fitness snapshot.
         </p>
       </div>
@@ -837,7 +837,7 @@ export default function DashboardPage() {
           <h3 className="text-sm font-medium text-surface-700">
             Your dashboard is ready
           </h3>
-          <p className="mt-1 text-sm text-surface-400">
+          <p className="mt-1 text-sm text-surface-500">
             Start by logging your weight, a workout, or your first meal.
           </p>
         </div>
