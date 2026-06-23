@@ -47,6 +47,7 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+.fuse_hidden*
 
 # Database
 *.sqlite3

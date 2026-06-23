@@ -126,7 +126,7 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <header className="border-b border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <header className="relative border-b border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
             <Link
@@ -164,7 +164,10 @@ export default function DashboardLayout({
               {user.profile?.display_name ?? user.email}
             </span>
             <ThemeToggle />
-            <SignOutButton />
+            <div className="hidden sm:block">
+              <SignOutButton />
+            </div>
+            <MobileMenu displayName={user.profile?.display_name ?? user.email} />
           </div>
         </div>
       </header>
@@ -244,5 +247,140 @@ function SignOutButton() {
     >
       Sign out
     </button>
+  );
+}
+
+// ── Mobile menu (hamburger) ─────────────────────────────────────────────────────
+
+function MobileMenu({ displayName }: { displayName: string }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
+  const [open, setOpen] = useState(false);
+
+  // Close the menu whenever the route changes.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Close on Escape for keyboard users.
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  async function handleSignOut() {
+    await logout();
+    router.push("/");
+    router.refresh();
+  }
+
+  const linkClass = (active: boolean) =>
+    cn(
+      "block rounded-lg px-3 py-2.5 text-base font-medium transition-colors",
+      "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500",
+      active
+        ? "bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300"
+        : "text-surface-700 hover:bg-surface-100 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-50",
+    );
+
+  return (
+    <div className="sm:hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label={open ? "Close menu" : "Open menu"}
+        aria-expanded={open}
+        aria-controls="mobile-menu"
+        className={cn(
+          "flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+          "text-surface-600 hover:bg-surface-100 hover:text-surface-900",
+          "dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-50",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500",
+        )}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+          aria-hidden="true"
+        >
+          {open ? (
+            <path d="M18 6 6 18M6 6l12 12" />
+          ) : (
+            <path d="M3 12h18M3 6h18M3 18h18" />
+          )}
+        </svg>
+      </button>
+
+      {open && (
+        <>
+          {/* Backdrop — tap anywhere outside the panel to close. */}
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            onClick={() => setOpen(false)}
+            className="fixed inset-x-0 bottom-0 top-[57px] z-30 cursor-default bg-surface-900/20 dark:bg-black/50"
+          />
+          {/* Dropdown panel — positioned below the header. */}
+          <div
+            id="mobile-menu"
+            className="absolute inset-x-0 top-full z-40 border-b border-surface-200 bg-white shadow-lg dark:border-surface-700 dark:bg-surface-800"
+          >
+            <nav
+              aria-label="Mobile navigation"
+              className="mx-auto max-w-7xl px-4 py-3"
+            >
+              <ul className="flex flex-col gap-1">
+                {NAV_LINKS.map(({ href, label }) => {
+                  const active =
+                    href === "/dashboard"
+                      ? pathname === "/dashboard"
+                      : pathname.startsWith(href);
+                  return (
+                    <li key={href}>
+                      <Link
+                        href={href}
+                        aria-current={active ? "page" : undefined}
+                        className={linkClass(active)}
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+              <div className="mt-3 border-t border-surface-200 pt-3 dark:border-surface-700">
+                <p className="px-3 pb-1 text-sm text-surface-500 dark:text-surface-400">
+                  {displayName}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className={cn(
+                    "block w-full rounded-lg px-3 py-2.5 text-left text-base font-medium transition-colors",
+                    "text-surface-700 hover:bg-surface-100 hover:text-surface-900",
+                    "dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-50",
+                    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500",
+                  )}
+                >
+                  Sign out
+                </button>
+              </div>
+            </nav>
+          </div>
+        </>
+      )}
+    </div>
   );
 }

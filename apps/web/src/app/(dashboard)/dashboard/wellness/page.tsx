@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useWellness } from '@/features/wellness/use-wellness'
 import type {
   LogSleepRequest,
@@ -24,14 +24,21 @@ function today(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
+/** Return an ISO date (YYYY-MM-DD) offset from the given date by `days`. */
+function addDays(isoDate: string, days: number): string {
+  const d = new Date(`${isoDate}T00:00:00`)
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+
 function RatingDots({ value, max = 5 }: { value: number | null; max?: number }) {
-  if (value === null) return <span className="text-gray-400 text-sm">-</span>
+  if (value === null) return <span className="text-surface-500 text-sm">-</span>
   return (
     <span className="flex gap-1">
       {Array.from({ length: max }).map((_, i) => (
         <span
           key={i}
-          className={`w-2 h-2 rounded-full ${i < value ? 'bg-indigo-500' : 'bg-gray-200'}`}
+          className={`w-2 h-2 rounded-full ${i < value ? 'bg-brand-500' : 'bg-surface-200'}`}
         />
       ))}
     </span>
@@ -42,22 +49,25 @@ function RatingPicker({
   value,
   onChange,
   labels,
+  groupLabel,
 }: {
   value: number | null
   onChange: (v: number) => void
   labels: Record<number, string>
+  groupLabel: string
 }) {
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex gap-2 flex-wrap" role="group" aria-label={groupLabel}>
       {[1, 2, 3, 4, 5].map((n) => (
         <button
           key={n}
           type="button"
+          aria-pressed={value === n}
           onClick={() => onChange(n)}
           className={`px-3 py-1 rounded-full text-sm border transition-colors ${
             value === n
-              ? 'bg-indigo-600 text-white border-indigo-600'
-              : 'bg-white text-gray-700 border-gray-300 hover:border-indigo-400'
+              ? 'bg-brand-600 text-white border-brand-600'
+              : 'bg-white text-surface-700 border-surface-300 hover:border-brand-400'
           }`}
         >
           {n} · {labels[n]}
@@ -76,37 +86,37 @@ function TodayCard({ snapshot }: { snapshot: ReturnType<typeof useWellness>['sna
   const waterL = (water_total_ml / 1000).toFixed(1)
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5">
-      <h2 className="font-semibold text-gray-900 mb-4">Today at a glance</h2>
+    <div className="bg-white rounded-xl border border-surface-200 p-5">
+      <h2 className="font-semibold text-surface-900 mb-4">Today at a glance</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="text-center">
-          <div className="text-2xl font-bold text-indigo-600">
+          <div className="text-2xl font-bold text-brand-600">
             {formatSleepDuration(sleep?.duration_minutes ?? null)}
           </div>
-          <div className="text-xs text-gray-500 mt-1">Sleep</div>
+          <div className="text-xs text-surface-500 mt-1">Sleep</div>
           {sleep?.quality && <RatingDots value={sleep.quality} />}
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-indigo-600">
+          <div className="text-2xl font-bold text-brand-600">
             {steps ? steps.steps.toLocaleString() : '—'}
           </div>
-          <div className="text-xs text-gray-500 mt-1">Steps</div>
+          <div className="text-xs text-surface-500 mt-1">Steps</div>
           {steps?.distance_m && (
-            <div className="text-xs text-gray-400">{formatDistanceKm(steps.distance_m)}</div>
+            <div className="text-xs text-surface-500">{formatDistanceKm(steps.distance_m)}</div>
           )}
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-indigo-600">
+          <div className="text-2xl font-bold text-brand-600">
             {wellness?.mood ?? '—'}
           </div>
-          <div className="text-xs text-gray-500 mt-1">Mood</div>
+          <div className="text-xs text-surface-500 mt-1">Mood</div>
           {wellness?.mood && (
-            <div className="text-xs text-gray-400">{MOOD_LABELS[wellness.mood]}</div>
+            <div className="text-xs text-surface-500">{MOOD_LABELS[wellness.mood]}</div>
           )}
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-indigo-600">{waterL}L</div>
-          <div className="text-xs text-gray-500 mt-1">Water</div>
+          <div className="text-2xl font-bold text-brand-600">{waterL}L</div>
+          <div className="text-xs text-surface-500 mt-1">Water</div>
         </div>
       </div>
     </div>
@@ -132,6 +142,7 @@ function LogSleepForm({
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const fid = useId()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -146,8 +157,10 @@ function LogSleepForm({
       } else {
         if (bedtime) payload.bedtime = `${date}T${bedtime}:00`
         if (wakeTime) {
-          // wake time might be next day
-          payload.wake_time = `${date}T${wakeTime}:00`
+          // If wake time is not strictly after bedtime, the user woke the
+          // following calendar day (e.g. bed 23:00, wake 07:00).
+          const wakeDate = bedtime && wakeTime <= bedtime ? addDays(date, 1) : date
+          payload.wake_time = `${wakeDate}T${wakeTime}:00`
         }
       }
       if (quality) payload.quality = quality
@@ -163,34 +176,37 @@ function LogSleepForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+        <label htmlFor={`${fid}-date`} className="block text-sm font-medium text-surface-700 mb-1">Date</label>
         <input
+          id={`${fid}-date`}
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
       <div className="flex gap-2">
         <button
           type="button"
+          aria-pressed={mode === 'duration'}
           onClick={() => setMode('duration')}
           className={`px-3 py-1 rounded-full text-sm border ${
             mode === 'duration'
-              ? 'bg-indigo-600 text-white border-indigo-600'
-              : 'border-gray-300 text-gray-600'
+              ? 'bg-brand-600 text-white border-brand-600'
+              : 'border-surface-300 text-surface-600'
           }`}
         >
           Duration
         </button>
         <button
           type="button"
+          aria-pressed={mode === 'times'}
           onClick={() => setMode('times')}
           className={`px-3 py-1 rounded-full text-sm border ${
             mode === 'times'
-              ? 'bg-indigo-600 text-white border-indigo-600'
-              : 'border-gray-300 text-gray-600'
+              ? 'bg-brand-600 text-white border-brand-600'
+              : 'border-surface-300 text-surface-600'
           }`}
         >
           Bedtime & wake
@@ -200,89 +216,97 @@ function LogSleepForm({
       {mode === 'duration' ? (
         <div className="flex gap-3 items-end">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Hours</label>
+            <label htmlFor={`${fid}-hours`} className="block text-xs text-surface-500 mb-1">Hours</label>
             <input
+              id={`${fid}-hours`}
               type="number"
               min={0}
               max={24}
               value={hours}
               onChange={(e) => setHours(e.target.value)}
               placeholder="7"
-              className="w-20 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-20 border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Minutes</label>
+            <label htmlFor={`${fid}-mins`} className="block text-xs text-surface-500 mb-1">Minutes</label>
             <input
+              id={`${fid}-mins`}
               type="number"
               min={0}
               max={59}
               value={mins}
               onChange={(e) => setMins(e.target.value)}
               placeholder="30"
-              className="w-20 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-20 border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
         </div>
       ) : (
         <div className="flex gap-3">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Bedtime</label>
+            <label htmlFor={`${fid}-bedtime`} className="block text-xs text-surface-500 mb-1">Bedtime</label>
             <input
+              id={`${fid}-bedtime`}
               type="time"
               value={bedtime}
               onChange={(e) => setBedtime(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Wake time</label>
+            <label htmlFor={`${fid}-wake`} className="block text-xs text-surface-500 mb-1">Wake time</label>
             <input
+              id={`${fid}-wake`}
               type="time"
               value={wakeTime}
               onChange={(e) => setWakeTime(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
         </div>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Sleep quality
-        </label>
+        <span className="block text-sm font-medium text-surface-700 mb-2">Sleep quality</span>
         <RatingPicker
           value={quality}
           onChange={setQuality}
           labels={{ 1: 'Very poor', 2: 'Poor', 3: 'Okay', 4: 'Good', 5: 'Excellent' }}
+          groupLabel="Sleep quality"
         />
       </div>
 
       <div>
-        <label className="block text-xs text-gray-500 mb-1">Notes (optional)</label>
+        <label htmlFor={`${fid}-notes`} className="block text-xs text-surface-500 mb-1">Notes (optional)</label>
         <input
+          id={`${fid}-notes`}
           type="text"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="e.g. Felt restless"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && (
+        <p role="alert" className="text-red-600 text-sm">
+          {error}
+        </p>
+      )}
 
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={saving}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+          className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
         >
           {saving ? 'Saving…' : 'Log sleep'}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+          className="px-4 py-2 border border-surface-300 rounded-lg text-sm text-surface-700 hover:bg-surface-50"
         >
           Cancel
         </button>
@@ -308,6 +332,7 @@ function LogStepsForm({
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const fid = useId()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -335,85 +360,97 @@ function LogStepsForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Date</label>
+          <label htmlFor={`${fid}-date`} className="block text-xs text-surface-500 mb-1">Date</label>
           <input
+            id={`${fid}-date`}
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Steps *</label>
+          <label htmlFor={`${fid}-steps`} className="block text-xs text-surface-500 mb-1">Steps *</label>
           <input
+            id={`${fid}-steps`}
             type="number"
             min={0}
+            required
+            aria-required="true"
             value={steps}
             onChange={(e) => setSteps(e.target.value)}
             placeholder="8000"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Active minutes</label>
+          <label htmlFor={`${fid}-active`} className="block text-xs text-surface-500 mb-1">Active minutes</label>
           <input
+            id={`${fid}-active`}
             type="number"
             min={0}
             value={activeMinutes}
             onChange={(e) => setActiveMinutes(e.target.value)}
             placeholder="45"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Distance (km)</label>
+          <label htmlFor={`${fid}-distance`} className="block text-xs text-surface-500 mb-1">Distance (km)</label>
           <input
+            id={`${fid}-distance`}
             type="number"
             min={0}
             step="0.1"
             value={distanceKm}
             onChange={(e) => setDistanceKm(e.target.value)}
             placeholder="6.4"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Calories burned</label>
+          <label htmlFor={`${fid}-calories`} className="block text-xs text-surface-500 mb-1">Calories burned</label>
           <input
+            id={`${fid}-calories`}
             type="number"
             min={0}
             value={caloriesBurned}
             onChange={(e) => setCaloriesBurned(e.target.value)}
             placeholder="320"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Notes</label>
+          <label htmlFor={`${fid}-notes`} className="block text-xs text-surface-500 mb-1">Notes</label>
           <input
+            id={`${fid}-notes`}
             type="text"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Optional"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
       </div>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && (
+        <p role="alert" className="text-red-600 text-sm">
+          {error}
+        </p>
+      )}
 
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={saving}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+          className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
         >
           {saving ? 'Saving…' : 'Log steps'}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+          className="px-4 py-2 border border-surface-300 rounded-lg text-sm text-surface-700 hover:bg-surface-50"
         >
           Cancel
         </button>
@@ -438,6 +475,7 @@ function LogWellnessForm({
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const fid = useId()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -464,58 +502,64 @@ function LogWellnessForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-xs text-gray-500 mb-1">Date</label>
+        <label htmlFor={`${fid}-date`} className="block text-xs text-surface-500 mb-1">Date</label>
         <input
+          id={`${fid}-date`}
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Mood</label>
-        <RatingPicker value={mood} onChange={setMood} labels={MOOD_LABELS} />
+        <span className="block text-sm font-medium text-surface-700 mb-2">Mood</span>
+        <RatingPicker value={mood} onChange={setMood} labels={MOOD_LABELS} groupLabel="Mood" />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Energy</label>
-        <RatingPicker value={energy} onChange={setEnergy} labels={ENERGY_LABELS} />
+        <span className="block text-sm font-medium text-surface-700 mb-2">Energy</span>
+        <RatingPicker value={energy} onChange={setEnergy} labels={ENERGY_LABELS} groupLabel="Energy" />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <span className="block text-sm font-medium text-surface-700 mb-2">
           Stress{' '}
-          <span className="text-xs font-normal text-gray-400">(1 = very calm)</span>
-        </label>
-        <RatingPicker value={stress} onChange={setStress} labels={STRESS_LABELS} />
+          <span className="text-xs font-normal text-surface-500">(1 = very calm)</span>
+        </span>
+        <RatingPicker value={stress} onChange={setStress} labels={STRESS_LABELS} groupLabel="Stress" />
       </div>
 
       <div>
-        <label className="block text-xs text-gray-500 mb-1">Notes (optional)</label>
+        <label htmlFor={`${fid}-notes`} className="block text-xs text-surface-500 mb-1">Notes (optional)</label>
         <input
+          id={`${fid}-notes`}
           type="text"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="e.g. Busy day at work"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && (
+        <p role="alert" className="text-red-600 text-sm">
+          {error}
+        </p>
+      )}
 
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={saving}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+          className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
         >
           {saving ? 'Saving…' : 'Log wellness'}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+          className="px-4 py-2 border border-surface-300 rounded-lg text-sm text-surface-700 hover:bg-surface-50"
         >
           Cancel
         </button>
@@ -546,8 +590,8 @@ function SleepTab({
   return (
     <div className="space-y-4">
       {showForm ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-medium text-gray-900 mb-4">Log sleep</h3>
+        <div className="bg-white rounded-xl border border-surface-200 p-5">
+          <h3 className="font-medium text-surface-900 mb-4">Log sleep</h3>
           <LogSleepForm
             onSubmit={async (p) => { await onLog(p); setShowForm(false) }}
             onCancel={() => setShowForm(false)}
@@ -556,23 +600,23 @@ function SleepTab({
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
+          className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700"
         >
           + Log sleep
         </button>
       )}
 
       {logs.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+        <div className="bg-white rounded-xl border border-surface-200 p-8 text-center text-surface-500">
           No sleep entries yet. Log your first sleep above.
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+        <div className="bg-white rounded-xl border border-surface-200 divide-y divide-surface-100">
           {logs.map((entry) => (
             <div key={entry.id} className="flex items-center justify-between px-5 py-3">
               <div>
-                <div className="font-medium text-sm text-gray-900">{entry.date}</div>
-                <div className="text-sm text-gray-500">
+                <div className="font-medium text-sm text-surface-900">{entry.date}</div>
+                <div className="text-sm text-surface-500">
                   {formatSleepDuration(entry.duration_minutes)}
                   {entry.quality && (
                     <span className="ml-2">· Quality: {entry.quality}/5</span>
@@ -616,8 +660,8 @@ function StepsTab({
   return (
     <div className="space-y-4">
       {showForm ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-medium text-gray-900 mb-4">Log steps</h3>
+        <div className="bg-white rounded-xl border border-surface-200 p-5">
+          <h3 className="font-medium text-surface-900 mb-4">Log steps</h3>
           <LogStepsForm
             onSubmit={async (p) => { await onLog(p); setShowForm(false) }}
             onCancel={() => setShowForm(false)}
@@ -626,23 +670,23 @@ function StepsTab({
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
+          className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700"
         >
           + Log steps
         </button>
       )}
 
       {logs.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+        <div className="bg-white rounded-xl border border-surface-200 p-8 text-center text-surface-500">
           No step entries yet. Log your first day above.
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+        <div className="bg-white rounded-xl border border-surface-200 divide-y divide-surface-100">
           {logs.map((entry) => (
             <div key={entry.id} className="flex items-center justify-between px-5 py-3">
               <div>
-                <div className="font-medium text-sm text-gray-900">{entry.date}</div>
-                <div className="text-sm text-gray-500">
+                <div className="font-medium text-sm text-surface-900">{entry.date}</div>
+                <div className="text-sm text-surface-500">
                   {entry.steps.toLocaleString()} steps
                   {entry.distance_m && (
                     <span className="ml-2">· {formatDistanceKm(entry.distance_m)}</span>
@@ -689,8 +733,8 @@ function WellnessTab({
   return (
     <div className="space-y-4">
       {showForm ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="font-medium text-gray-900 mb-4">Log wellness check-in</h3>
+        <div className="bg-white rounded-xl border border-surface-200 p-5">
+          <h3 className="font-medium text-surface-900 mb-4">Log wellness check-in</h3>
           <LogWellnessForm
             onSubmit={async (p) => { await onLog(p); setShowForm(false) }}
             onCancel={() => setShowForm(false)}
@@ -699,42 +743,42 @@ function WellnessTab({
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
+          className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700"
         >
           + Log wellness
         </button>
       )}
 
       {logs.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+        <div className="bg-white rounded-xl border border-surface-200 p-8 text-center text-surface-500">
           No wellness entries yet. Log your first check-in above.
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+        <div className="bg-white rounded-xl border border-surface-200 divide-y divide-surface-100">
           {logs.map((entry) => (
             <div key={entry.id} className="flex items-center justify-between px-5 py-3">
               <div>
-                <div className="font-medium text-sm text-gray-900">{entry.date}</div>
+                <div className="font-medium text-sm text-surface-900">{entry.date}</div>
                 <div className="flex gap-4 mt-1">
                   {entry.mood && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-surface-500">
                       Mood <RatingDots value={entry.mood} />
                       <span className="ml-1">{MOOD_LABELS[entry.mood]}</span>
                     </span>
                   )}
                   {entry.energy && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-surface-500">
                       Energy <RatingDots value={entry.energy} />
                     </span>
                   )}
                   {entry.stress && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-surface-500">
                       Stress {entry.stress}/5
                     </span>
                   )}
                 </div>
                 {entry.notes && (
-                  <div className="text-xs text-gray-400 mt-0.5">{entry.notes}</div>
+                  <div className="text-xs text-surface-500 mt-0.5">{entry.notes}</div>
                 )}
               </div>
               <button
@@ -771,6 +815,7 @@ export default function WellnessPage() {
     deleteSteps,
     logWellness,
     deleteWellness,
+    refresh,
   } = useWellness()
 
   const tabs: { key: Tab; label: string }[] = [
@@ -782,18 +827,18 @@ export default function WellnessPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Wellness</h1>
+      <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-50">Wellness</h1>
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-gray-200">
+      <div className="flex gap-1 border-b border-surface-200">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => setActiveTab(t.key)}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               activeTab === t.key
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-brand-600 text-brand-600'
+                : 'border-transparent text-surface-500 hover:text-surface-700'
             }`}
           >
             {t.label}
@@ -803,14 +848,26 @@ export default function WellnessPage() {
 
       {/* Error */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
-          {error}
+        <div
+          role="alert"
+          className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm flex items-center justify-between gap-3"
+        >
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => refresh()}
+            className="shrink-0 px-3 py-1 border border-red-300 rounded-lg text-red-700 hover:bg-red-100 text-sm font-medium"
+          >
+            Retry
+          </button>
         </div>
       )}
 
       {/* Loading */}
       {isLoading ? (
-        <div className="text-gray-400 text-sm py-8 text-center">Loading…</div>
+        <div role="status" className="text-surface-500 text-sm py-8 text-center">
+          Loading…
+        </div>
       ) : (
         <>
           {activeTab === 'today' && <TodayCard snapshot={snapshot} />}

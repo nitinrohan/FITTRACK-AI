@@ -59,7 +59,7 @@ function TemplateCard({
                   System
                 </span>
               )}
-              <span className="text-xs text-surface-400">
+              <span className="text-xs text-surface-500">
                 {exerciseCount} exercise{exerciseCount !== 1 ? "s" : ""}
               </span>
             </div>
@@ -80,7 +80,7 @@ function TemplateCard({
                 type="button"
                 aria-label={`Edit template: ${template.name}`}
                 onClick={() => onEdit(template)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-400 hover:bg-surface-100 hover:text-surface-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-500 hover:bg-surface-100 hover:text-surface-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -101,7 +101,7 @@ function TemplateCard({
                 type="button"
                 aria-label={`Delete template: ${template.name}`}
                 onClick={() => onDelete(template)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-400 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-500 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -129,7 +129,7 @@ function TemplateCard({
               <li key={ex.id} className="truncate text-xs text-surface-500">
                 {ex.order_index + 1}. {ex.exercise_name}
                 {ex.default_sets != null && ex.default_reps != null && (
-                  <span className="ml-1 text-surface-400">
+                  <span className="ml-1 text-surface-500">
                     {ex.default_sets}×{ex.default_reps}
                     {ex.default_weight_kg != null &&
                       ` @ ${ex.default_weight_kg} kg`}
@@ -138,7 +138,7 @@ function TemplateCard({
               </li>
             ))}
             {template.exercises.length > 4 && (
-              <li className="text-xs text-surface-400">
+              <li className="text-xs text-surface-500">
                 +{template.exercises.length - 4} more…
               </li>
             )}
@@ -320,8 +320,8 @@ export default function TemplatesPage() {
       {/* Page header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-surface-900">Templates</h1>
-          <p className="mt-0.5 text-sm text-surface-500">
+          <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-50">Templates</h1>
+          <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
             Build reusable workout plans to log sessions faster.
           </p>
         </div>
@@ -403,7 +403,7 @@ export default function TemplatesPage() {
           <h2 className="text-base font-semibold text-surface-700">
             No templates yet
           </h2>
-          <p className="mt-1 max-w-xs text-sm text-surface-400">
+          <p className="mt-1 max-w-xs text-sm text-surface-500">
             Create a template to save your favourite workout structure. You can
             also start an ad-hoc workout without a template.
           </p>

@@ -8,6 +8,7 @@ it in a .env file at the project root.
 from __future__ import annotations
 
 import json
+import os
 from functools import lru_cache
 from typing import Literal
 
@@ -84,6 +85,32 @@ class Settings(BaseSettings):
         return True
 
 
+def _normalise_cors_env() -> None:
+    """Normalise BACKEND_CORS_ORIGINS before pydantic_settings reads it.
+
+    pydantic_settings calls json.loads() on list[str] fields automatically.
+    If the env var contains single quotes, unquoted URLs, or is empty it will
+    crash before our field_validator ever runs.  We fix the raw os.environ
+    value in-place so Settings() always receives valid JSON.
+    """
+    raw = os.environ.get("BACKEND_CORS_ORIGINS", "").strip()
+    if not raw:
+        return  # empty → pydantic uses field default
+
+    try:
+        json.loads(raw)
+        return  # already valid JSON, nothing to do
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    # Best-effort recovery: strip outer brackets/quotes, split by comma,
+    # strip per-item quotes, re-serialise as valid JSON array.
+    inner = raw.strip("[]").strip()
+    items = [item.strip().strip("'\"") for item in inner.split(",") if item.strip()]
+    if items:
+        os.environ["BACKEND_CORS_ORIGINS"] = json.dumps(items)
+
+
 @lru_cache
 def get_settings() -> Settings:
     """Return a cached Settings instance.
@@ -91,4 +118,5 @@ def get_settings() -> Settings:
     Use FastAPI's Depends(get_settings) to inject settings into routes,
     or call directly in non-request contexts.
     """
+    _normalise_cors_env()
     return Settings()

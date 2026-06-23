@@ -157,7 +157,7 @@ function StatBadge({
       >
         {value}
       </span>
-      {sub && <span className="text-xs text-surface-400">{sub}</span>}
+      {sub && <span className="text-xs text-surface-500">{sub}</span>}
     </div>
   );
 }
@@ -256,7 +256,7 @@ function LogWeightForm({ onLog }: LogFormProps) {
               className="mb-1 block text-sm font-medium text-surface-700"
             >
               Notes{" "}
-              <span className="font-normal text-surface-400">(optional)</span>
+              <span className="font-normal text-surface-500">(optional)</span>
             </label>
             <textarea
               id="w-notes"
@@ -301,12 +301,12 @@ function EntryRow({ entry, onDelete }: EntryRowProps) {
           <span className="text-sm font-semibold text-surface-900 tabular-nums">
             {displayWeight}
           </span>
-          <span className="text-xs text-surface-400">{entry.weight_kg.toFixed(2)} kg</span>
+          <span className="text-xs text-surface-500">{entry.weight_kg.toFixed(2)} kg</span>
           {entry.bmi !== null && (
-            <span className="text-xs text-surface-400">BMI {entry.bmi}</span>
+            <span className="text-xs text-surface-500">BMI {entry.bmi}</span>
           )}
         </div>
-        <div className="mt-0.5 flex items-center gap-2 text-xs text-surface-400">
+        <div className="mt-0.5 flex items-center gap-2 text-xs text-surface-500">
           <span>{date}</span>
           {entry.body_fat_pct !== null && (
             <span>{entry.body_fat_pct.toFixed(1)}% body fat</span>
@@ -320,7 +320,7 @@ function EntryRow({ entry, onDelete }: EntryRowProps) {
         type="button"
         aria-label={`Delete entry from ${date}`}
         onClick={() => onDelete(entry)}
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-surface-400 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-surface-500 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500"
       >
         <svg
           viewBox="0 0 24 24"
@@ -437,8 +437,8 @@ export default function WeightPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">Weight</h1>
-        <p className="mt-0.5 text-sm text-surface-500">
+        <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-50">Weight</h1>
+        <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
           Track your body weight and composition over time.
         </p>
       </div>
@@ -491,7 +491,7 @@ export default function WeightPage() {
               <h2 className="text-base font-semibold text-surface-700">
                 No entries yet
               </h2>
-              <p className="mt-1 max-w-xs text-sm text-surface-400">
+              <p className="mt-1 max-w-xs text-sm text-surface-500">
                 Log your first weight entry to start tracking your trend.
               </p>
             </div>
@@ -561,7 +561,7 @@ export default function WeightPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle as="h3">History</CardTitle>
-                    <span className="text-xs text-surface-400">
+                    <span className="text-xs text-surface-500">
                       {total} total entr{total !== 1 ? "ies" : "y"}
                     </span>
                   </div>
