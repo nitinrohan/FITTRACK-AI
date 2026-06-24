@@ -195,6 +195,7 @@ const NAV_LINKS = [
   { href: "/dashboard/nutrition", label: "Nutrition" },
   { href: "/dashboard/measurements", label: "Measurements" },
   { href: "/dashboard/wellness", label: "Wellness" },
+  { href: "/dashboard/habits", label: "Habits" },
 ] as const;
 
 function NavLinks() {

@@ -25,6 +25,7 @@ from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 if TYPE_CHECKING:
     from app.models.exercise import Exercise
     from app.models.goal import Goal
+    from app.models.habit import Habit
     from app.models.measurement import BodyMeasurement
     from app.models.nutrition import Food, FoodLog, WaterLog
     from app.models.weight_entry import WeightEntry
@@ -134,6 +135,12 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     )
     wellness_logs: Mapped[list[WellnessLog]] = relationship(
         "WellnessLog",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    habits: Mapped[list[Habit]] = relationship(
+        "Habit",
         back_populates="user",
         cascade="all, delete-orphan",
         lazy="dynamic",

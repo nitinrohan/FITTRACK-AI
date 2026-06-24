@@ -8,7 +8,7 @@ The MVP is designed for one user and built to expand into a multi-user platform 
 
 ## What's Built
 
-**Phases 1–11 complete.** Wellness slice (sleep, steps, daily check-in, water roll-up): 44 backend tests passing, ruff clean, mypy 0 errors, tsc 0 errors.
+**Phases 1–12 complete.** Latest: Habits (daily check-offs, streaks, weekly adherence) — 42 backend tests passing, ruff clean, mypy 0 errors, tsc 0 errors.
 
 | Feature | Details |
 |---|---|
@@ -280,7 +280,7 @@ Ensure the source volumes are mounted (check `docker-compose.yml`). Restart with
 | 9 | Body measurements | ✅ Complete |
 | 10 | Dashboard + AI summaries | ✅ Complete |
 | 11 | Water, sleep, steps, and wellness | ✅ Complete |
-| 12 | Habits | 🔜 Next |
-| 13 | Progress charts | Planned |
+| 12 | Habits | ✅ Complete |
+| 13 | Progress charts | 🔜 Next |
 | 14 | Privacy, export, and account deletion | Planned |
 | 15 | Integrations and platform features | Planned |

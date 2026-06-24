@@ -39,6 +39,7 @@ from app.routers import (
     dashboard,
     exercises,
     goals,
+    habit,
     health,
     measurements,
     nutrition,
@@ -147,6 +148,9 @@ def create_app() -> FastAPI:
 
     # wellness router — sleep, steps, and wellness check-in.
     app.include_router(wellness.router)
+
+    # habit router — habits and daily completions.
+    app.include_router(habit.router)
 
     return app
 

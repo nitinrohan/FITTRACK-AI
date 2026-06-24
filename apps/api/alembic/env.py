@@ -28,6 +28,7 @@ from app.models import (  # noqa: F401
     ai_log,
     exercise,
     goal,
+    habit,
     measurement,
     nutrition,
     user,
