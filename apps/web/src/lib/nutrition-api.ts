@@ -13,6 +13,7 @@ import type {
   FoodLogEntry,
   LogFoodPayload,
   LogWaterPayload,
+  MacroEstimate,
   UpdateFoodLogPayload,
   UpdateFoodPayload,
   UpdateWaterLogPayload,
@@ -88,5 +89,21 @@ export const nutritionApi = {
   /** Delete a water log entry. */
   deleteWaterLog(id: string): Promise<void> {
     return apiClient.delete<void>(`/api/v1/nutrition/water/${id}`);
+  },
+
+  /** Ask the AI to estimate macros for a free-text food description.
+   *  Returns a preview only — nothing is saved. */
+  estimateMacros(description: string): Promise<MacroEstimate> {
+    return apiClient.post<MacroEstimate>("/api/v1/nutrition/estimate-macros", {
+      description,
+    });
+  },
+
+  /** Record whether the user accepted (saved) or dismissed an estimate. */
+  recordMacroDecision(log_id: string, accepted: boolean): Promise<void> {
+    return apiClient.post<void>("/api/v1/nutrition/estimate-macros/decision", {
+      log_id,
+      accepted,
+    });
   },
 };

@@ -8,7 +8,9 @@ The MVP is designed for one user and built to expand into a multi-user platform 
 
 ## What's Built
 
-**Phases 1–12 complete.** Latest: Habits (daily check-offs, streaks, weekly adherence) — 42 backend tests passing, ruff clean, mypy 0 errors, tsc 0 errors.
+**Phases 1–12 complete.** Habits (daily check-offs, streaks, weekly adherence) plus a dashboard "Today's habits" widget.
+
+Latest add-on: **AI macro estimation for nutrition** — describe a food in plain text and the AI returns an editable macro *estimate* you review before saving (never auto-saved; portion math is deterministic). The AI layer is provider-independent (Anthropic / OpenAI / **Ollama** for free local dev) with graceful fallback when AI is off. Backend: 455 tests passing (4 pre-existing weight-test failures unrelated), ruff clean, mypy 0 errors; frontend tsc + eslint clean.
 
 | Feature | Details |
 |---|---|

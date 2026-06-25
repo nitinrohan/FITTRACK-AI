@@ -66,6 +66,35 @@ export interface CreateFoodPayload {
   serving_unit?: string;
 }
 
+export interface MacroPortion {
+  grams: number;
+  calories_kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+}
+
+/** AI macro estimate — a preview the user edits before saving. */
+export interface MacroEstimate {
+  ai_available: boolean;
+  name: string | null;
+  serving_size_g: number | null;
+  serving_unit: string | null;
+  calories_per_100g: number | null;
+  protein_per_100g: number | null;
+  carbs_per_100g: number | null;
+  fat_per_100g: number | null;
+  portion: MacroPortion | null;
+  confidence: string | null;
+  is_estimate: boolean;
+  disclaimer: string;
+  message: string | null;
+  provider: string | null;
+  model_id: string | null;
+  prompt_version: string | null;
+  log_id: string | null;
+}
+
 export interface UpdateFoodPayload {
   name?: string;
   brand?: string;

@@ -98,6 +98,28 @@ class LatestMeasurementSection(BaseModel):
     right_thigh_cm: float | None = None
 
 
+# ── Habits today ──────────────────────────────────────────────────────────────
+
+
+class HabitTodayItem(BaseModel):
+    """A single active habit with today's completion state."""
+
+    id: str
+    name: str
+    color: str | None = None
+    target_days_per_week: int
+    completed_today: bool
+    current_streak: int
+
+
+class HabitsTodaySection(BaseModel):
+    """Today's active habits and how many are done so far."""
+
+    habits: list[HabitTodayItem]
+    total: int
+    completed_count: int
+
+
 # ── Top-level response ────────────────────────────────────────────────────────
 
 
@@ -109,3 +131,4 @@ class DashboardSummary(BaseModel):
     today_nutrition: TodayNutritionSection | None = None
     goals: GoalsSummarySection | None = None
     latest_measurement: LatestMeasurementSection | None = None
+    habits_today: HabitsTodaySection | None = None

@@ -30,11 +30,14 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useAuth } from "@/features/auth/use-auth";
 import { aiApi } from "@/lib/ai-api";
 import { dashboardApi } from "@/lib/dashboard-api";
+import { habitsApi, localToday } from "@/lib/habits-api";
 import type { WeeklySummaryResponse } from "@/types/ai";
 import type {
   DashboardSummary,
   GoalSummaryItem,
   GoalsSummarySection,
+  HabitsTodaySection,
+  HabitTodayItem,
   LatestMeasurementSection,
   TodayNutritionSection,
   WeightTrendSection,
@@ -65,7 +68,7 @@ function useDashboard() {
     void load();
   }, [load]);
 
-  return { data, isLoading, error };
+  return { data, isLoading, error, reload: load };
 }
 
 // ── Shared card wrapper ────────────────────────────────────────────────────────
@@ -728,11 +731,110 @@ function EmptyWidgetState({ message }: { message: string }) {
   );
 }
 
+// ── Today's habits widget ──────────────────────────────────────────────────────
+
+function HabitsTodayWidget({
+  data,
+  onChange,
+}: {
+  data: HabitsTodaySection;
+  onChange: () => Promise<void> | void;
+}) {
+  return (
+    <div className="flex min-h-[180px] flex-col gap-3 rounded-xl border border-surface-200 bg-white p-5">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wide text-surface-500">
+          Today&rsquo;s habits
+        </p>
+        <span className="text-xs text-surface-500">
+          {data.completed_count}/{data.total} done
+        </span>
+      </div>
+      <ul className="flex flex-1 flex-col gap-2">
+        {data.habits.map((habit) => (
+          <HabitTodayRow key={habit.id} habit={habit} onChange={onChange} />
+        ))}
+      </ul>
+      <Link
+        href="/dashboard/habits"
+        className="text-sm font-medium text-brand-600 hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 rounded"
+      >
+        Open habits &rarr;
+      </Link>
+    </div>
+  );
+}
+
+function HabitTodayRow({
+  habit,
+  onChange,
+}: {
+  habit: HabitTodayItem;
+  onChange: () => Promise<void> | void;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  async function toggle() {
+    setBusy(true);
+    try {
+      if (habit.completed_today) {
+        await habitsApi.unmarkComplete(habit.id, localToday());
+      } else {
+        await habitsApi.markComplete(habit.id);
+      }
+      await onChange();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <li className="flex items-center gap-3">
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={busy}
+        aria-pressed={habit.completed_today}
+        aria-label={
+          habit.completed_today
+            ? `Mark "${habit.name}" not done for today`
+            : `Mark "${habit.name}" done for today`
+        }
+        className={[
+          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors disabled:opacity-50",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500",
+          habit.completed_today
+            ? "border-brand-500 bg-brand-500 text-white"
+            : "border-surface-300 text-transparent hover:border-brand-400",
+        ].join(" ")}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} className="h-3.5 w-3.5" aria-hidden="true">
+          <path d="M20 6 9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      <span
+        className={`flex-1 truncate text-sm ${
+          habit.completed_today
+            ? "text-surface-400 line-through"
+            : "text-surface-800"
+        }`}
+      >
+        {habit.name}
+      </span>
+      {habit.current_streak > 0 && (
+        <span className="shrink-0 text-xs text-surface-500">
+          {habit.current_streak}d streak
+        </span>
+      )}
+    </li>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { data, isLoading, error } = useDashboard();
+  const { data, isLoading, error, reload } = useDashboard();
 
   const name = user?.profile?.display_name ?? "";
   const greeting = name ? `Welcome back, ${name}!` : "Welcome back!";
@@ -826,6 +928,13 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* Today's habits — spans full width */}
+          {data.habits_today && (
+            <div className="lg:col-span-2">
+              <HabitsTodayWidget data={data.habits_today} onChange={reload} />
+            </div>
+          )}
+
           {/* AI insights — always shown, spans full width */}
           <div className="lg:col-span-2">
             <AIInsightsWidget />
@@ -854,6 +963,7 @@ function isAllEmpty(data: DashboardSummary): boolean {
     data.workout_frequency === null &&
     data.today_nutrition === null &&
     data.goals === null &&
-    data.latest_measurement === null
+    data.latest_measurement === null &&
+    data.habits_today === null
   );
 }

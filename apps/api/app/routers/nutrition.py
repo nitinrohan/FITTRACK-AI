@@ -30,6 +30,11 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.exceptions import ForbiddenError, NotFoundError
 from app.models.user import User
+from app.schemas.ai import (
+    AcceptSummaryRequest,
+    MacroEstimateRequest,
+    MacroEstimateResponse,
+)
 from app.schemas.nutrition import (
     CreateFoodRequest,
     DailyNutritionResponse,
@@ -43,7 +48,11 @@ from app.schemas.nutrition import (
     UpdateWaterLogRequest,
     WaterLogResponse,
 )
-from app.services import nutrition_service
+from app.services import (
+    macro_estimation_service,
+    nutrition_service,
+    weekly_summary_service,
+)
 
 # ── Sub-routers ───────────────────────────────────────────────────────────────
 
@@ -207,6 +216,44 @@ def delete_water_log(
     found = nutrition_service.delete_water_log(db, log_id, current_user.id)
     if not found:
         raise NotFoundError("Water log entry not found.")
+
+
+# ── AI macro estimation (preview only — never saves) ──────────────────────────
+
+
+@nutrition_router.post("/estimate-macros", response_model=MacroEstimateResponse)
+def estimate_macros(
+    payload: MacroEstimateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> MacroEstimateResponse:
+    """Estimate macros for a free-text food description.
+
+    Returns a *preview* the user reviews and edits before saving — this
+    endpoint never creates a food or food-log entry itself. Always returns a
+    usable response (with ``ai_available`` false) when AI is off or fails.
+    """
+    return macro_estimation_service.estimate_macros(
+        db, user_id=current_user.id, description=payload.description
+    )
+
+
+@nutrition_router.post(
+    "/estimate-macros/decision",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=None,
+)
+def record_macro_decision(
+    body: AcceptSummaryRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> None:
+    """Record whether the user accepted (saved) or dismissed an estimate."""
+    found = weekly_summary_service.record_user_decision(
+        db, log_id=body.log_id, accepted=body.accepted
+    )
+    if not found:
+        raise NotFoundError("Estimate log not found.")
 
 
 # ── Combined router ───────────────────────────────────────────────────────────

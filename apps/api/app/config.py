@@ -60,10 +60,12 @@ class Settings(BaseSettings):
         return list(v)
 
     # ── AI ───────────────────────────────────────────────────────────────
-    ai_provider: Literal["anthropic", "openai", "none"] = "none"
+    ai_provider: Literal["anthropic", "openai", "ollama", "none"] = "none"
     ai_model: str = "claude-3-5-haiku-20241022"
     anthropic_api_key: str = ""
     openai_api_key: str = ""
+    # Ollama runs models locally; no API key needed. Used mainly for local dev.
+    ollama_base_url: str = "http://localhost:11434"
 
     # ── Derived helpers ──────────────────────────────────────────────────
     @property
@@ -81,6 +83,8 @@ class Settings(BaseSettings):
         if self.ai_provider == "anthropic" and not self.anthropic_api_key:
             return False
         if self.ai_provider == "openai" and not self.openai_api_key:
+            return False
+        if self.ai_provider == "ollama" and not self.ollama_base_url:
             return False
         return True
 

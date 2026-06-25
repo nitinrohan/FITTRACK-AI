@@ -45,6 +45,8 @@ _COST_TABLE: dict[str, dict[str, float]] = {
     # provider → {"input": cost_per_1m_tokens, "output": cost_per_1m_tokens}
     "anthropic": {"input": 0.80, "output": 4.00},
     "openai": {"input": 0.15, "output": 0.60},
+    # Ollama runs locally on the user's own hardware — no per-token cost.
+    "ollama": {"input": 0.0, "output": 0.0},
 }
 
 
@@ -155,6 +157,51 @@ def _call_openai(
         raise AIUnavailableError(f"OpenAI call failed: {exc}") from exc
 
 
+def _call_ollama(
+    prompt: str,
+    model_id: str,
+    base_url: str,
+    *,
+    max_tokens: int = 1024,
+    timeout: float = 60.0,
+) -> tuple[str, int | None, int | None]:
+    """Call a locally-running Ollama server's /api/generate endpoint.
+
+    Ollama runs open models on the user's own hardware, so there is no API
+    key and no per-token cost. Local generation can be slower than a hosted
+    API, hence the longer default timeout.
+
+    Returns (text_reply, input_tokens, output_tokens).
+    Raises AIUnavailableError on any failure (including the server being
+    unreachable, which is the common case when Ollama isn't running).
+    """
+    body: dict[str, Any] = {
+        "model": model_id,
+        "prompt": prompt,
+        "stream": False,
+        "options": {"num_predict": max_tokens},
+    }
+    try:
+        resp = httpx.post(
+            f"{base_url.rstrip('/')}/api/generate",
+            json=body,
+            timeout=timeout,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        text: str = data["response"]
+        # Ollama reports prompt_eval_count (input) and eval_count (output).
+        return (
+            text,
+            data.get("prompt_eval_count"),
+            data.get("eval_count"),
+        )
+    except httpx.HTTPStatusError as exc:
+        raise AIUnavailableError(f"Ollama API error: {exc.response.status_code}") from exc
+    except Exception as exc:
+        raise AIUnavailableError(f"Ollama call failed: {exc}") from exc
+
+
 # ── Public interface ──────────────────────────────────────────────────────────
 
 
@@ -190,6 +237,14 @@ def call_ai(
             prompt,
             model_id,
             settings.openai_api_key,
+            max_tokens=max_tokens,
+            timeout=timeout,
+        )
+    elif provider == "ollama":
+        text, inp, out = _call_ollama(
+            prompt,
+            model_id,
+            settings.ollama_base_url,
             max_tokens=max_tokens,
             timeout=timeout,
         )
