@@ -6,7 +6,7 @@ Hierarchy:
   WorkoutTemplate
     └─ WorkoutTemplateExercise  (ordered exercises in a template)
 
-  Workout  (a logged session — may start from a template or be ad-hoc)
+  Workout  (a logged session - may start from a template or be ad-hoc)
     └─ WorkoutExercise  (exercises performed in the session)
          └─ WorkoutSet  (individual sets: reps, weight, duration, distance)
 
@@ -55,7 +55,7 @@ class WorkoutTemplate(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
     Users create templates once and then start workouts from them.
     System templates (is_system=True, user_id=None) may be seeded as
-    starter plans — currently unused in the MVP but reserved for the future.
+    starter plans - currently unused in the MVP but reserved for the future.
     """
 
     __tablename__ = "workout_templates"
@@ -113,7 +113,7 @@ class WorkoutTemplateExercise(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # Display order within the template (0-based)
     order_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
-    # Optional defaults — pre-fill the logging form but the user can override
+    # Optional defaults - pre-fill the logging form but the user can override
     default_sets: Mapped[int | None] = mapped_column(Integer, nullable=True)
     default_reps: Mapped[int | None] = mapped_column(Integer, nullable=True)
     default_weight_kg: Mapped[float | None] = mapped_column(Float, nullable=True)

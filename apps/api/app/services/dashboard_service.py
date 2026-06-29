@@ -1,4 +1,4 @@
-"""Dashboard service — aggregates data from multiple domains.
+"""Dashboard service - aggregates data from multiple domains.
 
 One function, one DB session, one response.  Each section degrades
 gracefully to None when the user has no data.

@@ -1,5 +1,5 @@
 /**
- * Button component — accessible, variant-aware, touch-friendly.
+ * Button component - accessible, variant-aware, touch-friendly.
  *
  * Usage:
  *   <Button>Save</Button>

@@ -19,7 +19,7 @@ from app.repositories import exercise_repository
 logger = logging.getLogger(__name__)
 
 SYSTEM_EXERCISES: list[dict[str, Any]] = [
-    # ── Strength — Chest ──────────────────────────────────────────────
+    # ── Strength - Chest ──────────────────────────────────────────────
     {
         "name": "Barbell Bench Press",
         "category": "strength",
@@ -60,7 +60,7 @@ SYSTEM_EXERCISES: list[dict[str, Any]] = [
         "description": "Isolation fly movement using cable pulleys.",
         "instructions": "Set cables at shoulder height. Step forward and bring hands together in a hugging arc.",
     },
-    # ── Strength — Back ───────────────────────────────────────────────
+    # ── Strength - Back ───────────────────────────────────────────────
     {
         "name": "Barbell Deadlift",
         "category": "strength",
@@ -82,7 +82,7 @@ SYSTEM_EXERCISES: list[dict[str, Any]] = [
         "category": "strength",
         "equipment": "bodyweight",
         "muscle_groups": ["lats", "biceps"],
-        "description": "Underhand vertical pull — greater bicep emphasis than pull-up.",
+        "description": "Underhand vertical pull - greater bicep emphasis than pull-up.",
         "instructions": "Hang from a bar with palms facing you. Pull until chin clears the bar.",
     },
     {
@@ -117,7 +117,7 @@ SYSTEM_EXERCISES: list[dict[str, Any]] = [
         "description": "Single-arm row for unilateral back development.",
         "instructions": "Plant one knee on a bench. Pull the dumbbell to your hip, keeping your elbow close.",
     },
-    # ── Strength — Shoulders ──────────────────────────────────────────
+    # ── Strength - Shoulders ──────────────────────────────────────────
     {
         "name": "Overhead Press",
         "category": "strength",
@@ -150,7 +150,7 @@ SYSTEM_EXERCISES: list[dict[str, Any]] = [
         "description": "Cable exercise for rear delt and rotator cuff health.",
         "instructions": "Set cable at head height with rope attachment. Pull rope to your face, flaring elbows out.",
     },
-    # ── Strength — Arms ───────────────────────────────────────────────
+    # ── Strength - Arms ───────────────────────────────────────────────
     {
         "name": "Barbell Curl",
         "category": "strength",
@@ -199,7 +199,7 @@ SYSTEM_EXERCISES: list[dict[str, Any]] = [
         "description": "Parallel bar dip for triceps and chest.",
         "instructions": "Grip parallel bars and lower your body until shoulders are below elbows. Press back up.",
     },
-    # ── Strength — Legs ───────────────────────────────────────────────
+    # ── Strength - Legs ───────────────────────────────────────────────
     {
         "name": "Barbell Back Squat",
         "category": "strength",
@@ -280,7 +280,7 @@ SYSTEM_EXERCISES: list[dict[str, Any]] = [
         "description": "Standing or seated calf isolation.",
         "instructions": "Press through the balls of your feet to raise your heels as high as possible. Lower fully.",
     },
-    # ── Strength — Core ───────────────────────────────────────────────
+    # ── Strength - Core ───────────────────────────────────────────────
     {
         "name": "Plank",
         "category": "strength",
@@ -335,7 +335,7 @@ SYSTEM_EXERCISES: list[dict[str, Any]] = [
         "category": "cardio",
         "equipment": "machine",
         "muscle_groups": ["back", "legs", "arms", "core"],
-        "description": "Rowing ergometer — full-body cardio.",
+        "description": "Rowing ergometer - full-body cardio.",
         "instructions": "Drive with legs first, then lean back, then pull arms to your chest. Reverse on recovery.",
     },
     {
@@ -436,7 +436,7 @@ SYSTEM_EXERCISES: list[dict[str, Any]] = [
         "instructions": "Lie on your side with knees at 90°. Rotate your top arm and shoulder open toward the floor.",
     },
     {
-        "name": "Foam Roll — Quads",
+        "name": "Foam Roll - Quads",
         "category": "flexibility",
         "equipment": "other",
         "muscle_groups": ["quads"],
@@ -449,7 +449,7 @@ SYSTEM_EXERCISES: list[dict[str, Any]] = [
 def seed_exercises(db: Session) -> int:
     """Insert system exercises if none exist. Returns the number inserted."""
     if exercise_repository.system_exists(db):
-        logger.info("System exercises already seeded — skipping")
+        logger.info("System exercises already seeded - skipping")
         return 0
 
     inserted = 0
@@ -481,4 +481,4 @@ if __name__ == "__main__":
     SessionLocal = get_session_factory()
     with SessionLocal() as session:
         n = seed_exercises(session)
-        print(f"Done — {n} exercises inserted.")
+        print(f"Done - {n} exercises inserted.")

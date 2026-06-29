@@ -1,5 +1,5 @@
 /**
- * Dashboard API — typed wrapper for GET /api/v1/dashboard/summary.
+ * Dashboard API - typed wrapper for GET /api/v1/dashboard/summary.
  */
 
 import { apiClient } from "@/lib/api-client";

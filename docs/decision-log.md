@@ -1,11 +1,11 @@
-# FitTrack AI — Architecture Decision Log
+# FitTrack AI - Architecture Decision Log
 
 Each entry follows the format:
-**Context** — what situation prompted the decision  
-**Decision** — what was chosen  
-**Rationale** — why  
-**Trade-offs** — what was given up  
-**Status** — Accepted | Superseded | Deprecated
+**Context** - what situation prompted the decision  
+**Decision** - what was chosen  
+**Rationale** - why  
+**Trade-offs** - what was given up  
+**Status** - Accepted | Superseded | Deprecated
 
 ---
 
@@ -37,7 +37,7 @@ Each entry follows the format:
 **Decision:** Synchronous SQLAlchemy 2.0 with psycopg2-binary.
 
 **Rationale:**
-- FastAPI handles sync route handlers via a thread pool — no blocking of the event loop.
+- FastAPI handles sync route handlers via a thread pool - no blocking of the event loop.
 - Sync SQLAlchemy is significantly simpler: no async context managers, no `await` in repositories, no async Alembic configuration.
 - The application is not I/O-bound at MVP scale (no concurrent thousands of users).
 - Alembic migration support is more mature for sync.
@@ -74,11 +74,11 @@ Each entry follows the format:
 **Decision:** UUID v4, generated in Python (not by the database).
 
 **Rationale:**
-- UUIDs are safe to expose in URLs — sequential integers reveal record counts and allow enumeration attacks.
-- Generated in Python so the application has the ID before the INSERT commits — useful for optimistic UI, idempotency keys, and logging.
+- UUIDs are safe to expose in URLs - sequential integers reveal record counts and allow enumeration attacks.
+- Generated in Python so the application has the ID before the INSERT commits - useful for optimistic UI, idempotency keys, and logging.
 - Consistent across all tables; no type mismatches when joining.
 
-**Trade-offs:** 16 bytes vs 4–8 bytes for integers. Index fragmentation is higher with random UUIDs, but acceptable at MVP scale. UUIDv7 (monotonic) can be adopted later for better index locality.
+**Trade-offs:** 16 bytes vs 4-8 bytes for integers. Index fragmentation is higher with random UUIDs, but acceptable at MVP scale. UUIDv7 (monotonic) can be adopted later for better index locality.
 
 ---
 
@@ -93,7 +93,7 @@ Each entry follows the format:
 
 **Rationale:**
 - Eliminates per-row unit columns and conditional queries.
-- Makes calculations, aggregations, and comparisons trivial — no unit-aware arithmetic in SQL.
+- Makes calculations, aggregations, and comparisons trivial - no unit-aware arithmetic in SQL.
 - A single conversion layer (unit service) is the only place where conversion bugs can exist.
 - Historical data remains consistent if a user switches their display preference.
 
@@ -112,7 +112,7 @@ Each entry follows the format:
 
 **Rationale:**
 - Single tool replaces five separate tools.
-- 10–100× faster than the tools it replaces.
+- 10-100× faster than the tools it replaces.
 - Active development with regular rule additions.
 - Compatible with black's formatting style.
 
@@ -167,7 +167,7 @@ Each entry follows the format:
 **Decision:** `pydantic-settings` with a `Settings` class, cached via `@lru_cache`.
 
 **Rationale:**
-- Validates all configuration at startup — misconfigured deployments fail immediately with clear error messages rather than at the first runtime use.
+- Validates all configuration at startup - misconfigured deployments fail immediately with clear error messages rather than at the first runtime use.
 - Type annotations document the expected format of every variable.
 - The `@lru_cache` decorator means settings are loaded once per process.
 - Test override is straightforward: `get_settings.cache_clear()` before injecting test env vars.

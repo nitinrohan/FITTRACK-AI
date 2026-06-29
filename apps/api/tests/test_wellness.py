@@ -1,4 +1,4 @@
-"""Tests for wellness endpoints — /api/v1/sleep, /api/v1/steps, /api/v1/wellness.
+"""Tests for wellness endpoints - /api/v1/sleep, /api/v1/steps, /api/v1/wellness.
 
 Covers:
   Service-layer unit tests:
@@ -23,7 +23,7 @@ Covers:
   Wellness endpoint tests:
     - POST   /api/v1/wellness  (201, 422 no metric, auth)
     - GET    /api/v1/wellness  (200, pagination, auth)
-    - GET    /api/v1/wellness/daily (200 — snapshot)
+    - GET    /api/v1/wellness/daily (200 - snapshot)
     - GET    /api/v1/wellness/{id} (200, 404)
     - PATCH  /api/v1/wellness/{id} (200, 404)
     - DELETE /api/v1/wellness/{id} (204, 404)

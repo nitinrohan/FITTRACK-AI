@@ -1,4 +1,4 @@
-"""Business logic for the habit domain — CRUD, completions, and the
+"""Business logic for the habit domain - CRUD, completions, and the
 derived streak / adherence calculations.
 
 Domain calculations (pure, unit-tested):
@@ -7,7 +7,7 @@ Domain calculations (pure, unit-tested):
   - completions_in_week      : completions in the current (Mon-today) week.
   - weekly_adherence_pct     : completions_this_week / target, capped at 100%.
 
-All derived figures are explicitly that — derived.  They are never stored.
+All derived figures are explicitly that - derived.  They are never stored.
 The "current streak" is intentionally forgiving: not having completed *today*
 does not immediately zero the streak, because the day is not over yet.
 

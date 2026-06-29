@@ -1,4 +1,4 @@
-"""Goal service — business rules for creating, updating, and reading goals.
+"""Goal service - business rules for creating, updating, and reading goals.
 
 Calculations:
   progress_pct is computed here (not stored) from starting_value,
@@ -45,7 +45,7 @@ def compute_progress_pct(
 
     span = abs(target - start)
     if span == 0:
-        # Target equals starting — immediately 100% if current matches target.
+        # Target equals starting - immediately 100% if current matches target.
         return 100.0 if current == target else 0.0
 
     raw = (current - start) / span if target >= start else (start - current) / span

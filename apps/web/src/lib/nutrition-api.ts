@@ -1,5 +1,5 @@
 /**
- * Nutrition API — typed wrappers around the FitTrack FastAPI nutrition endpoints.
+ * Nutrition API - typed wrappers around the FitTrack FastAPI nutrition endpoints.
  *
  * All functions throw ApiError on non-2xx responses.
  */
@@ -92,7 +92,7 @@ export const nutritionApi = {
   },
 
   /** Ask the AI to estimate macros for a free-text food description.
-   *  Returns a preview only — nothing is saved. */
+   *  Returns a preview only - nothing is saved. */
   estimateMacros(description: string): Promise<MacroEstimate> {
     return apiClient.post<MacroEstimate>("/api/v1/nutrition/estimate-macros", {
       description,

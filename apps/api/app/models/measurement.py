@@ -8,7 +8,7 @@ imperial units.
 Design notes:
 - Every field except user_id and measured_at is optional so users can
   record only the measurements they care about (e.g. just waist + hips).
-- measured_at is a plain date — time-of-day is not meaningful.
+- measured_at is a plain date - time-of-day is not meaningful.
 - Multiple entries on the same date are accepted; the most-recent per date
   is used for progress charts.
 - left/right variants are stored separately for users who track limb
@@ -53,14 +53,14 @@ class BodyMeasurement(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     shoulders_cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     abdomen_cm: Mapped[float | None] = mapped_column(Float, nullable=True)
 
-    # ── Upper body — left / right (cm) ────────────────────────────────────
+    # ── Upper body - left / right (cm) ────────────────────────────────────
     # Store left + right separately to support asymmetry tracking.
     left_arm_cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     right_arm_cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     left_forearm_cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     right_forearm_cm: Mapped[float | None] = mapped_column(Float, nullable=True)
 
-    # ── Lower body — left / right (cm) ────────────────────────────────────
+    # ── Lower body - left / right (cm) ────────────────────────────────────
     left_thigh_cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     right_thigh_cm: Mapped[float | None] = mapped_column(Float, nullable=True)
     left_calf_cm: Mapped[float | None] = mapped_column(Float, nullable=True)

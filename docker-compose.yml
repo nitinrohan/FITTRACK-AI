@@ -59,7 +59,7 @@ services:
     volumes:
       # node_modules and .next in named volumes for performance.
       # Source files come from the image (see Dockerfile development stage).
-      # To enable hot-reload, uncomment the bind mount below — requires
+      # To enable hot-reload, uncomment the bind mount below - requires
       # the project folder path to have no spaces:
       # - ./apps/web:/app
       - web_node_modules:/app/node_modules

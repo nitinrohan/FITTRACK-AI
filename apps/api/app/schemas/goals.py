@@ -29,7 +29,7 @@ class CreateGoalRequest(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     description: str | None = Field(default=None, max_length=1000)
 
-    # Numeric tracking — all optional.  If any numeric field is provided,
+    # Numeric tracking - all optional.  If any numeric field is provided,
     # target_unit should also be provided (validated below).
     starting_value: float | None = Field(default=None, ge=0)
     target_value: float | None = Field(default=None, ge=0)
@@ -49,7 +49,7 @@ class CreateGoalRequest(BaseModel):
 
 
 class UpdateGoalRequest(BaseModel):
-    """All fields optional — send only what changed."""
+    """All fields optional - send only what changed."""
 
     title: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = None
@@ -84,7 +84,7 @@ class GoalResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    # Computed — not stored in DB.
+    # Computed - not stored in DB.
     progress_pct: float | None = None
 
 

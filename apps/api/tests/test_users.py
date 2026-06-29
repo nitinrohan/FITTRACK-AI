@@ -1,11 +1,11 @@
 """Tests for /api/v1/users/* endpoints.
 
 Covers:
-  - GET  /me              — returns current user; 401 when unauthenticated
-  - PUT  /me/profile      — valid update, unknown fields ignored, validation errors
-  - PUT  /me/preferences  — valid update, timezone validation, 401 guard
-  - POST /me/onboarding   — step counter, completed flag, co-persisted fields
-  - Data isolation        — cannot update another user's profile by spoofing
+  - GET  /me              - returns current user; 401 when unauthenticated
+  - PUT  /me/profile      - valid update, unknown fields ignored, validation errors
+  - PUT  /me/preferences  - valid update, timezone validation, 401 guard
+  - POST /me/onboarding   - step counter, completed flag, co-persisted fields
+  - Data isolation        - cannot update another user's profile by spoofing
 """
 
 from __future__ import annotations

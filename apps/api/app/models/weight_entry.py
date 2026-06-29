@@ -1,14 +1,14 @@
 """WeightEntry ORM model.
 
 Stores a single body-weight measurement for a user.  All numeric values are
-stored in canonical SI units — weight in kg, body fat as a percentage (0-100),
+stored in canonical SI units - weight in kg, body fat as a percentage (0-100),
 muscle mass in kg.  The frontend converts to the user's preferred unit system
 at display time.
 
 Design notes:
 - measured_at is stored as a plain date (not datetime) because users typically
   log weight once per day.  If a user logs twice on the same day the second
-  entry is accepted — the service layer surfaces this as a note, not an error.
+  entry is accepted - the service layer surfaces this as a note, not an error.
   The most-recent entry per day is used for charting.
 - body_fat_pct and muscle_mass_kg are fully optional.  Many users only track
   scale weight.
@@ -52,7 +52,7 @@ class WeightEntry(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     muscle_mass_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
 
     # ── Timeline ───────────────────────────────────────────────────────────
-    # Stored as a date — time-of-day is not relevant for weight trends.
+    # Stored as a date - time-of-day is not relevant for weight trends.
     measured_at: Mapped[date] = mapped_column(Date, nullable=False)
 
     # ── Context ────────────────────────────────────────────────────────────

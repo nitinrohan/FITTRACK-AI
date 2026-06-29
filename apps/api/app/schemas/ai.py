@@ -1,8 +1,8 @@
 """AI feature schemas.
 
-WeeklySummaryRequest  — parameters the client can send (currently empty;
+WeeklySummaryRequest  - parameters the client can send (currently empty;
                          reserved for future options like preferred language).
-WeeklySummaryResponse — structured response returned to the frontend.
+WeeklySummaryResponse - structured response returned to the frontend.
 
 The frontend must show the summary to the user before any data changes.
 AI never mutates application data directly.
@@ -86,7 +86,7 @@ class MacroEstimateRequest(BaseModel):
 
 class MacroPortion(BaseModel):
     """Macros for the described portion (computed deterministically from the
-    per-100g figures and the estimated serving size — not by the model)."""
+    per-100g figures and the estimated serving size - not by the model)."""
 
     grams: float
     calories_kcal: float
@@ -119,7 +119,7 @@ class MacroEstimateResponse(BaseModel):
 
     # Always present
     is_estimate: bool = True
-    disclaimer: str = "AI estimate — review and edit before saving."
+    disclaimer: str = "AI estimate - review and edit before saving."
     message: str | None = None  # set when ai_available is False
 
     # Metadata

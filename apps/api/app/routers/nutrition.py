@@ -1,4 +1,4 @@
-"""Nutrition router — food library, food logging, and water logging.
+"""Nutrition router - food library, food logging, and water logging.
 
 Endpoints:
   /api/v1/foods
@@ -218,7 +218,7 @@ def delete_water_log(
         raise NotFoundError("Water log entry not found.")
 
 
-# ── AI macro estimation (preview only — never saves) ──────────────────────────
+# ── AI macro estimation (preview only - never saves) ──────────────────────────
 
 
 @nutrition_router.post("/estimate-macros", response_model=MacroEstimateResponse)
@@ -229,7 +229,7 @@ def estimate_macros(
 ) -> MacroEstimateResponse:
     """Estimate macros for a free-text food description.
 
-    Returns a *preview* the user reviews and edits before saving — this
+    Returns a *preview* the user reviews and edits before saving - this
     endpoint never creates a food or food-log entry itself. Always returns a
     usable response (with ``ai_available`` false) when AI is off or fails.
     """

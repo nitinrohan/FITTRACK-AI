@@ -1,5 +1,5 @@
 /**
- * Habit domain types — mirror the FastAPI /api/v1/habits schemas.
+ * Habit domain types - mirror the FastAPI /api/v1/habits schemas.
  *
  * The stat fields (completed_today, current_streak, …) are derived by the
  * backend from completion history; they are read-only on the client.

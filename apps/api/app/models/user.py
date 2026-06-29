@@ -151,7 +151,7 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
 
 class UserProfile(UUIDPrimaryKeyMixin, TimestampMixin, Base):
-    """Personal profile information — separate from auth credentials.
+    """Personal profile information - separate from auth credentials.
 
     All fields are optional so users can complete them progressively
     during onboarding without being forced to provide everything at
@@ -172,11 +172,11 @@ class UserProfile(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     bio: Mapped[str | None] = mapped_column(Text, nullable=True)
     avatar_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
-    # Physical — stored in canonical units (cm, no weight here; weight is logged separately)
+    # Physical - stored in canonical units (cm, no weight here; weight is logged separately)
     date_of_birth: Mapped[date | None] = mapped_column(Date, nullable=True)
     height_cm: Mapped[float | None] = mapped_column(Float(precision=1), nullable=True)
 
-    # Demographic — optional, used only for formulas that genuinely require it
+    # Demographic - optional, used only for formulas that genuinely require it
     # (e.g. Mifflin-St Jeor BMR). Never used for profiling or targeting.
     # Stored as a free-form string so users can self-describe; see onboarding docs.
     biological_sex: Mapped[str | None] = mapped_column(String(20), nullable=True)
@@ -217,7 +217,7 @@ class UserPreference(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         nullable=False,
     )
 
-    # Measurement system — affects display only; canonical storage is always SI.
+    # Measurement system - affects display only; canonical storage is always SI.
     # "metric" | "imperial"
     unit_system: Mapped[str] = mapped_column(String(20), default="metric", nullable=False)
 
@@ -231,7 +231,7 @@ class UserPreference(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     first_day_of_week: Mapped[int] = mapped_column(default=1, nullable=False)
     # 0=Sunday, 1=Monday (ISO default)
 
-    # Notification opt-ins (individual channels controlled via NotificationPreference — Phase 7)
+    # Notification opt-ins (individual channels controlled via NotificationPreference - Phase 7)
     email_notifications_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     # AI features opt-in (required before sending data to an external model)

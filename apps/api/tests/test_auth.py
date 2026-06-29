@@ -1,6 +1,6 @@
 """Tests for authentication endpoints and security utilities.
 
-All database calls are mocked — these are unit-level tests that verify:
+All database calls are mocked - these are unit-level tests that verify:
   - Input validation (bad email, short password)
   - Happy-path registration and login (cookie setting, response shape)
   - Error paths (duplicate email, wrong password, inactive account)
@@ -47,7 +47,7 @@ class TestPasswordHashing:
         assert verify_password("wrong-password", hashed) is False
 
     def test_two_hashes_of_same_password_differ(self) -> None:
-        # bcrypt uses a random salt — same input produces different hashes.
+        # bcrypt uses a random salt - same input produces different hashes.
         h1 = hash_password("mypassword")
         h2 = hash_password("mypassword")
         assert h1 != h2
@@ -253,7 +253,7 @@ class TestLogout:
         assert resp.status_code == 204
 
 
-# ── /me — protected endpoint ───────────────────────────────────────────────
+# ── /me - protected endpoint ───────────────────────────────────────────────
 
 
 class TestMe:

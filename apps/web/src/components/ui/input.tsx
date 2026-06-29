@@ -1,5 +1,5 @@
 /**
- * Input component — accessible, supports unit labels and error states.
+ * Input component - accessible, supports unit labels and error states.
  *
  * Usage:
  *   <Input label="Email" type="email" error={errors.email?.message} />

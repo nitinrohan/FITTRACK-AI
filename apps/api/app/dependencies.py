@@ -1,6 +1,6 @@
 """FastAPI dependency injection for common request-scoped objects.
 
-get_current_user is the central auth dependency — every protected endpoint
+get_current_user is the central auth dependency - every protected endpoint
 uses it via Depends(get_current_user).
 
 Design:

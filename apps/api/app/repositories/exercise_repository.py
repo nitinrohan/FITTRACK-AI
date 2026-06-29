@@ -1,4 +1,4 @@
-"""Exercise repository — all database access for exercises."""
+"""Exercise repository - all database access for exercises."""
 
 from __future__ import annotations
 

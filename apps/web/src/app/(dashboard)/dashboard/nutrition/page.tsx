@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /dashboard/nutrition — Daily nutrition log page.
+ * /dashboard/nutrition - Daily nutrition log page.
  *
  * Features:
  *   - Date navigation (prev / today / next)
@@ -277,7 +277,7 @@ function MealSectionCard({
       {/* Entries */}
       {entries.length === 0 && !showAdd ? (
         <p className="px-4 py-4 text-sm text-surface-500 italic">
-          Nothing logged yet — add a food above.
+          Nothing logged yet - add a food above.
         </p>
       ) : (
         <ul className="divide-y divide-surface-100" aria-label={`${MEAL_TYPE_LABELS[mealType]} entries`}>
@@ -535,7 +535,7 @@ function SearchFoodForm({ onAdd, onCancel }: Pick<AddFoodFormProps, "onAdd" | "o
         )}
       </div>
 
-      {/* Quantity field — shown once a food is selected */}
+      {/* Quantity field - shown once a food is selected */}
       {selected && (
         <div>
           <label htmlFor="food-quantity" className="mb-1 block text-xs font-medium text-surface-600">

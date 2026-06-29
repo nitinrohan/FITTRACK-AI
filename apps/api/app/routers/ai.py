@@ -1,8 +1,8 @@
-"""AI feature router — /api/v1/ai/*
+"""AI feature router - /api/v1/ai/*
 
 Endpoints:
-  POST /weekly-summary       — Generate a weekly summary (read-only; no data mutation).
-  POST /weekly-summary/accept — Record user's accept/dismiss decision.
+  POST /weekly-summary       - Generate a weekly summary (read-only; no data mutation).
+  POST /weekly-summary/accept - Record user's accept/dismiss decision.
 
 All endpoints require authentication.
 """
@@ -32,7 +32,7 @@ def generate_weekly_summary(
 ) -> WeeklySummaryResponse:
     """Generate a weekly summary from the last 7 days of the user's data.
 
-    This endpoint is read-only — it never modifies user data.  If the AI
+    This endpoint is read-only - it never modifies user data.  If the AI
     provider is unavailable, a rule-based summary is returned instead.
     The response always includes `ai_available` to tell the frontend which
     path was taken.

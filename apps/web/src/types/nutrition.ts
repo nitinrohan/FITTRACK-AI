@@ -74,7 +74,7 @@ export interface MacroPortion {
   fat_g: number;
 }
 
-/** AI macro estimate — a preview the user edits before saving. */
+/** AI macro estimate - a preview the user edits before saving. */
 export interface MacroEstimate {
   ai_available: boolean;
   name: string | null;

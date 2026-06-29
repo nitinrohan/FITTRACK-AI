@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Onboarding wizard — /onboarding
+ * Onboarding wizard - /onboarding
  *
  * Shown once to new users after registration (onboarding_completed = false).
  * Four steps:
@@ -129,7 +129,7 @@ export default function OnboardingPage() {
       setStep(nextStep);
       if (isLast) {
         // Refresh auth context so needsOnboarding becomes false before
-        // the dashboard layout mounts — prevents the redirect loop.
+        // the dashboard layout mounts - prevents the redirect loop.
         await refreshUser();
         router.push("/dashboard");
       }

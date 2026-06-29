@@ -1,4 +1,4 @@
-"""Exercise service — business logic for the exercise library.
+"""Exercise service - business logic for the exercise library.
 
 Rules:
 - Any authenticated user can read system exercises and their own custom ones.

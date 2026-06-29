@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Active workout page — /dashboard/workouts/[id]
+ * Active workout page - /dashboard/workouts/[id]
  *
  * Serves both in-progress logging and completed workout detail views.
  *
@@ -39,7 +39,7 @@ function formatDate(iso: string): string {
 }
 
 function formatDuration(seconds: number | null): string {
-  if (seconds === null) return "—";
+  if (seconds === null) return "-";
   const m = Math.floor(seconds / 60);
   const h = Math.floor(m / 60);
   if (h > 0) return `${h}h ${m % 60}m`;
@@ -47,7 +47,7 @@ function formatDuration(seconds: number | null): string {
 }
 
 function formatVolume(kg: number | null): string {
-  if (kg === null) return "—";
+  if (kg === null) return "-";
   return `${kg.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg`;
 }
 
@@ -194,7 +194,7 @@ function LogSetForm({
             max={10000}
             value={reps}
             onChange={(e) => setReps(e.target.value)}
-            placeholder="—"
+            placeholder="-"
             className="w-20 rounded-lg border border-surface-200 bg-white px-2 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
         </div>
@@ -212,7 +212,7 @@ function LogSetForm({
             step={0.25}
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            placeholder="—"
+            placeholder="-"
             className="w-24 rounded-lg border border-surface-200 bg-white px-2 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
         </div>
@@ -229,7 +229,7 @@ function LogSetForm({
             min={0}
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
-            placeholder="—"
+            placeholder="-"
             className="w-20 rounded-lg border border-surface-200 bg-white px-2 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
         </div>
@@ -352,7 +352,7 @@ function ExerciseBlock({
         </p>
       )}
 
-      {/* Log set form — only for in-progress */}
+      {/* Log set form - only for in-progress */}
       {inProgress && (
         <LogSetForm
           exerciseId={ex.id}
@@ -710,7 +710,7 @@ export default function WorkoutDetailPage() {
         ))}
       </div>
 
-      {/* Add exercise — in-progress only */}
+      {/* Add exercise - in-progress only */}
       {inProgress && (
         <div className="mt-4">
           <AddExercisePanel onAdd={handleAddExercise} isAdding={isAdding} />

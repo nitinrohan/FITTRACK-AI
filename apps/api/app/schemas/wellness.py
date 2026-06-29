@@ -1,9 +1,9 @@
 """Schemas for sleep, steps, and wellness endpoints.
 
 Unit conventions:
-  sleep duration  — minutes (integer)
-  distance        — metres  (float); frontend converts to km / miles
-  ratings         — integers 1-5 (validated here and in service)
+  sleep duration  - minutes (integer)
+  distance        - metres  (float); frontend converts to km / miles
+  ratings         - integers 1-5 (validated here and in service)
 
 Validation rules enforced here (schema level):
   - quality, mood, energy, stress must be 1-5 when provided

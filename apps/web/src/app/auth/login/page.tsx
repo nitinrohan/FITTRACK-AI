@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Login page — /auth/login
+ * Login page - /auth/login
  *
  * - React Hook Form + Zod validation.
  * - Calls auth context login() which POST /api/v1/auth/login.
@@ -45,7 +45,7 @@ function LoginForm() {
       // If the user hasn't finished onboarding, send them there first.
       // The auth context doesn't update until after this call resolves,
       // so we check by reading the /me response implicitly via the context
-      // after re-render — but to be safe, we always check on the server
+      // after re-render - but to be safe, we always check on the server
       // by redirecting to /dashboard which will itself redirect if needed.
       router.push(returnTo);
       router.refresh();
@@ -130,7 +130,7 @@ function LoginForm() {
                 {...register("password")}
               />
               <div className="flex justify-end">
-                {/* Placeholder — password reset is a future feature */}
+                {/* Placeholder - password reset is a future feature */}
                 <span
                   className="text-xs text-surface-400"
                   aria-label="Password reset not yet available"

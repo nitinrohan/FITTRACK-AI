@@ -1,7 +1,7 @@
 """Repository functions for the habit domain.
 
 All functions accept a SQLAlchemy Session and return ORM objects.
-No business logic lives here — streak/adherence calculations belong in
+No business logic lives here - streak/adherence calculations belong in
 habit_service.py.  Every query is scoped by user_id for data isolation.
 """
 

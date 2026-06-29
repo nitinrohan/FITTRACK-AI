@@ -20,7 +20,7 @@ class RegisterRequest(BaseModel):
     @field_validator("password")
     @classmethod
     def password_not_email(cls, v: str, info: object) -> str:
-        # Prevent trivially weak passwords — full policy enforced server-side.
+        # Prevent trivially weak passwords - full policy enforced server-side.
         if len(v.strip()) < 8:
             raise ValueError("Password must be at least 8 characters")
         return v

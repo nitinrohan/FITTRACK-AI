@@ -1,4 +1,4 @@
-"""Fix ai_usage_logs timestamp columns — add server DEFAULT now().
+"""Fix ai_usage_logs timestamp columns - add server DEFAULT now().
 
 Migration 0008 created created_at and updated_at as NOT NULL but without
 a server-side DEFAULT.  Every INSERT from SQLAlchemy fails with

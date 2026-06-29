@@ -8,9 +8,9 @@ The MVP is designed for one user and built to expand into a multi-user platform 
 
 ## What's Built
 
-**Phases 1–12 complete.** Habits (daily check-offs, streaks, weekly adherence) plus a dashboard "Today's habits" widget.
+**Phases 1-13 complete.** Habits (daily check-offs, streaks) + dashboard widget, and a **Progress** page with selectable-range charts (weight / workouts / calories) - each chart paired with an accessible text summary and data table.
 
-Latest add-on: **AI macro estimation for nutrition** — describe a food in plain text and the AI returns an editable macro *estimate* you review before saving (never auto-saved; portion math is deterministic). The AI layer is provider-independent (Anthropic / OpenAI / **Ollama** for free local dev) with graceful fallback when AI is off. Backend: 455 tests passing (4 pre-existing weight-test failures unrelated), ruff clean, mypy 0 errors; frontend tsc + eslint clean.
+Latest add-on: **AI macro estimation for nutrition** - describe a food in plain text and the AI returns an editable macro *estimate* you review before saving (never auto-saved; portion math is deterministic). The AI layer is provider-independent (Anthropic / OpenAI / **Ollama** for free local dev) with graceful fallback when AI is off. Backend: 455 tests passing (4 pre-existing weight-test failures unrelated), ruff clean, mypy 0 errors; frontend tsc + eslint clean.
 
 | Feature | Details |
 |---|---|
@@ -47,7 +47,7 @@ cd fittrack-ai
 cp .env.example .env
 ```
 
-Edit `.env` — at minimum change:
+Edit `.env` - at minimum change:
 - `POSTGRES_PASSWORD`
 - `APP_SECRET_KEY`
 - `JWT_SECRET_KEY`
@@ -69,11 +69,11 @@ Migrations run automatically before the API starts.
 ### 3. Verify
 
 ```
-http://localhost:3000     — Web app
-http://localhost:8000     — API root
-http://localhost:8000/docs — OpenAPI documentation
-http://localhost:8000/health — Liveness check
-http://localhost:8000/ready  — Readiness check (DB connectivity)
+http://localhost:3000     - Web app
+http://localhost:8000     - API root
+http://localhost:8000/docs - OpenAPI documentation
+http://localhost:8000/health - Liveness check
+http://localhost:8000/ready  - Readiness check (DB connectivity)
 ```
 
 ---
@@ -243,7 +243,7 @@ npx tsc --noEmit       # 0 errors
 ## Troubleshooting
 
 **`make up` fails with DB connection error**
-The API retries until the DB health check passes. Wait 10–15 seconds and check `make logs-api`.
+The API retries until the DB health check passes. Wait 10-15 seconds and check `make logs-api`.
 
 **Port already in use**
 Change the host port in `docker-compose.yml` (e.g. `"8001:8000"` for the API).
@@ -258,12 +258,12 @@ Ensure the source volumes are mounted (check `docker-compose.yml`). Restart with
 
 ## Documentation
 
-- [`docs/architecture.md`](./docs/architecture.md) — System design and component overview
-- [`docs/decision-log.md`](./docs/decision-log.md) — Architecture decision records
-- [`docs/data-model.md`](./docs/data-model.md) — Database schema (Phase 2+)
-- [`docs/api.md`](./docs/api.md) — API reference (Phase 2+)
-- [`docs/security.md`](./docs/security.md) — Security design (Phase 2+)
-- [`docs/ai-design.md`](./docs/ai-design.md) — AI assistant architecture (Phase 6+)
+- [`docs/architecture.md`](./docs/architecture.md) - System design and component overview
+- [`docs/decision-log.md`](./docs/decision-log.md) - Architecture decision records
+- [`docs/data-model.md`](./docs/data-model.md) - Database schema (Phase 2+)
+- [`docs/api.md`](./docs/api.md) - API reference (Phase 2+)
+- [`docs/security.md`](./docs/security.md) - Security design (Phase 2+)
+- [`docs/ai-design.md`](./docs/ai-design.md) - AI assistant architecture (Phase 6+)
 
 ---
 
@@ -283,6 +283,6 @@ Ensure the source volumes are mounted (check `docker-compose.yml`). Restart with
 | 10 | Dashboard + AI summaries | ✅ Complete |
 | 11 | Water, sleep, steps, and wellness | ✅ Complete |
 | 12 | Habits | ✅ Complete |
-| 13 | Progress charts | 🔜 Next |
-| 14 | Privacy, export, and account deletion | Planned |
+| 13 | Progress charts | ✅ Complete |
+| 14 | Privacy, export, and account deletion | 🔜 Next |
 | 15 | Integrations and platform features | Planned |

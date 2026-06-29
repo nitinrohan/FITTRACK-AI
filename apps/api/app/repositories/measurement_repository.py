@@ -1,7 +1,7 @@
 """Repository functions for the body measurements domain.
 
 All functions accept a SQLAlchemy Session and return ORM objects (or None).
-No business logic lives here — that belongs in measurement_service.py.
+No business logic lives here - that belongs in measurement_service.py.
 """
 
 from __future__ import annotations

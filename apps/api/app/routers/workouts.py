@@ -1,31 +1,31 @@
-"""Workouts router — /api/v1/workouts/* and /api/v1/templates/*
+"""Workouts router - /api/v1/workouts/* and /api/v1/templates/*
 
 Template endpoints:
-  POST   /api/v1/templates/                              — Create a template
-  GET    /api/v1/templates/                              — List templates
-  GET    /api/v1/templates/{template_id}                 — Get a template
-  PUT    /api/v1/templates/{template_id}                 — Update a template
-  DELETE /api/v1/templates/{template_id}                 — Delete a template
+  POST   /api/v1/templates/                              - Create a template
+  GET    /api/v1/templates/                              - List templates
+  GET    /api/v1/templates/{template_id}                 - Get a template
+  PUT    /api/v1/templates/{template_id}                 - Update a template
+  DELETE /api/v1/templates/{template_id}                 - Delete a template
 
 Workout session endpoints:
-  POST   /api/v1/workouts/                               — Start a workout
-  GET    /api/v1/workouts/                               — List workouts
-  GET    /api/v1/workouts/{workout_id}                   — Get a workout
-  POST   /api/v1/workouts/{workout_id}/complete          — Complete a workout
-  PATCH  /api/v1/workouts/{workout_id}                   — Update name/notes
-  DELETE /api/v1/workouts/{workout_id}                   — Delete a workout
+  POST   /api/v1/workouts/                               - Start a workout
+  GET    /api/v1/workouts/                               - List workouts
+  GET    /api/v1/workouts/{workout_id}                   - Get a workout
+  POST   /api/v1/workouts/{workout_id}/complete          - Complete a workout
+  PATCH  /api/v1/workouts/{workout_id}                   - Update name/notes
+  DELETE /api/v1/workouts/{workout_id}                   - Delete a workout
 
 Exercise management within a workout:
-  POST   /api/v1/workouts/{workout_id}/exercises         — Add an exercise
-  DELETE /api/v1/workouts/{workout_id}/exercises/{we_id} — Remove an exercise
+  POST   /api/v1/workouts/{workout_id}/exercises         - Add an exercise
+  DELETE /api/v1/workouts/{workout_id}/exercises/{we_id} - Remove an exercise
 
 Set logging:
-  POST   /api/v1/workouts/{workout_id}/exercises/{we_id}/sets        — Log a set
-  PATCH  /api/v1/workouts/{workout_id}/exercises/{we_id}/sets/{s_id} — Update a set
-  DELETE /api/v1/workouts/{workout_id}/exercises/{we_id}/sets/{s_id} — Delete a set
+  POST   /api/v1/workouts/{workout_id}/exercises/{we_id}/sets        - Log a set
+  PATCH  /api/v1/workouts/{workout_id}/exercises/{we_id}/sets/{s_id} - Update a set
+  DELETE /api/v1/workouts/{workout_id}/exercises/{we_id}/sets/{s_id} - Delete a set
 
 All endpoints require authentication.
-Ownership is enforced in the service layer — users can only touch their own data.
+Ownership is enforced in the service layer - users can only touch their own data.
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ from app.schemas.workouts import (
 )
 from app.services import workout_service
 
-# Two routers — separate prefixes, same module.
+# Two routers - separate prefixes, same module.
 # NOTE: router.include_router() is called at the BOTTOM of this file, after all
 # route functions are defined, so routes are not missed due to copy-at-call-time.
 template_router = APIRouter(prefix="/api/v1/templates", tags=["workout-templates"])
@@ -348,7 +348,7 @@ def delete_set(
 
 
 # ── Aggregate router (registered last so all routes above are included) ────────
-# include_router copies routes at call time — this must come after all @decorators.
+# include_router copies routes at call time - this must come after all @decorators.
 router = APIRouter()
 router.include_router(template_router)
 router.include_router(workout_router)

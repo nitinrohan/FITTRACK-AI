@@ -98,7 +98,7 @@ function TodayCard({ snapshot }: { snapshot: ReturnType<typeof useWellness>['sna
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-brand-600">
-            {steps ? steps.steps.toLocaleString() : '—'}
+            {steps ? steps.steps.toLocaleString() : '-'}
           </div>
           <div className="text-xs text-surface-500 mt-1">Steps</div>
           {steps?.distance_m && (
@@ -107,7 +107,7 @@ function TodayCard({ snapshot }: { snapshot: ReturnType<typeof useWellness>['sna
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-brand-600">
-            {wellness?.mood ?? '—'}
+            {wellness?.mood ?? '-'}
           </div>
           <div className="text-xs text-surface-500 mt-1">Mood</div>
           {wellness?.mood && (

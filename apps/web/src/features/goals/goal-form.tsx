@@ -1,5 +1,5 @@
 /**
- * GoalForm — modal form for creating and editing goals.
+ * GoalForm - modal form for creating and editing goals.
  *
  * Supports two modes:
  *   - Create: no `goal` prop, submits CreateGoalPayload.
@@ -50,7 +50,7 @@ const STATUS_LABELS: Record<GoalStatus, string> = {
 export function GoalForm({ open, onClose, goal, onSubmit }: GoalFormProps) {
   const isEdit = !!goal;
 
-  // Use a union form — edit schema is a superset of create (adds status)
+  // Use a union form - edit schema is a superset of create (adds status)
   const {
     register,
     handleSubmit,
@@ -279,7 +279,7 @@ export function GoalForm({ open, onClose, goal, onSubmit }: GoalFormProps) {
           {...register("deadline")}
         />
 
-        {/* Status — edit mode only */}
+        {/* Status - edit mode only */}
         {isEdit && goal && statusOptions.length > 0 && (
           <div>
             <label

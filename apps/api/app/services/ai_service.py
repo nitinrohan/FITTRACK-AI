@@ -45,7 +45,7 @@ _COST_TABLE: dict[str, dict[str, float]] = {
     # provider → {"input": cost_per_1m_tokens, "output": cost_per_1m_tokens}
     "anthropic": {"input": 0.80, "output": 4.00},
     "openai": {"input": 0.15, "output": 0.60},
-    # Ollama runs locally on the user's own hardware — no per-token cost.
+    # Ollama runs locally on the user's own hardware - no per-token cost.
     "ollama": {"input": 0.0, "output": 0.0},
 }
 
@@ -161,20 +161,27 @@ def _call_ollama(
     prompt: str,
     model_id: str,
     base_url: str,
+    api_key: str = "",
     *,
     max_tokens: int = 1024,
     timeout: float = 60.0,
 ) -> tuple[str, int | None, int | None]:
-    """Call a locally-running Ollama server's /api/generate endpoint.
+    """Call an Ollama /api/generate endpoint - local or Ollama Cloud.
 
-    Ollama runs open models on the user's own hardware, so there is no API
-    key and no per-token cost. Local generation can be slower than a hosted
-    API, hence the longer default timeout.
+    The request shape is identical for both: local (http://localhost:11434,
+    no key) and Ollama Cloud (https://ollama.com, Bearer API key). When
+    ``api_key`` is set it's sent as an Authorization header, which is what
+    Ollama Cloud requires.
+
+    Local generation can be slow, hence the longer default timeout.
 
     Returns (text_reply, input_tokens, output_tokens).
     Raises AIUnavailableError on any failure (including the server being
-    unreachable, which is the common case when Ollama isn't running).
+    unreachable, the common case when local Ollama isn't running).
     """
+    headers: dict[str, str] = {}
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
     body: dict[str, Any] = {
         "model": model_id,
         "prompt": prompt,
@@ -185,6 +192,7 @@ def _call_ollama(
         resp = httpx.post(
             f"{base_url.rstrip('/')}/api/generate",
             json=body,
+            headers=headers,
             timeout=timeout,
         )
         resp.raise_for_status()
@@ -245,6 +253,7 @@ def call_ai(
             prompt,
             model_id,
             settings.ollama_base_url,
+            settings.ollama_api_key,
             max_tokens=max_tokens,
             timeout=timeout,
         )

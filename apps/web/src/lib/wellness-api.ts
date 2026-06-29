@@ -1,5 +1,5 @@
 /**
- * Wellness API — typed wrappers around the FitTrack FastAPI
+ * Wellness API - typed wrappers around the FitTrack FastAPI
  * /api/v1/sleep, /api/v1/steps, and /api/v1/wellness endpoints.
  *
  * All functions throw ApiError on non-2xx responses.

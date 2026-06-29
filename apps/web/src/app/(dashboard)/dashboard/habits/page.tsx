@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Habits page — create habits, check them off for today, and track streaks.
+ * Habits page - create habits, check them off for today, and track streaks.
  *
  * Tone: encouraging and non-judgemental. Streaks are shown as positive
  * progress, never as pressure; missing a day does not shame the user.

@@ -1,4 +1,4 @@
-"""Workout service — business logic for templates, workout sessions, and sets.
+"""Workout service - business logic for templates, workout sessions, and sets.
 
 Responsibilities:
 - Orchestrate template create/update (including exercise list replace).
@@ -11,7 +11,7 @@ Design notes:
 - All DB mutations go through the repository; no SQLAlchemy queries here.
 - PR detection is best-effort: if historical data is missing we mark is_pr=False.
 - Volume formula: sum(weight_kg * reps) for sets where both values are present.
-  This is "total tonnage" — a common and easily understood metric.
+  This is "total tonnage" - a common and easily understood metric.
 - Estimated 1RM (Epley formula) is available as a helper but not surfaced in
   responses yet; it is here for use in future analytics features.
 """
@@ -62,7 +62,7 @@ def estimated_one_rep_max(weight_kg: float, reps: int) -> float | None:
     """Epley formula: weight x (1 + reps/30).
 
     Returns None for invalid inputs (reps=0 or weight=0).
-    Clearly an estimate — not presented as exact.
+    Clearly an estimate - not presented as exact.
     """
     if reps <= 0 or weight_kg <= 0:
         return None
@@ -407,7 +407,7 @@ def complete_workout(
     if workout is None:
         return None
     if workout.completed_at is not None:
-        # Already completed — return as-is (idempotent)
+        # Already completed - return as-is (idempotent)
         return _build_workout_response(workout)
 
     completed_at = payload.completed_at or _utc_now()

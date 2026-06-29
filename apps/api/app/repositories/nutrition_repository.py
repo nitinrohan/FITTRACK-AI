@@ -1,7 +1,7 @@
 """Repository functions for the nutrition domain.
 
 All functions accept a SQLAlchemy Session and return ORM objects (or None).
-No business logic lives here — that belongs in nutrition_service.py.
+No business logic lives here - that belongs in nutrition_service.py.
 """
 
 from __future__ import annotations

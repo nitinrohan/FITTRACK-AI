@@ -1,4 +1,4 @@
-"""Business logic for the wellness domain — sleep, steps, wellness check-in.
+"""Business logic for the wellness domain - sleep, steps, wellness check-in.
 
 Key responsibilities:
 - Compute duration_minutes from bedtime/wake_time when not supplied directly.

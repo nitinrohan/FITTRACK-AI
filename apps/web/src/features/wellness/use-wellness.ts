@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * useWellness — data hook for the wellness page.
+ * useWellness - data hook for the wellness page.
  *
  * Manages three independent lists (sleep, steps, wellness) plus a
  * combined daily snapshot.  Each sub-domain is loaded independently so

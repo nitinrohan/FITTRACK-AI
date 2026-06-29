@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Dashboard page — /dashboard
+ * Dashboard page - /dashboard
  *
  * Widgets:
  *   - Weight trend line chart (30 days, Recharts)
@@ -552,7 +552,7 @@ function AIInsightsWidget() {
       {/* Idle */}
       {state.status === "idle" && (
         <p className="mt-3 text-sm text-surface-500">
-          Get a personalised review of your last 7 days — workouts, nutrition,
+          Get a personalised review of your last 7 days - workouts, nutrition,
           weight, and goals.
         </p>
       )}
@@ -629,7 +629,7 @@ function AIInsightsWidget() {
             </summary>
             <div className="mt-2 grid grid-cols-2 gap-1 sm:grid-cols-3">
               {[
-                ["Week", `${state.data.data_snapshot.week_start} – ${state.data.data_snapshot.week_end}`],
+                ["Week", `${state.data.data_snapshot.week_start} - ${state.data.data_snapshot.week_end}`],
                 ["Weight entries", String(state.data.data_snapshot.weight_entries)],
                 ["Workouts", String(state.data.data_snapshot.workouts_completed)],
                 ["Food log days", `${state.data.data_snapshot.food_log_days}/7`],
@@ -649,7 +649,7 @@ function AIInsightsWidget() {
               onClick={() => void accept()}
               className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 transition-colors"
             >
-              Helpful — thanks!
+              Helpful - thanks!
             </button>
             <button
               onClick={() => void dismiss()}
@@ -921,28 +921,28 @@ export default function DashboardPage() {
             </Widget>
           )}
 
-          {/* Latest measurements — spans full width on large screens */}
+          {/* Latest measurements - spans full width on large screens */}
           {data.latest_measurement && (
             <div className="lg:col-span-2">
               <LatestMeasurementWidget data={data.latest_measurement} />
             </div>
           )}
 
-          {/* Today's habits — spans full width */}
+          {/* Today's habits - spans full width */}
           {data.habits_today && (
             <div className="lg:col-span-2">
               <HabitsTodayWidget data={data.habits_today} onChange={reload} />
             </div>
           )}
 
-          {/* AI insights — always shown, spans full width */}
+          {/* AI insights - always shown, spans full width */}
           <div className="lg:col-span-2">
             <AIInsightsWidget />
           </div>
         </div>
       )}
 
-      {/* Empty overall state — no data at all */}
+      {/* Empty overall state - no data at all */}
       {!isLoading && !error && data && isAllEmpty(data) && (
         <div className="rounded-xl border border-dashed border-surface-300 bg-white px-6 py-12 text-center">
           <h3 className="text-sm font-medium text-surface-700">

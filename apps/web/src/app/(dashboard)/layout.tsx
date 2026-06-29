@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Protected dashboard layout — wraps all /dashboard/* routes.
+ * Protected dashboard layout - wraps all /dashboard/* routes.
  *
  * This layout handles the brief window between:
  *   1. The middleware allowing the request through (cookie present).
@@ -132,7 +132,7 @@ export default function DashboardLayout({
             <Link
               href="/dashboard"
               className="flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 rounded"
-              aria-label="FitTrack AI — home"
+              aria-label="FitTrack AI - home"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500">
                 <svg
@@ -196,6 +196,8 @@ const NAV_LINKS = [
   { href: "/dashboard/measurements", label: "Measurements" },
   { href: "/dashboard/wellness", label: "Wellness" },
   { href: "/dashboard/habits", label: "Habits" },
+  { href: "/dashboard/progress", label: "Progress" },
+  { href: "/dashboard/settings", label: "Settings" },
 ] as const;
 
 function NavLinks() {
@@ -332,7 +334,7 @@ function MobileMenu({ displayName }: { displayName: string }) {
 
       {open && (
         <>
-          {/* Backdrop — tap anywhere outside the panel to close. */}
+          {/* Backdrop - tap anywhere outside the panel to close. */}
           <button
             type="button"
             tabIndex={-1}
@@ -340,7 +342,7 @@ function MobileMenu({ displayName }: { displayName: string }) {
             onClick={() => setOpen(false)}
             className="fixed inset-x-0 bottom-0 top-[57px] z-30 cursor-default bg-surface-900/20 dark:bg-black/50"
           />
-          {/* Dropdown panel — positioned below the header. */}
+          {/* Dropdown panel - positioned below the header. */}
           <div
             id="mobile-menu"
             className="absolute inset-x-0 top-full z-40 border-b border-surface-200 bg-white shadow-lg dark:border-surface-700 dark:bg-surface-800"

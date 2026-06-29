@@ -17,7 +17,7 @@
     --color-success: theme("colors.brand.500");
   }
 
-  /* Dark mode overrides — applied when <html class="dark"> is set */
+  /* Dark mode overrides - applied when <html class="dark"> is set */
   .dark {
     --color-brand: theme("colors.brand.400");
     --color-brand-dark: theme("colors.brand.500");

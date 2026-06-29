@@ -1,4 +1,4 @@
-"""Tests for the habit domain — /api/v1/habits.
+"""Tests for the habit domain - /api/v1/habits.
 
 Covers:
   Pure domain calculations:

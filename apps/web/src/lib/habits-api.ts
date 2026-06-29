@@ -1,5 +1,5 @@
 /**
- * Habits API — typed wrappers around the FitTrack /api/v1/habits endpoints.
+ * Habits API - typed wrappers around the FitTrack /api/v1/habits endpoints.
  *
  * The `today` query param carries the client's *local* calendar date so the
  * backend computes "completed today" and streaks against the user's day, not
@@ -16,7 +16,7 @@ import type {
   UpdateHabitRequest,
 } from '@/types/habits'
 
-/** Local calendar date as YYYY-MM-DD (not UTC — uses the browser's timezone). */
+/** Local calendar date as YYYY-MM-DD (not UTC - uses the browser's timezone). */
 export function localToday(): string {
   const d = new Date()
   const mm = String(d.getMonth() + 1).padStart(2, '0')

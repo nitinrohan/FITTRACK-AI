@@ -1,5 +1,5 @@
 /**
- * Weight API — typed wrappers around the FitTrack FastAPI weight endpoints.
+ * Weight API - typed wrappers around the FitTrack FastAPI weight endpoints.
  */
 
 import { apiClient } from "@/lib/api-client";

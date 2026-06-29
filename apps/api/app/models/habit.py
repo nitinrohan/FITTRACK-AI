@@ -1,14 +1,14 @@
-"""Habit ORM models — habits and their daily completions.
+"""Habit ORM models - habits and their daily completions.
 
 Phase 12 adds two tables for the habit-tracking feature:
 
-  Habit            — a recurring behaviour the user wants to build, e.g.
+  Habit            - a recurring behaviour the user wants to build, e.g.
                      "Drink 2L of water" or "Read 10 pages".  MVP habits are
                      daily check-offs with a configurable weekly target
                      (target_days_per_week, 1-7).  Habits are archived rather
                      than hard-deleted so historical completions are preserved.
 
-  HabitCompletion  — one check-off of a habit on a calendar date.  A unique
+  HabitCompletion  - one check-off of a habit on a calendar date.  A unique
                      (habit_id, date) constraint guarantees at most one
                      completion per habit per day, which makes the "mark done"
                      endpoint naturally idempotent.

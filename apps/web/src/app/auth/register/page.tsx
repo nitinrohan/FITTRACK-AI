@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Register page — /auth/register
+ * Register page - /auth/register
  *
  * - React Hook Form + Zod: email, password (min 8), confirm password, display name.
  * - Calls auth context register() which POST /api/v1/auth/register.

@@ -1,4 +1,4 @@
-"""Authentication service — registration, login, and token lifecycle.
+"""Authentication service - registration, login, and token lifecycle.
 
 This layer contains all auth business rules. It calls the user repository
 for database access and the security module for cryptography. Routes call
@@ -7,7 +7,7 @@ this service; they never call the repository or security module directly.
 Error strategy:
 - Raise domain exceptions (ConflictError, UnauthorizedError) that the
   exception handlers in main.py convert to consistent HTTP responses.
-- Never reveal whether an email exists in a "wrong password" path —
+- Never reveal whether an email exists in a "wrong password" path -
   always use the generic "Invalid credentials" message to prevent
   email enumeration.
 """
@@ -61,7 +61,7 @@ def login(db: Session, email: str, password: str) -> User:
 
     Uses a constant-time comparison to resist timing attacks.
     Returns the same error message whether the email is unknown or the
-    password is wrong — prevents email enumeration.
+    password is wrong - prevents email enumeration.
     """
     user = user_repository.get_user_by_email(db, email)
 

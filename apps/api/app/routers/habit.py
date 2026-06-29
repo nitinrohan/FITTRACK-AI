@@ -1,4 +1,4 @@
-"""Habit router — /api/v1/habits.
+"""Habit router - /api/v1/habits.
 
   POST   /api/v1/habits                         create a habit
   GET    /api/v1/habits                         list habits (paginated)

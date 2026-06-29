@@ -1,5 +1,5 @@
 /**
- * Loading spinner — use for async states inside components.
+ * Loading spinner - use for async states inside components.
  * Always pair with an aria-label or visually hidden text.
  */
 

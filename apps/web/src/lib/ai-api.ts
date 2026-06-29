@@ -1,5 +1,5 @@
 /**
- * AI API — typed wrappers for /api/v1/ai/* endpoints.
+ * AI API - typed wrappers for /api/v1/ai/* endpoints.
  */
 
 import { apiClient } from "@/lib/api-client";

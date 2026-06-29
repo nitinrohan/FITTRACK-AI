@@ -6,7 +6,7 @@ Focus areas:
   - Defensive coercion of malformed / negative / missing model output.
   - Endpoint: auth required, validation, preview shape.
 
-The AI provider call is always mocked — no network and no real model.
+The AI provider call is always mocked - no network and no real model.
 """
 
 from __future__ import annotations

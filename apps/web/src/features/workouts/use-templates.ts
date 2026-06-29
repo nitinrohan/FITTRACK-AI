@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * useTemplates — data hook for workout templates.
+ * useTemplates - data hook for workout templates.
  */
 
 import { useCallback, useEffect, useState } from "react";

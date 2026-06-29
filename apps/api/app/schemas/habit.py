@@ -1,4 +1,4 @@
-"""Schemas for the habit endpoints — /api/v1/habits.
+"""Schemas for the habit endpoints - /api/v1/habits.
 
 Validation rules enforced here (schema level):
   - name: 1-100 chars (trimmed, non-empty)

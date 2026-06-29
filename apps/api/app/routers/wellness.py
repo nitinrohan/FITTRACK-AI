@@ -1,4 +1,4 @@
-"""Wellness router — sleep, steps, and wellness check-in endpoints.
+"""Wellness router - sleep, steps, and wellness check-in endpoints.
 
 Sub-routers (combined at the bottom of this file):
   /api/v1/sleep

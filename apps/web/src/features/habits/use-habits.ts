@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * useHabits — data hook for the habits page.
+ * useHabits - data hook for the habits page.
  *
  * Loads the habit list (active by default) and exposes actions for creating,
  * editing, archiving, deleting, and toggling today's completion. Each action

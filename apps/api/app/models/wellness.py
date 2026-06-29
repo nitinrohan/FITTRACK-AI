@@ -1,18 +1,18 @@
-"""Wellness ORM models — sleep, daily steps, and wellness check-in.
+"""Wellness ORM models - sleep, daily steps, and wellness check-in.
 
 Phase 11 adds three lightweight daily-logging tables:
 
-  SleepLog    — one or more sleep entries per day (naps are valid).
+  SleepLog    - one or more sleep entries per day (naps are valid).
                 Canonical unit: duration_minutes (integer).
                 bedtime / wake_time are optional UTC datetimes; when both
                 are provided the service computes duration_minutes from them.
 
-  DailySteps  — step-count log for a calendar date.
+  DailySteps  - step-count log for a calendar date.
                 Canonical unit: steps (integer), distance in metres.
                 Multiple entries per day are accepted (app syncs, manual
                 entry); the latest entry for a date is used for display.
 
-  WellnessLog — subjective daily check-in: mood, energy, stress on a 1-5
+  WellnessLog - subjective daily check-in: mood, energy, stress on a 1-5
                 scale.  At least one metric must be provided (validated in
                 the service layer).  One entry per day is the norm but the
                 DB allows multiple.
@@ -50,7 +50,7 @@ if TYPE_CHECKING:
 class SleepLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     """One sleep session logged by a user.
 
-    The `date` field is the calendar date the sleep "belongs to" — typically
+    The `date` field is the calendar date the sleep "belongs to" - typically
     the wake-up date, so a session from 23:00 Mon → 07:00 Tue is logged as
     Tuesday.
 
@@ -71,7 +71,7 @@ class SleepLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # ── Date ─────────────────────────────────────────────────────────────────
     date: Mapped[date] = mapped_column(Date, nullable=False)
 
-    # ── Times (optional — may log duration directly) ──────────────────────────
+    # ── Times (optional - may log duration directly) ──────────────────────────
     bedtime: Mapped[datetime | None] = mapped_column(DateTime(timezone=False), nullable=True)
     wake_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=False), nullable=True)
 
@@ -148,9 +148,9 @@ class WellnessLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     (enforced in the service layer).
 
     Rating scale:
-      mood    — 1 (very low) … 5 (excellent)
-      energy  — 1 (exhausted) … 5 (high energy)
-      stress  — 1 (very calm) … 5 (very stressed)
+      mood    - 1 (very low) … 5 (excellent)
+      energy  - 1 (exhausted) … 5 (high energy)
+      stress  - 1 (very calm) … 5 (very stressed)
                 (inverted at display time: higher stress = worse)
 
     Multiple entries per date are accepted (e.g. morning + evening check).

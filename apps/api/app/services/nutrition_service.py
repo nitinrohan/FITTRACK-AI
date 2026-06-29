@@ -2,8 +2,8 @@
 
 Key responsibilities:
 - Food CRUD with ownership rules (system foods cannot be modified/deleted by users).
-- FoodLog CRUD — only the owner can read/write.
-- WaterLog CRUD — only the owner can read/write.
+- FoodLog CRUD - only the owner can read/write.
+- WaterLog CRUD - only the owner can read/write.
 - Daily nutrition summary: aggregates FoodLog entries for a date into
   per-meal sections and day-level totals.
 

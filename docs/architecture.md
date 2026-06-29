@@ -1,8 +1,8 @@
-# FitTrack AI — Architecture
+# FitTrack AI - Architecture
 
 ## Overview
 
-FitTrack AI is a web application built as a **modular monolith** — a single deployable unit with clearly separated internal domains. This gives the simplicity of a monolith (single deployment, shared database, no network hops between services) while maintaining clean boundaries that make future extraction into services straightforward if needed.
+FitTrack AI is a web application built as a **modular monolith** - a single deployable unit with clearly separated internal domains. This gives the simplicity of a monolith (single deployment, shared database, no network hops between services) while maintaining clean boundaries that make future extraction into services straightforward if needed.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -33,7 +33,7 @@ Each layer has a single, clear responsibility:
 
 | Layer | Location | Responsibility |
 |---|---|---|
-| **Routers** | `app/routers/` | HTTP request/response binding. Thin — validate input, call service, return response. No business logic. |
+| **Routers** | `app/routers/` | HTTP request/response binding. Thin - validate input, call service, return response. No business logic. |
 | **Schemas** | `app/schemas/` | Pydantic models for request bodies, response envelopes, and validation rules. |
 | **Services** | `app/services/` | Business logic, orchestration, domain rules. Calls repositories; does not touch SQLAlchemy directly. |
 | **Repositories** | `app/repositories/` | Database access. All SQLAlchemy queries live here. Returns domain objects, never raw SQL result rows. |
@@ -101,7 +101,7 @@ All values are stored in canonical units and converted only for input/display:
 - JWT refresh tokens (30-day expiry) in a separate HTTP-only cookie
 - Token rotation on every refresh
 - All protected endpoints check ownership: `WHERE user_id = :current_user_id`
-- AI provider API keys are backend-only — never sent to the frontend
+- AI provider API keys are backend-only - never sent to the frontend
 
 ---
 
@@ -116,7 +116,7 @@ AIRequest → AIProvider (interface)
                └── NullProvider (returns "AI unavailable" safely)
 ```
 
-The core tracker works fully when `AI_PROVIDER=none`. The AI layer reads verified application data (via services) and uses the language model only for explanation and summarisation — never as the source of truth for calculations.
+The core tracker works fully when `AI_PROVIDER=none`. The AI layer reads verified application data (via services) and uses the language model only for explanation and summarisation - never as the source of truth for calculations.
 
 All AI responses are parsed into typed `AIResponse` objects before being sent to the frontend. Raw model output never reaches the API response.
 
@@ -128,7 +128,7 @@ The modular monolith can evolve without a rewrite:
 
 1. **Multi-tenant:** Add `organization_id` to user-owned tables; scope all queries by tenant.
 2. **Trainer-client:** Add `TrainerClientRelationship` table; extend authorization service to check relationship permissions.
-3. **Background jobs:** Extract long-running tasks (AI summaries, data exports) to a worker queue (Celery + Redis or similar) — the service layer is already decoupled from the HTTP request cycle.
+3. **Background jobs:** Extract long-running tasks (AI summaries, data exports) to a worker queue (Celery + Redis or similar) - the service layer is already decoupled from the HTTP request cycle.
 4. **Microservices (if justified):** The AI service and the notification service are the most natural extraction candidates, because they have distinct infrastructure requirements.
 
 ---

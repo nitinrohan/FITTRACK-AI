@@ -1,5 +1,5 @@
 /**
- * Measurements API — typed wrappers around the FitTrack FastAPI
+ * Measurements API - typed wrappers around the FitTrack FastAPI
  * /api/v1/measurements endpoints.
  *
  * All functions throw ApiError on non-2xx responses.

@@ -7,7 +7,7 @@ Goals can be purely qualitative (title + description) or quantitative
 Internal unit strategy:
   target_unit and current_unit store the *display* unit chosen by the user
   (e.g. "kg", "lb", "%", "reps").  The numeric values are stored exactly as
-  entered — no server-side unit conversion for goals because goal values are
+  entered - no server-side unit conversion for goals because goal values are
   personal targets the user sets, not measured physiological data.
   When the user changes their unit preference the goal values stay as-is;
   the frontend displays them with whatever unit was recorded on the goal.

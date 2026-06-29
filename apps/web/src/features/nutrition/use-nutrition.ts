@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * useNutrition — data hook for the daily nutrition log page.
+ * useNutrition - data hook for the daily nutrition log page.
  *
  * Fetches the DailyNutrition summary for a given date and exposes helpers
  * for logging food, updating/deleting log entries, and logging water.

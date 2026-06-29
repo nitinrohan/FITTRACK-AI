@@ -5,7 +5,7 @@ of wholegrain toast") into a structured macro ESTIMATE.
 
 Safety / architecture rules honoured here:
 - The result is always an estimate, never presented as exact, and is never
-  saved automatically — the endpoint returns a preview the user approves.
+  saved automatically - the endpoint returns a preview the user approves.
 - The language model only parses text into per-100g figures; the portion
   totals are computed by deterministic Python, not the model.
 - When AI is unavailable or the call fails, we degrade gracefully: the user
@@ -142,7 +142,7 @@ def estimate_macros(
         if per100_cal == 0 and per100_pro == 0 and per100_carb == 0 and per100_fat == 0:
             raise ValueError("AI returned all-zero macros.")
 
-        # Portion totals — computed here, not by the model.
+        # Portion totals - computed here, not by the model.
         factor = serving / 100.0
         portion = MacroPortion(
             grams=serving,

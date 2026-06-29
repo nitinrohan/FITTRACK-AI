@@ -6,7 +6,7 @@ Unit strategy:
     without a separate conversion call.
   - Conversion constant: 1 inch = 2.54 cm.
 
-All measurement fields are optional — users can record only the
+All measurement fields are optional - users can record only the
 measurements they care about.  At least one measurement field must be
 non-None on create (validated at the service layer, not here, to keep
 the schema simple).
@@ -68,7 +68,7 @@ class CreateMeasurementRequest(_MeasurementFields):
 
 
 class UpdateMeasurementRequest(_MeasurementFields):
-    """Partial update — send only changed fields.
+    """Partial update - send only changed fields.
 
     Setting a field to null clears that measurement from the entry.
     """

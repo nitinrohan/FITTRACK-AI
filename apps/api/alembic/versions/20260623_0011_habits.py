@@ -4,7 +4,7 @@ Revision ID: 20260623_0011
 Revises: 20260619_0010
 Create Date: 2026-06-23
 
-Phase 12 — Habit tracking.  Adds the `habits` table (recurring behaviours
+Phase 12 - Habit tracking.  Adds the `habits` table (recurring behaviours
 with a weekly target) and `habit_completions` (one check-off per habit per
 day, enforced by a unique constraint).
 """
