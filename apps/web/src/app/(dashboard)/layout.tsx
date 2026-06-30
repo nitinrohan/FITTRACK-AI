@@ -195,6 +195,7 @@ const NAV_LINKS = [
   { href: "/dashboard/nutrition", label: "Nutrition" },
   { href: "/dashboard/measurements", label: "Measurements" },
   { href: "/dashboard/wellness", label: "Wellness" },
+  { href: "/dashboard/mind", label: "Mind" },
   { href: "/dashboard/habits", label: "Habits" },
   { href: "/dashboard/progress", label: "Progress" },
   { href: "/dashboard/settings", label: "Settings" },

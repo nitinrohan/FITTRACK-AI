@@ -195,7 +195,7 @@ function LogSetForm({
             value={reps}
             onChange={(e) => setReps(e.target.value)}
             placeholder="-"
-            className="w-20 rounded-lg border border-surface-200 bg-white px-2 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-20 rounded-lg border border-surface-200 bg-white px-2 py-2 text-sm text-surface-900 placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-50"
           />
         </div>
         <div>
@@ -213,7 +213,7 @@ function LogSetForm({
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
             placeholder="-"
-            className="w-24 rounded-lg border border-surface-200 bg-white px-2 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-24 rounded-lg border border-surface-200 bg-white px-2 py-2 text-sm text-surface-900 placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-50"
           />
         </div>
         <div>
@@ -230,7 +230,7 @@ function LogSetForm({
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             placeholder="-"
-            className="w-20 rounded-lg border border-surface-200 bg-white px-2 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-20 rounded-lg border border-surface-200 bg-white px-2 py-2 text-sm text-surface-900 placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-50"
           />
         </div>
         <Button
@@ -417,7 +417,7 @@ function AddExercisePanel({ onAdd, isAdding }: AddExercisePanelProps) {
             value={exerciseId}
             onChange={(e) => setExerciseId(e.target.value)}
             placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            className="w-full rounded-lg border border-surface-200 bg-white px-3 py-2 font-mono text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full rounded-lg border border-surface-200 bg-white px-3 py-2 font-mono text-xs text-surface-900 placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-50"
           />
         </div>
         <Button type="submit" size="sm" isLoading={isAdding} className="self-end">

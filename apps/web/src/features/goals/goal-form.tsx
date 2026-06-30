@@ -224,7 +224,7 @@ export function GoalForm({ open, onClose, goal, onSubmit }: GoalFormProps) {
               <span className="normal-case text-surface-400">(optional)</span>
             </legend>
 
-            <div className="mt-3 grid grid-cols-3 gap-3">
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Input
                 id="gf-starting"
                 label="Starting"

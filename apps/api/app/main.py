@@ -42,9 +42,11 @@ from app.routers import (
     habit,
     health,
     measurements,
+    mindfulness,
     nutrition,
     privacy,
     progress,
+    stress,
     users,
     weight,
     wellness,
@@ -159,6 +161,12 @@ def create_app() -> FastAPI:
 
     # privacy router - data export, record summary, account deletion.
     app.include_router(privacy.router)
+
+    # stress router - 0-100 stress readings + daily summary.
+    app.include_router(stress.router)
+
+    # mindfulness router - session library + mindful-minute logs.
+    app.include_router(mindfulness.router)
 
     return app
 

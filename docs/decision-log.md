@@ -192,3 +192,88 @@ Each entry follows the format:
 - Hot-reload via mounted volumes means development speed is not sacrificed.
 
 **Trade-offs:** Docker Desktop must be installed. First `docker-compose up` is slower than running services directly. Both mitigated by clear README instructions.
+
+---
+
+## ADR-011: Account deletion is an immediate hard delete
+
+**Date:** 2026-06-26  
+**Status:** Accepted
+
+**Context:** Phase 14 needs an account-deletion capability. The options were an immediate hard delete versus a soft delete with a recovery grace period and a scheduled purge job.
+
+**Decision:** Immediate hard delete, gated by re-verifying the account password (backend) and a typed `DELETE` confirmation (frontend).
+
+**Rationale:**
+- Matches the plain-language meaning users expect from "delete my account".
+- No background purge job or extra account state to maintain in the MVP.
+- A full data export exists alongside it, so users can keep their data before deleting.
+
+**Trade-offs:** No self-service recovery window - deletion is irreversible. Acceptable for the MVP; a soft-delete grace period is noted as possible future work in `docs/privacy.md`.
+
+---
+
+## ADR-012: Delete via ORM cascade, not a single database cascade
+
+**Date:** 2026-06-26  
+**Status:** Accepted
+
+**Context:** Deleting a user must remove all owned rows. Two foreign keys use `ON DELETE RESTRICT` (`food_logs -> foods`, and `workout_exercises` / `workout_template_exercises -> exercises`).
+
+**Decision:** Use `db.delete(user)` and the ORM relationship cascades, purging `ai_usage_logs` explicitly first.
+
+**Rationale:**
+- PostgreSQL checks `RESTRICT` immediately, so a pure DB-level cascade from the user row could fail even when the referencing rows are also being deleted. The ORM deletes children in FK-dependency order, satisfying `RESTRICT`.
+- `ai_usage_logs` has no ORM relationship on `User`; deleting it explicitly keeps behaviour identical under test databases that do not enforce foreign keys.
+
+**Trade-offs:** Slightly more application code than relying solely on DB cascades, in exchange for correctness across both PostgreSQL and the test setup.
+
+---
+
+## ADR-013: DELETE account returns 200, not 204
+
+**Date:** 2026-06-26  
+**Status:** Accepted
+
+**Context:** The account-deletion endpoint must receive the current password in the request body. The installed FastAPI version asserts that a `204 No Content` route cannot declare a request body.
+
+**Decision:** `DELETE /api/v1/privacy/account` returns `200` with a small confirmation body instead of `204`.
+
+**Rationale:** Keeps the password in the request body (the correct place for a secret, versus a query string or header) while satisfying the framework constraint.
+
+**Trade-offs:** Minor deviation from the "204 for deletes" convention used elsewhere; documented here and in `docs/privacy.md`.
+
+---
+
+## ADR-014: Stress readings are a separate domain from the wellness check-in
+
+**Date:** 2026-06-26  
+**Status:** Accepted
+
+**Context:** WellnessLog already has a subjective `stress` field on a 1-5 scale (a once-or-twice-daily check-in). The new Stress feature needs a finer-grained, multiple-readings-per-day 0-100 metric with daily highest/lowest/average and a Low/Moderate/High band, matching the requested design.
+
+**Decision:** Add a dedicated `stress_logs` table (0-100, point-in-time `recorded_at`, `source` defaulting to "manual") rather than overloading the wellness `stress` field. Leave the wellness check-in unchanged.
+
+**Rationale:**
+- The 1-5 daily rating cannot represent multiple intraday readings or a 0-100 range.
+- A `source` column is an extension point for wearable-provided readings later, without touching the subjective check-in.
+- Daily highest/lowest/average and the band are derived at query time (timezone-aware), never stored.
+
+**Trade-offs:** Two stress concepts now exist. Mitigated by keeping their purposes distinct (subjective daily mood/energy/stress check-in vs. granular stress readings) and documenting it here.
+
+---
+
+## ADR-015: Mindfulness music is an external link, not embedded audio
+
+**Date:** 2026-06-26  
+**Status:** Accepted
+
+**Context:** The mindfulness feature should let users practise sessions with optional music, but there is no licensed audio source or player in the product yet.
+
+**Decision:** `MindfulnessSession.external_url` holds an optional link (e.g. Spotify/YouTube) that opens in a new tab. Sessions with no link show a "Link coming soon" state. Mindful minutes are logged separately in `mindfulness_logs`.
+
+**Rationale:**
+- Ships the useful part (a session library + minute logging + streak) without taking on audio licensing/hosting now.
+- The link field is a clean seam to fill in real content later, per session.
+
+**Trade-offs:** No in-app playback yet; the experience depends on third-party links until an audio source is chosen.

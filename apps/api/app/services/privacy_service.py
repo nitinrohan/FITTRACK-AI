@@ -40,7 +40,9 @@ from app.models.exercise import Exercise
 from app.models.goal import Goal
 from app.models.habit import Habit, HabitCompletion
 from app.models.measurement import BodyMeasurement
+from app.models.mindfulness import MindfulnessLog, MindfulnessSession
 from app.models.nutrition import Food, FoodLog, WaterLog
+from app.models.stress import StressLog
 from app.models.user import User
 from app.models.weight_entry import WeightEntry
 from app.models.wellness import DailySteps, SleepLog, WellnessLog
@@ -181,6 +183,15 @@ def build_export(db: Session, *, user: User) -> dict[str, Any]:
             db.query(WellnessLog).filter(WellnessLog.user_id == uid).all()
         ),
         "habits": habit_rows,
+        "stress_logs": _serialize_many(
+            db.query(StressLog).filter(StressLog.user_id == uid).all()
+        ),
+        "custom_mindfulness_sessions": _serialize_many(
+            db.query(MindfulnessSession).filter(MindfulnessSession.user_id == uid).all()
+        ),
+        "mindfulness_logs": _serialize_many(
+            db.query(MindfulnessLog).filter(MindfulnessLog.user_id == uid).all()
+        ),
         "ai_usage_logs": _serialize_many(
             db.query(AIUsageLog).filter(AIUsageLog.user_id == uid).all()
         ),
@@ -212,6 +223,10 @@ def build_summary(db: Session, *, user: User) -> dict[str, int]:
         "daily_steps": db.query(DailySteps).filter(DailySteps.user_id == uid).count(),
         "wellness_logs": db.query(WellnessLog).filter(WellnessLog.user_id == uid).count(),
         "habits": db.query(Habit).filter(Habit.user_id == uid).count(),
+        "stress_logs": db.query(StressLog).filter(StressLog.user_id == uid).count(),
+        "mindfulness_logs": db.query(MindfulnessLog)
+        .filter(MindfulnessLog.user_id == uid)
+        .count(),
     }
 
 

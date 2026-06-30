@@ -16,6 +16,8 @@ export interface PrivacySummary {
   daily_steps: number;
   wellness_logs: number;
   habits: number;
+  stress_logs: number;
+  mindfulness_logs: number;
 }
 
 /** The export is an open, domain-grouped snapshot; we only type its metadata. */
@@ -48,5 +50,7 @@ export const SUMMARY_LABELS: { key: keyof PrivacySummary; label: string }[] = [
   { key: "daily_steps", label: "Daily steps" },
   { key: "wellness_logs", label: "Wellness check-ins" },
   { key: "habits", label: "Habits" },
+  { key: "stress_logs", label: "Stress readings" },
+  { key: "mindfulness_logs", label: "Mindfulness logs" },
   { key: "custom_exercises", label: "Custom exercises" },
 ];

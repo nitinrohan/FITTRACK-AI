@@ -182,7 +182,7 @@ function LogSleepForm({
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
@@ -225,7 +225,7 @@ function LogSleepForm({
               value={hours}
               onChange={(e) => setHours(e.target.value)}
               placeholder="7"
-              className="w-20 border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-20 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div>
@@ -238,7 +238,7 @@ function LogSleepForm({
               value={mins}
               onChange={(e) => setMins(e.target.value)}
               placeholder="30"
-              className="w-20 border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-20 border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
         </div>
@@ -251,7 +251,7 @@ function LogSleepForm({
               type="time"
               value={bedtime}
               onChange={(e) => setBedtime(e.target.value)}
-              className="border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div>
@@ -261,7 +261,7 @@ function LogSleepForm({
               type="time"
               value={wakeTime}
               onChange={(e) => setWakeTime(e.target.value)}
-              className="border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
         </div>
@@ -285,7 +285,7 @@ function LogSleepForm({
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="e.g. Felt restless"
-          className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
@@ -358,7 +358,7 @@ function LogStepsForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label htmlFor={`${fid}-date`} className="block text-xs text-surface-500 mb-1">Date</label>
           <input
@@ -366,7 +366,7 @@ function LogStepsForm({
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
@@ -380,7 +380,7 @@ function LogStepsForm({
             value={steps}
             onChange={(e) => setSteps(e.target.value)}
             placeholder="8000"
-            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
@@ -392,7 +392,7 @@ function LogStepsForm({
             value={activeMinutes}
             onChange={(e) => setActiveMinutes(e.target.value)}
             placeholder="45"
-            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
@@ -405,7 +405,7 @@ function LogStepsForm({
             value={distanceKm}
             onChange={(e) => setDistanceKm(e.target.value)}
             placeholder="6.4"
-            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
@@ -417,7 +417,7 @@ function LogStepsForm({
             value={caloriesBurned}
             onChange={(e) => setCaloriesBurned(e.target.value)}
             placeholder="320"
-            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div>
@@ -428,7 +428,7 @@ function LogStepsForm({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Optional"
-            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
       </div>
@@ -508,7 +508,7 @@ function LogWellnessForm({
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
@@ -538,7 +538,7 @@ function LogWellnessForm({
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="e.g. Busy day at work"
-          className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="w-full border border-surface-300 rounded-lg px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 

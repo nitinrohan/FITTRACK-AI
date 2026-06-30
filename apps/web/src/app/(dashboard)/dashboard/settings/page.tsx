@@ -29,6 +29,39 @@ import { SUMMARY_LABELS } from "@/types/privacy";
 
 const DELETE_CONFIRM_PHRASE = "DELETE";
 
+/** A labelled on/off control for a single boolean preference. */
+function ToggleRow({
+  title,
+  description,
+  enabled,
+  isSaving,
+  onToggle,
+}: {
+  title: string;
+  description: string;
+  enabled: boolean;
+  isSaving: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-lg border border-surface-200 px-4 py-3">
+      <div>
+        <p className="text-sm font-medium text-surface-900">{title}</p>
+        <p className="text-xs text-surface-500">{description}</p>
+      </div>
+      <Button
+        variant={enabled ? "secondary" : "primary"}
+        size="sm"
+        onClick={onToggle}
+        isLoading={isSaving}
+        aria-pressed={enabled}
+      >
+        {enabled ? "Turn off" : "Turn on"}
+      </Button>
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const router = useRouter();
   const { user, logout, refreshUser } = useAuth();
@@ -39,10 +72,14 @@ export default function SettingsPage() {
   const [exportError, setExportError] = useState<string | null>(null);
   const [exportedAt, setExportedAt] = useState<string | null>(null);
 
-  // ── AI toggle state ───────────────────────────────────────────────────────
+  // ── Preference toggles (AI + notifications) ───────────────────────────────
   const aiEnabled = user?.preferences?.ai_features_enabled ?? false;
   const [isSavingAi, setIsSavingAi] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+
+  const emailEnabled = user?.preferences?.email_notifications_enabled ?? false;
+  const [isSavingEmail, setIsSavingEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   // ── Delete state ──────────────────────────────────────────────────────────
   const [showDelete, setShowDelete] = useState(false);
@@ -93,6 +130,21 @@ export default function SettingsPage() {
       );
     } finally {
       setIsSavingAi(false);
+    }
+  }
+
+  async function handleToggleEmail() {
+    setIsSavingEmail(true);
+    setEmailError(null);
+    try {
+      await usersApi.updatePreferences({ email_notifications_enabled: !emailEnabled });
+      await refreshUser();
+    } catch (err) {
+      setEmailError(
+        err instanceof Error ? err.message : "Could not update this setting. Please try again."
+      );
+    } finally {
+      setIsSavingEmail(false);
     }
   }
 
@@ -222,27 +274,46 @@ export default function SettingsPage() {
               {aiError}
             </p>
           )}
-          <div className="flex items-center justify-between gap-4 rounded-lg border border-surface-200 px-4 py-3">
-            <div>
-              <p className="text-sm font-medium text-surface-900">
-                AI features are {aiEnabled ? "on" : "off"}
-              </p>
-              <p className="text-xs text-surface-500">
-                {aiEnabled
-                  ? "Your data may be sent to an AI model for summaries and suggestions."
-                  : "No data is sent to any AI model."}
-              </p>
-            </div>
-            <Button
-              variant={aiEnabled ? "secondary" : "primary"}
-              size="sm"
-              onClick={() => void handleToggleAi()}
-              isLoading={isSavingAi}
-              aria-pressed={aiEnabled}
-            >
-              {aiEnabled ? "Turn off" : "Turn on"}
-            </Button>
-          </div>
+          <ToggleRow
+            title={`AI features are ${aiEnabled ? "on" : "off"}`}
+            description={
+              aiEnabled
+                ? "Your data may be sent to an AI model for summaries and suggestions."
+                : "No data is sent to any AI model."
+            }
+            enabled={aiEnabled}
+            isSaving={isSavingAi}
+            onToggle={() => void handleToggleAi()}
+          />
+        </CardBody>
+      </Card>
+
+      {/* ── Notifications ─────────────────────────────────────────────────── */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+        </CardHeader>
+        <CardBody className="space-y-3">
+          <p className="text-sm text-surface-600">
+            Choose whether FitTrack may email you (for example, weekly summaries). This does not
+            affect security-related messages such as password resets.
+          </p>
+          {emailError && (
+            <p role="alert" className="text-sm text-red-600">
+              {emailError}
+            </p>
+          )}
+          <ToggleRow
+            title={`Email notifications are ${emailEnabled ? "on" : "off"}`}
+            description={
+              emailEnabled
+                ? "FitTrack may send you product and summary emails."
+                : "FitTrack will not send you product or summary emails."
+            }
+            enabled={emailEnabled}
+            isSaving={isSavingEmail}
+            onToggle={() => void handleToggleEmail()}
+          />
         </CardBody>
       </Card>
 
@@ -255,6 +326,10 @@ export default function SettingsPage() {
           <p className="text-sm text-surface-600">
             Permanently delete your account and all {totalRecords > 0 ? totalRecords : ""} of your
             records. This cannot be undone. We recommend exporting your data first.
+          </p>
+          <p className="text-xs text-surface-500">
+            Want to remove just some entries instead? You can delete individual records from each
+            tracking page (weight, workouts, nutrition, and so on).
           </p>
           <Button variant="destructive" onClick={() => setShowDelete(true)}>
             Delete my account…

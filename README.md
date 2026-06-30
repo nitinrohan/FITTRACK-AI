@@ -8,9 +8,13 @@ The MVP is designed for one user and built to expand into a multi-user platform 
 
 ## What's Built
 
-**Phases 1-13 complete.** Habits (daily check-offs, streaks) + dashboard widget, and a **Progress** page with selectable-range charts (weight / workouts / calories) - each chart paired with an accessible text summary and data table.
+**Phases 1-14 complete.** Habits (daily check-offs, streaks) + dashboard widget, and a **Progress** page with selectable-range charts (weight / workouts / calories) - each chart paired with an accessible text summary and data table.
 
-Latest add-on: **AI macro estimation for nutrition** - describe a food in plain text and the AI returns an editable macro *estimate* you review before saving (never auto-saved; portion math is deterministic). The AI layer is provider-independent (Anthropic / OpenAI / **Ollama** for free local dev) with graceful fallback when AI is off. Backend: 455 tests passing (4 pre-existing weight-test failures unrelated), ruff clean, mypy 0 errors; frontend tsc + eslint clean.
+Latest add: a **Mind** page - **Stress** (self-reported 0-100 readings with daily highest / lowest / average and a Low/Moderate/High band gauge) and **Mindfulness** (a curated session library plus mindful-minute logging with a day streak). Stress is presented supportively and is explicitly not a medical assessment.
+
+Also recent: **Settings & privacy** (Phase 14) - a per-category summary of your stored data, a full **JSON data export** (downloaded client-side), AI and email-notification opt-ins, and **password-confirmed account deletion** (irreversible hard delete, typed confirmation). See [`docs/privacy.md`](./docs/privacy.md).
+
+Earlier add-on: **AI macro estimation for nutrition** - describe a food in plain text and the AI returns an editable macro *estimate* you review before saving (never auto-saved; portion math is deterministic). The AI layer is provider-independent (Anthropic / OpenAI / **Ollama** for free local dev) with graceful fallback when AI is off. Backend: 501 tests passing (4 pre-existing weight-test failures unrelated), ruff clean, mypy 0 errors; frontend tsc + eslint clean.
 
 | Feature | Details |
 |---|---|
@@ -264,6 +268,7 @@ Ensure the source volumes are mounted (check `docker-compose.yml`). Restart with
 - [`docs/api.md`](./docs/api.md) - API reference (Phase 2+)
 - [`docs/security.md`](./docs/security.md) - Security design (Phase 2+)
 - [`docs/ai-design.md`](./docs/ai-design.md) - AI assistant architecture (Phase 6+)
+- [`docs/privacy.md`](./docs/privacy.md) - Privacy, data export, and account deletion (Phase 14)
 
 ---
 
@@ -284,5 +289,5 @@ Ensure the source volumes are mounted (check `docker-compose.yml`). Restart with
 | 11 | Water, sleep, steps, and wellness | ✅ Complete |
 | 12 | Habits | ✅ Complete |
 | 13 | Progress charts | ✅ Complete |
-| 14 | Privacy, export, and account deletion | 🔜 Next |
-| 15 | Integrations and platform features | Planned |
+| 14 | Privacy, export, and account deletion | ✅ Complete |
+| 15 | Integrations and platform features | 🔜 Next |

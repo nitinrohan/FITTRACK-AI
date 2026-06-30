@@ -29,6 +29,8 @@ class PrivacySummary(BaseModel):
     daily_steps: int = 0
     wellness_logs: int = 0
     habits: int = 0
+    stress_logs: int = 0
+    mindfulness_logs: int = 0
 
 
 class DataExport(BaseModel):
