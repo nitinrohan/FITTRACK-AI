@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Goals page — /dashboard/goals
+ * Goals page - /dashboard/goals
  *
  * Lists all goals for the current user.  Features:
  * - Filter tabs: All / Active / Paused / Completed / Cancelled
@@ -213,7 +213,7 @@ function GoalCard({ goal, onEdit, onDelete }: GoalCardProps) {
           )}
         </div>
 
-        {/* Progress bar — only when numeric tracking is set up */}
+        {/* Progress bar - only when numeric tracking is set up */}
         {goal.progress_pct !== null && (
           <div>
             <div className="mb-1 flex items-center justify-between text-xs text-surface-500">
@@ -376,7 +376,7 @@ export default function GoalsPage() {
     try {
       await deleteGoal(deletingGoal.id);
     } catch {
-      // silently ignore for now — could surface as a toast in Phase 5
+      // silently ignore for now - could surface as a toast in Phase 5
     } finally {
       setIsDeleting(false);
       setDeletingGoal(null);

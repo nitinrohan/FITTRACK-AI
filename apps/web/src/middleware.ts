@@ -1,5 +1,5 @@
 /**
- * Next.js edge middleware — route protection.
+ * Next.js edge middleware - route protection.
  *
  * Rules:
  * - /dashboard/* and /settings/* require the fittrack_access cookie.

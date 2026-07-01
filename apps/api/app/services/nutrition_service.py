@@ -2,8 +2,8 @@
 
 Key responsibilities:
 - Food CRUD with ownership rules (system foods cannot be modified/deleted by users).
-- FoodLog CRUD — only the owner can read/write.
-- WaterLog CRUD — only the owner can read/write.
+- FoodLog CRUD - only the owner can read/write.
+- WaterLog CRUD - only the owner can read/write.
 - Daily nutrition summary: aggregates FoodLog entries for a date into
   per-meal sections and day-level totals.
 
@@ -26,6 +26,7 @@ from sqlalchemy.orm import Session
 from app.exceptions import ForbiddenError, NotFoundError
 from app.models.nutrition import MEAL_TYPES, Food, FoodLog, WaterLog
 from app.repositories import nutrition_repository
+from app.schemas.ai import LogMealRequest
 from app.schemas.nutrition import (
     CreateFoodRequest,
     DailyNutritionResponse,
@@ -41,13 +42,19 @@ from app.schemas.nutrition import (
     UpdateWaterLogRequest,
     WaterLogResponse,
 )
+from app.services.nutrition_calculations import scale_macro, sum_macro_totals
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 
 def _scale(per_100g: float, quantity_g: float) -> float:
-    """Scale a per-100g value to the actual quantity eaten."""
-    return round(per_100g * quantity_g / 100, 1)
+    """Scale a per-100g value to the actual quantity eaten.
+
+    Thin wrapper kept for backward compatibility (existing tests import this
+    name directly) - the real implementation lives in nutrition_calculations
+    so recipe_service can share it without reaching into this module.
+    """
+    return scale_macro(per_100g, quantity_g)
 
 
 def _build_food_response(food: Food) -> FoodResponse:
@@ -105,12 +112,9 @@ def _build_water_log_response(log: WaterLog) -> WaterLogResponse:
 
 
 def _sum_macros(entries: list[FoodLogResponse]) -> MacroTotals:
+    calories, protein_g, carbs_g, fat_g, fiber_g = sum_macro_totals(entries)
     return MacroTotals(
-        calories=round(sum(e.calories for e in entries), 1),
-        protein_g=round(sum(e.protein_g for e in entries), 1),
-        carbs_g=round(sum(e.carbs_g for e in entries), 1),
-        fat_g=round(sum(e.fat_g for e in entries), 1),
-        fiber_g=round(sum(e.fiber_g or 0 for e in entries), 1),
+        calories=calories, protein_g=protein_g, carbs_g=carbs_g, fat_g=fat_g, fiber_g=fiber_g
     )
 
 
@@ -230,6 +234,59 @@ def log_food(db: Session, user_id: uuid.UUID, payload: LogFoodRequest) -> FoodLo
     refreshed = nutrition_repository.get_food_log_by_id(db, log.id, user_id)
     assert refreshed is not None
     return _build_food_log_response(refreshed)
+
+
+def log_meal(
+    db: Session, user_id: uuid.UUID, payload: LogMealRequest
+) -> tuple[list[FoodLogResponse], MacroTotals]:
+    """Bulk-save a user-approved multi-item meal as real Food + FoodLog rows.
+
+    Each item becomes its own private Food (so it can be edited/reused later,
+    same as the single-item AI estimate flow) plus one FoodLog entry. All
+    inserts happen in a single commit so the batch is atomic - either every
+    item is logged or none are.
+    """
+    meal_type = payload.meal_type if payload.meal_type in MEAL_TYPES else "other"
+    created_logs: list[FoodLog] = []
+
+    for item in payload.items:
+        food = nutrition_repository.create_food(
+            db,
+            user_id=user_id,
+            name=item.name.strip(),
+            brand=None,
+            description=None,
+            calories_per_100g=item.calories_per_100g,
+            protein_per_100g=item.protein_per_100g,
+            carbs_per_100g=item.carbs_per_100g,
+            fat_per_100g=item.fat_per_100g,
+            fiber_per_100g=item.fiber_per_100g,
+            sugar_per_100g=None,
+            sodium_per_100g=None,
+            serving_size_g=item.quantity_g,
+            serving_unit=item.serving_unit,
+            is_system=False,
+        )
+        log = nutrition_repository.create_food_log(
+            db,
+            user_id=user_id,
+            food_id=food.id,
+            logged_date=payload.logged_date,
+            meal_type=meal_type,
+            quantity_g=item.quantity_g,
+            notes=None,
+        )
+        created_logs.append(log)
+
+    db.commit()
+
+    responses: list[FoodLogResponse] = []
+    for log in created_logs:
+        refreshed = nutrition_repository.get_food_log_by_id(db, log.id, user_id)
+        assert refreshed is not None
+        responses.append(_build_food_log_response(refreshed))
+
+    return responses, _sum_macros(responses)
 
 
 def update_food_log(

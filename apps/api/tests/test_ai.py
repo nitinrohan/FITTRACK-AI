@@ -2,9 +2,9 @@
 
 Unit tests:
   - estimate_cost()
-  - parse_json_reply() — clean JSON, fenced JSON, invalid JSON
-  - _build_prompt() — contains key data points
-  - _rule_based_summary() — highlights / suggestions logic
+  - parse_json_reply() - clean JSON, fenced JSON, invalid JSON
+  - _build_prompt() - contains key data points
+  - _rule_based_summary() - highlights / suggestions logic
 
 Endpoint tests:
   POST /api/v1/ai/weekly-summary

@@ -4,7 +4,7 @@ Revision ID: 20260618_0009
 Revises: 20260616_0008
 Create Date: 2026-06-18
 
-Phase 11 — Water, sleep, steps, and wellness tracking.
+Phase 11 - Water, sleep, steps, and wellness tracking.
 Water already exists (water_logs in migration 0006).
 This migration adds the three new tables.
 """

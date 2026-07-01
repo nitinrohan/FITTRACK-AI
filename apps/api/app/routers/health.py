@@ -1,10 +1,10 @@
 """Health and readiness endpoints.
 
-/health  — Lightweight liveness probe. Returns immediately without touching
+/health  - Lightweight liveness probe. Returns immediately without touching
            the database.  Used by load balancers and container orchestrators
            to decide whether to send traffic to this instance.
 
-/ready   — Readiness probe. Verifies database connectivity before reporting
+/ready   - Readiness probe. Verifies database connectivity before reporting
            ready.  Used by orchestrators to decide whether the instance can
            handle requests (e.g., after a cold start or migration).
 

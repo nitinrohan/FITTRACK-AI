@@ -1,6 +1,6 @@
 """Schemas for user profile and preferences endpoints.
 
-Separate from auth.py — auth schemas handle registration/login shapes;
+Separate from auth.py - auth schemas handle registration/login shapes;
 these handle read and update shapes for the /api/v1/users/* endpoints.
 """
 

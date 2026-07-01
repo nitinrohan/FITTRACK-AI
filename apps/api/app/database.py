@@ -1,7 +1,7 @@
 """Database engine and session management.
 
 All database interaction goes through the SQLAlchemy session returned by
-get_db().  Routes and services should use Depends(get_db) — never import
+get_db().  Routes and services should use Depends(get_db) - never import
 the engine or SessionLocal directly.
 
 Internal canonical units (stored in the DB):
@@ -24,7 +24,7 @@ from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
-# Module-level engine and session factory — created lazily on first access
+# Module-level engine and session factory - created lazily on first access
 # so that tests can override DATABASE_URL before import.
 _engine: Engine | None = None
 _SessionLocal: sessionmaker[Session] | None = None

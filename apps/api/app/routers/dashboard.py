@@ -1,4 +1,4 @@
-"""Dashboard router — /api/v1/dashboard/summary.
+"""Dashboard router - /api/v1/dashboard/summary.
 
 Single read-only endpoint that aggregates all widgets into one response.
 """

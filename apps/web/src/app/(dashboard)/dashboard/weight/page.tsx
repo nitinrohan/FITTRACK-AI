@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Weight page — /dashboard/weight
+ * Weight page - /dashboard/weight
  *
  * Features:
  * - Stats summary bar: latest, change, 7-day average
@@ -50,7 +50,7 @@ function todayISO(): string {
 // ── Sparkline chart ───────────────────────────────────────────────────────────
 
 interface SparklineProps {
-  entries: WeightEntry[]; // newest-first — we reverse for chart
+  entries: WeightEntry[]; // newest-first - we reverse for chart
   height?: number;
 }
 
@@ -228,7 +228,7 @@ function LogWeightForm({ onLog }: LogFormProps) {
           </div>
 
           {/* Date + body fat */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-2">
             <Input
               label="Date"
               id="w-date"
@@ -507,7 +507,7 @@ export default function WeightPage() {
                     value={
                       stats.latest_kg !== null
                         ? `${stats.latest_kg.toFixed(1)} kg`
-                        : "—"
+                        : "-"
                     }
                     sub={
                       entries[0]?.bmi !== null && entries[0]?.bmi !== undefined
@@ -520,7 +520,7 @@ export default function WeightPage() {
                     value={
                       stats.change_kg !== null
                         ? `${stats.change_kg > 0 ? "+" : ""}${stats.change_kg.toFixed(1)} kg`
-                        : "—"
+                        : "-"
                     }
                     sub={`over ${stats.count} entries`}
                     highlight={changeSign}
@@ -530,15 +530,15 @@ export default function WeightPage() {
                     value={
                       stats.moving_avg_7d_kg !== null
                         ? `${stats.moving_avg_7d_kg.toFixed(1)} kg`
-                        : "—"
+                        : "-"
                     }
                   />
                   <StatBadge
                     label="Range"
                     value={
                       stats.min_kg !== null && stats.max_kg !== null
-                        ? `${stats.min_kg.toFixed(1)} – ${stats.max_kg.toFixed(1)} kg`
-                        : "—"
+                        ? `${stats.min_kg.toFixed(1)} - ${stats.max_kg.toFixed(1)} kg`
+                        : "-"
                     }
                   />
                 </CardBody>

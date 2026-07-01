@@ -1,19 +1,19 @@
 """Password hashing and JWT token management.
 
 Security decisions:
-- bcrypt via passlib, cost factor 12 — strong enough for production while
+- bcrypt via passlib, cost factor 12 - strong enough for production while
   keeping login latency under 200ms on typical hardware.
 - Two token types: short-lived access token (30 min) + long-lived refresh
   token (30 days). Both stored in HTTP-only, SameSite=Lax cookies.
-- Tokens carry only the user ID in the 'sub' claim — no other PII.
+- Tokens carry only the user ID in the 'sub' claim - no other PII.
 - Token type ('access' | 'refresh') is embedded in the payload so access
   tokens cannot be used as refresh tokens and vice versa.
 - Refresh tokens are rotated on every use (issued fresh on each /auth/refresh
   call) to limit the window of a stolen token.
 
 Cookie names:
-  fittrack_access   — short-lived JWT, authorises API requests
-  fittrack_refresh  — long-lived JWT, used only on POST /api/v1/auth/refresh
+  fittrack_access   - short-lived JWT, authorises API requests
+  fittrack_refresh  - long-lived JWT, used only on POST /api/v1/auth/refresh
 """
 
 from __future__ import annotations
@@ -30,13 +30,13 @@ from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
-# Cookie names — referenced here and in the auth router so they stay in sync.
+# Cookie names - referenced here and in the auth router so they stay in sync.
 ACCESS_COOKIE_NAME = "fittrack_access"
 REFRESH_COOKIE_NAME = "fittrack_refresh"
 
 TokenType = Literal["access", "refresh"]
 
-# passlib context — auto-rehashes if the algorithm or cost factor changes.
+# passlib context - auto-rehashes if the algorithm or cost factor changes.
 _pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 
 
@@ -61,7 +61,7 @@ def hash_password(plain_password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Return True if plain_password matches the stored hash.
 
-    Uses a constant-time comparison internally — safe against timing attacks.
+    Uses a constant-time comparison internally - safe against timing attacks.
     """
     return _pwd_context.verify(_prepare_password(plain_password), hashed_password)
 

@@ -1,4 +1,4 @@
-"""Goal repository — all DB access for the goals domain.
+"""Goal repository - all DB access for the goals domain.
 
 Ownership is enforced by always filtering on user_id.  No route or service
 should ever query goals without supplying the authenticated user's id.
@@ -36,7 +36,7 @@ def create_goal(
 
 
 def get_goal_by_id(db: Session, goal_id: uuid.UUID) -> Goal | None:
-    """Return a goal by its primary key (no ownership check — caller must verify)."""
+    """Return a goal by its primary key (no ownership check - caller must verify)."""
     return db.query(Goal).filter(Goal.id == goal_id).first()
 
 

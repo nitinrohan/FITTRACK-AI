@@ -1,5 +1,5 @@
 /**
- * Goals API — typed wrappers around the FitTrack FastAPI goals endpoints.
+ * Goals API - typed wrappers around the FitTrack FastAPI goals endpoints.
  *
  * All functions throw ApiError on non-2xx responses.
  */

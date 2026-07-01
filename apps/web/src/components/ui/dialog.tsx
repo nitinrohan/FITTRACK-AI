@@ -1,5 +1,5 @@
 /**
- * Dialog — accessible modal overlay.
+ * Dialog - accessible modal overlay.
  *
  * - Traps focus within the dialog when open.
  * - Closes on Escape or backdrop click.
@@ -18,7 +18,7 @@ interface DialogProps {
   title: string;
   description?: string;
   children: React.ReactNode;
-  /** Extra classes on the panel — use to control max-width */
+  /** Extra classes on the panel - use to control max-width */
   className?: string;
 }
 

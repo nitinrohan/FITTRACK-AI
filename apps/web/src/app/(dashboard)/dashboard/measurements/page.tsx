@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /dashboard/measurements — Body measurements tracking page.
+ * /dashboard/measurements - Body measurements tracking page.
  *
  * Features:
  *   - "Current" snapshot card showing the most-recent value per field
@@ -377,7 +377,7 @@ function LogForm({ unit, onSubmit, onCancel }: LogFormProps) {
     e.preventDefault();
     setError(null);
 
-    // Build payload — convert from display unit to cm
+    // Build payload - convert from display unit to cm
     const payload: Record<string, unknown> = {
       measured_at: date,
       notes: notes || undefined,

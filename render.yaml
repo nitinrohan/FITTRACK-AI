@@ -1,4 +1,4 @@
-# Render Blueprint — deploys FastAPI backend + PostgreSQL database.
+# Render Blueprint - deploys FastAPI backend + PostgreSQL database.
 # Docs: https://render.com/docs/blueprint-spec
 #
 # Deploy: render.com → New → Blueprint → select this repo → Apply
@@ -24,6 +24,17 @@ services:
       - key: BACKEND_CORS_ORIGINS
         # Update to your actual Vercel URL after deploying the frontend.
         value: '["https://fittrack-ai-ashen.vercel.app","http://localhost:3000"]'
+      # ── AI (Ollama Cloud) ──────────────────────────────────────────────
+      # Non-secret config lives here; the secret OLLAMA_API_KEY must be set
+      # in the Render dashboard (Environment tab), NOT committed to git.
+      - key: AI_PROVIDER
+        value: ollama
+      - key: OLLAMA_BASE_URL
+        value: https://ollama.com
+      - key: AI_MODEL
+        value: gpt-oss:120b
+      - key: OLLAMA_API_KEY
+        sync: false  # set this value in the Render dashboard; never commit it
 
 databases:
   - name: fittrack-db

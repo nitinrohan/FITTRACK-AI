@@ -83,7 +83,7 @@ def _gather_snapshot(
                 if s.weight_kg is not None and s.reps is not None:
                     total_volume_kg += s.weight_kg * s.reps
 
-    # Nutrition — count distinct days with food log entries in the window
+    # Nutrition - count distinct days with food log entries in the window
     from sqlalchemy import func
 
     from app.models.nutrition import FoodLog, WaterLog
@@ -212,7 +212,7 @@ def _rule_based_summary(snapshot: WeeklyDataSnapshot) -> WeeklySummaryResponse:
 
     if snapshot.food_log_days >= 5:
         highlights.append(
-            f"You tracked nutrition on {snapshot.food_log_days} of 7 days — great consistency."
+            f"You tracked nutrition on {snapshot.food_log_days} of 7 days - great consistency."
         )
     elif snapshot.food_log_days > 0:
         highlights.append(
@@ -222,15 +222,15 @@ def _rule_based_summary(snapshot: WeeklyDataSnapshot) -> WeeklySummaryResponse:
         suggestions.append("Aim to log at least 5 days this week to build the habit.")
 
     if snapshot.water_log_days == 0:
-        suggestions.append("Try logging your water intake — even rough estimates help.")
+        suggestions.append("Try logging your water intake - even rough estimates help.")
 
     if not suggestions:
-        suggestions.append("Keep up the consistency — small steps add up over time.")
+        suggestions.append("Keep up the consistency - small steps add up over time.")
 
     return WeeklySummaryResponse(
         highlights=highlights,
         suggestions=suggestions,
-        encouragement="Every week is a fresh start — keep going!",
+        encouragement="Every week is a fresh start - keep going!",
         data_snapshot=snapshot,
         ai_available=False,
     )
@@ -278,7 +278,7 @@ def get_weekly_summary(db: Session, *, user_id: uuid.UUID) -> WeeklySummaryRespo
     """Generate a weekly summary for the user.
 
     Tries the configured AI provider first; falls back to rule-based output
-    if AI is unavailable or the call fails.  Never raises — always returns
+    if AI is unavailable or the call fails.  Never raises - always returns
     a usable response.
     """
     snapshot, extended = _gather_snapshot(db, user_id)

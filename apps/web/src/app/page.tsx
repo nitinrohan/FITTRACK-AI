@@ -51,7 +51,7 @@ export default function HomePage() {
             href="/auth/register"
             className="inline-flex min-h-touch items-center justify-center rounded-lg bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
-            Get started — it&apos;s free
+            Get started - it&apos;s free
           </Link>
           <Link
             href="/auth/login"
@@ -61,9 +61,9 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Phase indicator — remove once MVP screens are built */}
+        {/* Phase indicator - remove once MVP screens are built */}
         <p className="text-xs text-surface-400" aria-label="Development phase">
-          Phase 1 — Foundation
+          Phase 1 - Foundation
         </p>
       </div>
     </main>

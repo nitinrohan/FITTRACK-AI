@@ -1,4 +1,4 @@
-"""Nutrition router — food library, food logging, and water logging.
+"""Nutrition router - food library, food logging, and water logging.
 
 Endpoints:
   /api/v1/foods
@@ -30,6 +30,15 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.exceptions import ForbiddenError, NotFoundError
 from app.models.user import User
+from app.schemas.ai import (
+    AcceptSummaryRequest,
+    LogMealRequest,
+    LogMealResponse,
+    MacroEstimateRequest,
+    MacroEstimateResponse,
+    MealEstimateRequest,
+    MealEstimateResponse,
+)
 from app.schemas.nutrition import (
     CreateFoodRequest,
     DailyNutritionResponse,
@@ -43,7 +52,18 @@ from app.schemas.nutrition import (
     UpdateWaterLogRequest,
     WaterLogResponse,
 )
-from app.services import nutrition_service
+from app.schemas.nutrition_insight import DailyInsightResponse
+from app.schemas.nutrition_target import (
+    NutritionTargetResponse,
+    UpdateNutritionTargetRequest,
+)
+from app.services import (
+    daily_insight_service,
+    macro_estimation_service,
+    nutrition_service,
+    nutrition_target_service,
+    weekly_summary_service,
+)
 
 # ── Sub-routers ───────────────────────────────────────────────────────────────
 
@@ -207,6 +227,135 @@ def delete_water_log(
     found = nutrition_service.delete_water_log(db, log_id, current_user.id)
     if not found:
         raise NotFoundError("Water log entry not found.")
+
+
+# ── AI macro estimation (preview only - never saves) ──────────────────────────
+
+
+@nutrition_router.post("/estimate-macros", response_model=MacroEstimateResponse)
+def estimate_macros(
+    payload: MacroEstimateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> MacroEstimateResponse:
+    """Estimate macros for a free-text food description.
+
+    Returns a *preview* the user reviews and edits before saving - this
+    endpoint never creates a food or food-log entry itself. Always returns a
+    usable response (with ``ai_available`` false) when AI is off or fails.
+    """
+    return macro_estimation_service.estimate_macros(
+        db, user_id=current_user.id, description=payload.description
+    )
+
+
+@nutrition_router.post(
+    "/estimate-macros/decision",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=None,
+)
+def record_macro_decision(
+    body: AcceptSummaryRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> None:
+    """Record whether the user accepted (saved) or dismissed an estimate."""
+    found = weekly_summary_service.record_user_decision(
+        db, log_id=body.log_id, accepted=body.accepted
+    )
+    if not found:
+        raise NotFoundError("Estimate log not found.")
+
+
+@nutrition_router.post("/estimate-meal", response_model=MealEstimateResponse)
+def estimate_meal(
+    payload: MealEstimateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> MealEstimateResponse:
+    """Estimate macros for a free-text description of MULTIPLE foods at once.
+
+    e.g. "45g oats, 200ml almond milk, 2 belvita biscuits". Returns one
+    editable preview item per food - nothing is saved until the user calls
+    POST /log-meal. Always returns a usable response when AI is off or fails.
+    """
+    return macro_estimation_service.estimate_meal_macros(
+        db, user_id=current_user.id, description=payload.description
+    )
+
+
+@nutrition_router.post(
+    "/log-meal", response_model=LogMealResponse, status_code=status.HTTP_201_CREATED
+)
+def log_meal(
+    payload: LogMealRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> LogMealResponse:
+    """Bulk-save a user-approved multi-item meal as real food + food-log rows.
+
+    Each item in ``payload.items`` becomes its own Food (owned by the current
+    user) and one FoodLog entry, all in a single atomic commit.
+    """
+    entries, totals = nutrition_service.log_meal(db, current_user.id, payload)
+    if payload.estimate_log_id:
+        weekly_summary_service.record_user_decision(
+            db, log_id=payload.estimate_log_id, accepted=True
+        )
+    return LogMealResponse(entries=entries, totals=totals)
+
+
+# ── Nutrition targets (user-configured daily goals) ───────────────────────────
+
+
+@nutrition_router.get("/targets", response_model=NutritionTargetResponse)
+def get_nutrition_targets(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> NutritionTargetResponse:
+    """Return the current user's daily nutrition targets.
+
+    Any field that hasn't been configured is null - the app never guesses a
+    target on the user's behalf.
+    """
+    return nutrition_target_service.get_targets(db, current_user.id)
+
+
+@nutrition_router.put("/targets", response_model=NutritionTargetResponse)
+def update_nutrition_targets(
+    payload: UpdateNutritionTargetRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> NutritionTargetResponse:
+    """Replace the current user's daily nutrition targets.
+
+    Send null for any field to clear it.
+    """
+    return nutrition_target_service.update_targets(db, current_user.id, payload)
+
+
+# ── Daily nutrition insight (read-only - never mutates data) ──────────────────
+
+
+@nutrition_router.get("/insight", response_model=DailyInsightResponse)
+def get_daily_insight(
+    log_date: date = Query(
+        default=...,
+        alias="date",
+        description="Date in YYYY-MM-DD format",
+    ),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> DailyInsightResponse:
+    """Compare a day's logged nutrition against the user's own targets and
+    get an AI-written explanation + suggestions for any remaining meals.
+
+    Read-only - never creates, edits, or deletes any data. Always returns a
+    usable response (with ``ai_available`` false) when AI is off or fails.
+    """
+    return daily_insight_service.get_daily_insight(
+        db, user_id=current_user.id, target_date=log_date
+    )
 
 
 # ── Combined router ───────────────────────────────────────────────────────────

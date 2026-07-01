@@ -1,5 +1,5 @@
 /**
- * Workouts API — typed wrappers around the FitTrack FastAPI workout endpoints.
+ * Workouts API - typed wrappers around the FitTrack FastAPI workout endpoints.
  *
  * All functions throw ApiError on non-2xx responses.
  */

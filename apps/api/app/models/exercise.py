@@ -63,7 +63,7 @@ class Exercise(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         nullable=True,
     )
 
-    # Relationship — only present for custom exercises
+    # Relationship - only present for custom exercises
     user: Mapped[User | None] = relationship("User", back_populates="exercises")
 
     __table_args__ = (

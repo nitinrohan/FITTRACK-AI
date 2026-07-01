@@ -1,11 +1,11 @@
-"""Goals router — /api/v1/goals/*
+"""Goals router - /api/v1/goals/*
 
 Endpoints:
-  POST   /           — Create a new goal.
-  GET    /           — List the current user's goals (paginated, filterable).
-  GET    /{goal_id}  — Get a single goal.
-  PUT    /{goal_id}  — Update a goal (partial — only sent fields change).
-  DELETE /{goal_id}  — Delete a goal permanently.
+  POST   /           - Create a new goal.
+  GET    /           - List the current user's goals (paginated, filterable).
+  GET    /{goal_id}  - Get a single goal.
+  PUT    /{goal_id}  - Update a goal (partial - only sent fields change).
+  DELETE /{goal_id}  - Delete a goal permanently.
 
 All endpoints require authentication.
 Users can only access their own goals (enforced in the service layer).

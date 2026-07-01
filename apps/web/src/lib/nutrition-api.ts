@@ -1,5 +1,5 @@
 /**
- * Nutrition API — typed wrappers around the FitTrack FastAPI nutrition endpoints.
+ * Nutrition API - typed wrappers around the FitTrack FastAPI nutrition endpoints.
  *
  * All functions throw ApiError on non-2xx responses.
  */
@@ -7,14 +7,21 @@
 import { apiClient } from "@/lib/api-client";
 import type {
   CreateFoodPayload,
+  DailyInsight,
   DailyNutrition,
   Food,
   FoodListResponse,
   FoodLogEntry,
   LogFoodPayload,
+  LogMealPayload,
+  LogMealResult,
   LogWaterPayload,
+  MacroEstimate,
+  MealEstimate,
+  NutritionTarget,
   UpdateFoodLogPayload,
   UpdateFoodPayload,
+  UpdateNutritionTargetPayload,
   UpdateWaterLogPayload,
   WaterLogEntry,
 } from "@/types/nutrition";
@@ -88,5 +95,52 @@ export const nutritionApi = {
   /** Delete a water log entry. */
   deleteWaterLog(id: string): Promise<void> {
     return apiClient.delete<void>(`/api/v1/nutrition/water/${id}`);
+  },
+
+  /** Ask the AI to estimate macros for a free-text food description.
+   *  Returns a preview only - nothing is saved. */
+  estimateMacros(description: string): Promise<MacroEstimate> {
+    return apiClient.post<MacroEstimate>("/api/v1/nutrition/estimate-macros", {
+      description,
+    });
+  },
+
+  /** Record whether the user accepted (saved) or dismissed an estimate. */
+  recordMacroDecision(log_id: string, accepted: boolean): Promise<void> {
+    return apiClient.post<void>("/api/v1/nutrition/estimate-macros/decision", {
+      log_id,
+      accepted,
+    });
+  },
+
+  /** Ask the AI to parse a description of MULTIPLE foods into a per-item
+   *  breakdown. Returns a preview only - nothing is saved. */
+  estimateMeal(description: string): Promise<MealEstimate> {
+    return apiClient.post<MealEstimate>("/api/v1/nutrition/estimate-meal", {
+      description,
+    });
+  },
+
+  /** Bulk-save a user-approved multi-item meal as real food + food-log entries. */
+  logMeal(payload: LogMealPayload): Promise<LogMealResult> {
+    return apiClient.post<LogMealResult>("/api/v1/nutrition/log-meal", payload);
+  },
+
+  /** Get the current user's daily nutrition targets (null fields = not set). */
+  getTargets(): Promise<NutritionTarget> {
+    return apiClient.get<NutritionTarget>("/api/v1/nutrition/targets");
+  },
+
+  /** Replace the current user's daily nutrition targets. */
+  updateTargets(payload: UpdateNutritionTargetPayload): Promise<NutritionTarget> {
+    return apiClient.put<NutritionTarget>("/api/v1/nutrition/targets", payload);
+  },
+
+  /** Read-only AI comparison of a day's logged nutrition vs. the user's own
+   *  targets, plus suggestions for any remaining meals. Never saves anything. */
+  getInsight(date: string): Promise<DailyInsight> {
+    return apiClient.get<DailyInsight>(
+      `/api/v1/nutrition/insight?date=${encodeURIComponent(date)}`
+    );
   },
 };

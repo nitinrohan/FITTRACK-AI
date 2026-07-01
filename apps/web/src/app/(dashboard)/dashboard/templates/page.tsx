@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Templates page — /dashboard/templates
+ * Templates page - /dashboard/templates
  *
  * Lists all workout templates (user-created and system).
  * Features:
@@ -73,7 +73,7 @@ function TemplateCard({
             )}
           </div>
 
-          {/* Actions — edit/delete only for user-owned */}
+          {/* Actions - edit/delete only for user-owned */}
           {!template.is_system && (
             <div className="flex shrink-0 items-center gap-1">
               <button

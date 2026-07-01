@@ -1,7 +1,7 @@
 """Repository functions for the wellness domain (sleep, steps, wellness check-in).
 
 All functions accept a SQLAlchemy Session and return ORM objects.
-No business logic lives here — that belongs in wellness_service.py.
+No business logic lives here - that belongs in wellness_service.py.
 """
 
 from __future__ import annotations

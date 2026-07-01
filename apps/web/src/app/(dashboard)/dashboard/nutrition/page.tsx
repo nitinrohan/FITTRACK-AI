@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /dashboard/nutrition — Daily nutrition log page.
+ * /dashboard/nutrition - Daily nutrition log page.
  *
  * Features:
  *   - Date navigation (prev / today / next)
@@ -13,12 +13,16 @@
  *   - All states: loading, empty, error
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useNutrition, useFoodSearch } from "@/features/nutrition/use-nutrition";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { DescribeMealPanel } from "@/components/nutrition/describe-meal-panel";
+import { DailyInsightCard } from "@/components/nutrition/daily-insight-card";
 import { cn } from "@/lib/utils";
+import { foodsApi, nutritionApi } from "@/lib/nutrition-api";
 import type {
   FoodLogEntry,
+  MacroEstimate,
   MacroTotals,
   MealSection,
   MealType,
@@ -54,6 +58,8 @@ function formatDateLabel(dateStr: string): string {
 
 export default function NutritionPage() {
   const [date, setDate] = useState(todayStr);
+  const [showDescribePanel, setShowDescribePanel] = useState(false);
+  const [insightRefreshKey, setInsightRefreshKey] = useState(0);
 
   const {
     daily,
@@ -65,6 +71,12 @@ export default function NutritionPage() {
     logWater,
     deleteWaterLog,
   } = useNutrition(date);
+
+  // Bump the insight refresh key whenever the day's totals change (any log
+  // added/edited/removed), so the "Today vs. your targets" card stays current.
+  useEffect(() => {
+    if (daily) setInsightRefreshKey((k) => k + 1);
+  }, [daily]);
 
   const goToday = () => setDate(todayStr());
   const goPrev = () => setDate((d) => offsetDate(d, -1));
@@ -117,6 +129,28 @@ export default function NutritionPage() {
         </div>
       </div>
 
+      {/* Describe-a-meal quick action */}
+      {!showDescribePanel && (
+        <button
+          type="button"
+          onClick={() => setShowDescribePanel(true)}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-brand-300 bg-brand-50/50 px-4 py-3 text-sm font-medium text-brand-700 hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 dark:border-brand-800 dark:bg-brand-950/20 dark:text-brand-300"
+        >
+          <SparkleIcon />
+          Log everything you ate, all at once
+        </button>
+      )}
+      {showDescribePanel && (
+        <DescribeMealPanel
+          date={date}
+          onLogged={async () => {
+            await refresh();
+            setShowDescribePanel(false);
+          }}
+          onCancel={() => setShowDescribePanel(false)}
+        />
+      )}
+
       {/* Loading */}
       {isLoading && (
         <div className="flex justify-center py-16">
@@ -142,6 +176,9 @@ export default function NutritionPage() {
         <div className="space-y-6">
           {/* Macro summary */}
           <MacroSummaryBar totals={daily.day_totals} />
+
+          {/* Today vs. targets + AI insight */}
+          <DailyInsightCard date={date} refreshKey={insightRefreshKey} />
 
           {/* Meal sections */}
           <div className="space-y-4">
@@ -182,6 +219,7 @@ function MacroSummaryBar({ totals }: { totals: MacroTotals }) {
     { label: "Protein", value: Math.round(totals.protein_g), unit: "g", color: "bg-brand-500" },
     { label: "Carbs", value: Math.round(totals.carbs_g), unit: "g", color: "bg-yellow-400" },
     { label: "Fat", value: Math.round(totals.fat_g), unit: "g", color: "bg-pink-400" },
+    { label: "Fiber", value: Math.round(totals.fiber_g), unit: "g", color: "bg-teal-400" },
   ];
 
   return (
@@ -189,7 +227,7 @@ function MacroSummaryBar({ totals }: { totals: MacroTotals }) {
       <h2 className="mb-3 text-sm font-medium text-surface-500">
         Daily totals
       </h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {macros.map(({ label, value, unit, color }) => (
           <div key={label} className="rounded-lg bg-surface-50 p-3">
             <div className="flex items-center gap-1.5 mb-1">
@@ -275,7 +313,7 @@ function MealSectionCard({
       {/* Entries */}
       {entries.length === 0 && !showAdd ? (
         <p className="px-4 py-4 text-sm text-surface-500 italic">
-          Nothing logged yet — add a food above.
+          Nothing logged yet - add a food above.
         </p>
       ) : (
         <ul className="divide-y divide-surface-100" aria-label={`${MEAL_TYPE_LABELS[mealType]} entries`}>
@@ -380,6 +418,50 @@ interface AddFoodFormProps {
 }
 
 function AddFoodForm({ onAdd, onCancel }: AddFoodFormProps) {
+  const [mode, setMode] = useState<"search" | "ai">("search");
+
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-1" role="tablist" aria-label="Add food method">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "search"}
+          onClick={() => setMode("search")}
+          className={addModeClass(mode === "search")}
+        >
+          Search
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mode === "ai"}
+          onClick={() => setMode("ai")}
+          className={addModeClass(mode === "ai")}
+        >
+          Estimate with AI
+        </button>
+      </div>
+      {mode === "search" ? (
+        <SearchFoodForm onAdd={onAdd} onCancel={onCancel} />
+      ) : (
+        <AiEstimatePanel onAdd={onAdd} onCancel={onCancel} />
+      )}
+    </div>
+  );
+}
+
+function addModeClass(active: boolean): string {
+  return cn(
+    "rounded-lg px-3 py-1 text-xs font-medium transition-colors",
+    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500",
+    active
+      ? "bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300"
+      : "text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200",
+  );
+}
+
+function SearchFoodForm({ onAdd, onCancel }: Pick<AddFoodFormProps, "onAdd" | "onCancel">) {
   const { results, isSearching, searchError, search, clear } = useFoodSearch();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<{ id: string; name: string; serving_size_g: number | null } | null>(null);
@@ -489,7 +571,7 @@ function AddFoodForm({ onAdd, onCancel }: AddFoodFormProps) {
         )}
       </div>
 
-      {/* Quantity field — shown once a food is selected */}
+      {/* Quantity field - shown once a food is selected */}
       {selected && (
         <div>
           <label htmlFor="food-quantity" className="mb-1 block text-xs font-medium text-surface-600">
@@ -532,6 +614,279 @@ function AddFoodForm({ onAdd, onCancel }: AddFoodFormProps) {
         </button>
       </div>
     </form>
+  );
+}
+
+// ── AI macro estimate panel ─────────────────────────────────────────────────────
+
+function AiEstimatePanel({
+  onAdd,
+  onCancel,
+}: Pick<AddFoodFormProps, "onAdd" | "onCancel">) {
+  const fid = useId();
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [estimate, setEstimate] = useState<MacroEstimate | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  // Editable preview fields (seeded from the estimate, then user-adjustable).
+  const [name, setName] = useState("");
+  const [cal, setCal] = useState("");
+  const [protein, setProtein] = useState("");
+  const [carbs, setCarbs] = useState("");
+  const [fat, setFat] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [unit, setUnit] = useState("serving");
+
+  async function handleEstimate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!description.trim()) return;
+    setLoading(true);
+    setError(null);
+    setEstimate(null);
+    try {
+      const est = await nutritionApi.estimateMacros(description.trim());
+      setEstimate(est);
+      if (est.ai_available) {
+        setName(est.name ?? description.trim());
+        setCal(String(est.calories_per_100g ?? 0));
+        setProtein(String(est.protein_per_100g ?? 0));
+        setCarbs(String(est.carbs_per_100g ?? 0));
+        setFat(String(est.fat_per_100g ?? 0));
+        setQuantity(String(est.serving_size_g ?? 100));
+        setUnit(est.serving_unit ?? "serving");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Estimate failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const qtyNum = parseFloat(quantity) || 0;
+  const factor = qtyNum / 100;
+  const portionCal = Math.round((parseFloat(cal) || 0) * factor);
+
+  async function handleSave() {
+    const qty = parseFloat(quantity);
+    const calories = parseFloat(cal);
+    if (!name.trim()) {
+      setError("Give the food a name.");
+      return;
+    }
+    if (isNaN(qty) || qty <= 0) {
+      setError("Enter a quantity greater than 0.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const food = await foodsApi.create({
+        name: name.trim(),
+        calories_per_100g: Math.max(0, calories || 0),
+        protein_per_100g: Math.max(0, parseFloat(protein) || 0),
+        carbs_per_100g: Math.max(0, parseFloat(carbs) || 0),
+        fat_per_100g: Math.max(0, parseFloat(fat) || 0),
+        serving_size_g: qty,
+        serving_unit: unit || undefined,
+      });
+      await onAdd(food.id, qty);
+      if (estimate?.log_id) {
+        void nutritionApi.recordMacroDecision(estimate.log_id, true);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save food.");
+      setSaving(false);
+    }
+  }
+
+  function handleCancel() {
+    if (estimate?.log_id) {
+      void nutritionApi.recordMacroDecision(estimate.log_id, false);
+    }
+    onCancel();
+  }
+
+  // ── Step 1: describe ──────────────────────────────────────────────────────
+  if (!estimate || !estimate.ai_available) {
+    return (
+      <form onSubmit={(e) => void handleEstimate(e)} className="space-y-3">
+        <div>
+          <label
+            htmlFor={`${fid}-desc`}
+            className="mb-1 block text-xs font-medium text-surface-600 dark:text-surface-300"
+          >
+            Describe what you ate or drank
+          </label>
+          <input
+            id={`${fid}-desc`}
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            maxLength={280}
+            placeholder="e.g. two boiled eggs and a slice of wholegrain toast"
+            className="w-full rounded-lg border border-surface-200 bg-white px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-50"
+          />
+        </div>
+
+        {estimate && !estimate.ai_available && (
+          <p
+            role="status"
+            className="rounded-lg bg-surface-50 px-3 py-2 text-xs text-surface-600 dark:bg-surface-700 dark:text-surface-300"
+          >
+            {estimate.message ??
+              "AI estimate unavailable. Switch to Search, or save a food manually."}
+          </p>
+        )}
+        {error && (
+          <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+            {error}
+          </p>
+        )}
+
+        <div className="flex items-center gap-2">
+          <button
+            type="submit"
+            disabled={loading || !description.trim()}
+            className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 disabled:opacity-50 transition-colors"
+          >
+            {loading ? "Estimating…" : "Estimate macros"}
+          </button>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="rounded-lg px-3 py-1.5 text-xs text-surface-600 hover:bg-surface-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 dark:text-surface-300 dark:hover:bg-surface-700"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    );
+  }
+
+  // ── Step 2: editable preview ──────────────────────────────────────────────
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+        <span aria-hidden="true">⚠</span>
+        <span>
+          {estimate.disclaimer}
+          {estimate.confidence ? ` (${estimate.confidence} confidence)` : ""}
+        </span>
+      </div>
+
+      <div>
+        <label
+          htmlFor={`${fid}-name`}
+          className="mb-1 block text-xs font-medium text-surface-600 dark:text-surface-300"
+        >
+          Food name
+        </label>
+        <input
+          id={`${fid}-name`}
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full rounded-lg border border-surface-200 bg-white px-3 py-2 text-sm text-surface-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-50"
+        />
+      </div>
+
+      <fieldset>
+        <legend className="mb-1 text-xs font-medium text-surface-600 dark:text-surface-300">
+          Per 100 g (editable)
+        </legend>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <MacroField id={`${fid}-cal`} label="Calories" value={cal} onChange={setCal} />
+          <MacroField id={`${fid}-pro`} label="Protein g" value={protein} onChange={setProtein} />
+          <MacroField id={`${fid}-carb`} label="Carbs g" value={carbs} onChange={setCarbs} />
+          <MacroField id={`${fid}-fat`} label="Fat g" value={fat} onChange={setFat} />
+        </div>
+      </fieldset>
+
+      <div className="flex items-end gap-2">
+        <div>
+          <label
+            htmlFor={`${fid}-qty`}
+            className="mb-1 block text-xs font-medium text-surface-600 dark:text-surface-300"
+          >
+            Quantity (g)
+          </label>
+          <input
+            id={`${fid}-qty`}
+            type="number"
+            min="1"
+            step="any"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            className="w-28 rounded-lg border border-surface-200 bg-white px-3 py-2 text-sm text-surface-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-50"
+          />
+        </div>
+        <p className="pb-2 text-xs text-surface-500 dark:text-surface-400">
+          ≈ <span className="font-semibold text-surface-800 dark:text-surface-100">{portionCal}</span> kcal for this portion
+        </p>
+      </div>
+
+      {error && (
+        <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+          {error}
+        </p>
+      )}
+
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => void handleSave()}
+          disabled={saving}
+          className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 disabled:opacity-50 transition-colors"
+        >
+          {saving ? "Saving…" : "Save & log"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setEstimate(null)}
+          className="rounded-lg px-3 py-1.5 text-xs text-surface-600 hover:bg-surface-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 dark:text-surface-300 dark:hover:bg-surface-700"
+        >
+          Re-estimate
+        </button>
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="rounded-lg px-3 py-1.5 text-xs text-surface-600 hover:bg-surface-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 dark:text-surface-300 dark:hover:bg-surface-700"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function MacroField({
+  id,
+  label,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className="mb-1 block text-[11px] text-surface-500 dark:text-surface-400">
+        {label}
+      </label>
+      <input
+        id={id}
+        type="number"
+        min="0"
+        step="any"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-surface-200 bg-white px-2 py-1.5 text-sm text-surface-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-50"
+      />
+    </div>
   );
 }
 
@@ -605,7 +960,7 @@ function WaterTracker({
             min="1"
             max="10000"
             required
-            className="w-28 rounded-lg border border-surface-200 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+            className="w-28 rounded-lg border border-surface-200 bg-white px-3 py-2 text-sm text-surface-900 placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-50"
           />
         </div>
         {/* Common quick-amounts */}
@@ -755,6 +1110,14 @@ function TrashIcon() {
       <path d="M19 6l-1 14H6L5 6" />
       <path d="M10 11v6M14 11v6" />
       <path d="M9 6V4h6v2" />
+    </svg>
+  );
+}
+
+function SparkleIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" />
     </svg>
   );
 }

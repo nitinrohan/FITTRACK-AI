@@ -57,7 +57,7 @@ class CreateTemplateRequest(BaseModel):
 
 
 class UpdateTemplateRequest(BaseModel):
-    """All fields optional — send only what changed.
+    """All fields optional - send only what changed.
 
     If `exercises` is provided it fully replaces the existing exercise list.
     Omit `exercises` to leave the list unchanged.
@@ -114,7 +114,7 @@ class LogSetRequest(BaseModel):
 
 
 class UpdateSetRequest(BaseModel):
-    """Partial update — send only changed fields."""
+    """Partial update - send only changed fields."""
 
     reps: int | None = Field(default=None, ge=0, le=10000)
     weight_kg: float | None = None
@@ -209,7 +209,7 @@ class WorkoutResponse(BaseModel):
 
 
 class WorkoutSummary(BaseModel):
-    """Lightweight row for list views — no nested exercises."""
+    """Lightweight row for list views - no nested exercises."""
 
     id: uuid.UUID
     name: str

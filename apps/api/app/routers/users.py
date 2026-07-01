@@ -1,10 +1,10 @@
-"""Users router — /api/v1/users/*
+"""Users router - /api/v1/users/*
 
 Endpoints for reading and updating the current user's profile,
 preferences, and onboarding state.
 
 All endpoints require authentication via get_current_user.
-Users can only access their own data — no cross-user reads here.
+Users can only access their own data - no cross-user reads here.
 """
 
 from __future__ import annotations
@@ -42,7 +42,7 @@ def get_me(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> UserResponse:
-    """Alias for GET /api/v1/auth/me — available under /users for REST symmetry."""
+    """Alias for GET /api/v1/auth/me - available under /users for REST symmetry."""
     user = user_repository.get_user_with_relations(db, current_user.id) or current_user
     return UserResponse.model_validate(user)
 

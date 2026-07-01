@@ -1,7 +1,7 @@
-"""Workout repository — all DB access for the workouts domain.
+"""Workout repository - all DB access for the workouts domain.
 
 Ownership is enforced on every user-facing query by filtering on user_id.
-The repository never raises HTTP exceptions — that is the router's job.
+The repository never raises HTTP exceptions - that is the router's job.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ def create_template(
     name: str,
     description: str | None,
 ) -> WorkoutTemplate:
-    """Insert a new template (without exercises — add them separately)."""
+    """Insert a new template (without exercises - add them separately)."""
     template = WorkoutTemplate(
         id=uuid.uuid4(),
         user_id=user_id,
@@ -106,7 +106,7 @@ def list_templates_for_user(
     offset: int = 0,
     limit: int = 20,
 ) -> tuple[list[WorkoutTemplate], int]:
-    """Return (templates, total) — user's own templates + system templates."""
+    """Return (templates, total) - user's own templates + system templates."""
     query = (
         db.query(WorkoutTemplate)
         .options(

@@ -1,1 +1,1 @@
-# FitTrack AI — FastAPI application package
+# FitTrack AI - FastAPI application package

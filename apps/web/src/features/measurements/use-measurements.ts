@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * useMeasurements — data hook for body measurements page.
+ * useMeasurements - data hook for body measurements page.
  */
 
 import { useCallback, useEffect, useState } from "react";

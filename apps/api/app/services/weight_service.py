@@ -1,4 +1,4 @@
-"""Weight service — business logic for the weight-tracking domain.
+"""Weight service - business logic for the weight-tracking domain.
 
 Unit conversions:
   1 lb = 0.453592 kg  (exact value used throughout)

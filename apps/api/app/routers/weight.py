@@ -1,11 +1,11 @@
-"""Weight router — /api/v1/weight/*
+"""Weight router - /api/v1/weight/*
 
 Endpoints:
-  POST   /              — Log a new weight entry.
-  GET    /              — List entries (paginated, optional date range).
-  GET    /{entry_id}    — Get a single entry.
-  PUT    /{entry_id}    — Update an entry.
-  DELETE /{entry_id}    — Delete an entry.
+  POST   /              - Log a new weight entry.
+  GET    /              - List entries (paginated, optional date range).
+  GET    /{entry_id}    - Get a single entry.
+  PUT    /{entry_id}    - Update an entry.
+  DELETE /{entry_id}    - Delete an entry.
 
 All endpoints require authentication.
 Height from the user's profile is passed to the service when available

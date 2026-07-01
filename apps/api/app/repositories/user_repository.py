@@ -4,7 +4,7 @@ All database queries for user-related data are centralised here.
 Services call these functions; routes never touch SQLAlchemy directly.
 
 Ownership rule: every function that looks up a user-owned resource
-accepts user_id as an explicit argument — there is no global "current user"
+accepts user_id as an explicit argument - there is no global "current user"
 singleton. This keeps authorisation explicit and prevents accidental
 cross-user data leaks.
 """
@@ -72,7 +72,7 @@ def update_user_profile(
 ) -> UserProfile | None:
     """Update allowed fields on a UserProfile.
 
-    Only whitelisted fields are applied — callers cannot inject arbitrary
+    Only whitelisted fields are applied - callers cannot inject arbitrary
     column names via **fields because the repository controls the mapping.
     """
     allowed = {

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Workouts page — /dashboard/workouts
+ * Workouts page - /dashboard/workouts
  *
  * Shows workout history and in-progress workouts.
  * Features:
@@ -35,7 +35,7 @@ function formatDate(iso: string): string {
 }
 
 function formatDuration(seconds: number | null): string {
-  if (seconds === null) return "—";
+  if (seconds === null) return "-";
   const m = Math.floor(seconds / 60);
   const h = Math.floor(m / 60);
   if (h > 0) return `${h}h ${m % 60}m`;
@@ -43,7 +43,7 @@ function formatDuration(seconds: number | null): string {
 }
 
 function formatVolume(kg: number | null): string {
-  if (kg === null) return "—";
+  if (kg === null) return "-";
   return `${kg.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg`;
 }
 

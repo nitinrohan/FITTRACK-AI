@@ -1,11 +1,11 @@
-"""Authentication router — /api/v1/auth/*
+"""Authentication router - /api/v1/auth/*
 
 Endpoints:
-  POST /register  — Create account, set auth cookies, return user.
-  POST /login     — Verify credentials, set auth cookies, return user.
-  POST /logout    — Clear auth cookies.
-  POST /refresh   — Rotate tokens using the refresh cookie.
-  GET  /me        — Return the currently authenticated user.
+  POST /register  - Create account, set auth cookies, return user.
+  POST /login     - Verify credentials, set auth cookies, return user.
+  POST /logout    - Clear auth cookies.
+  POST /refresh   - Rotate tokens using the refresh cookie.
+  GET  /me        - Return the currently authenticated user.
 
 Cookie strategy:
   Tokens are set as HTTP-only cookies so they're never accessible to
@@ -13,7 +13,7 @@ Cookie strategy:
   provides CSRF protection for same-origin POST requests.
 
 Rate limiting:
-  Extension point — TODO Phase 7: add slowapi rate limiter to /login
+  Extension point - TODO Phase 7: add slowapi rate limiter to /login
   and /register to prevent brute-force and abuse.
 """
 
@@ -111,7 +111,7 @@ def refresh(
     """Issue new tokens using the refresh token cookie.
 
     Called automatically by the frontend when the access token expires.
-    Both tokens are rotated — the old refresh token is implicitly invalidated.
+    Both tokens are rotated - the old refresh token is implicitly invalidated.
     """
     from app.exceptions import UnauthorizedError
 

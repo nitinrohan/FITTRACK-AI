@@ -1,5 +1,5 @@
 /**
- * Card — minimal surface container for dashboard sections and form groups.
+ * Card - minimal surface container for dashboard sections and form groups.
  */
 
 import { cn } from "@/lib/utils";

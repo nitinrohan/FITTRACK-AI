@@ -52,7 +52,7 @@ class LogWeightRequest(BaseModel):
 
 
 class UpdateWeightEntryRequest(BaseModel):
-    """Partial update — send only changed fields."""
+    """Partial update - send only changed fields."""
 
     weight: float | None = Field(default=None, gt=0, le=700)
     display_unit: Literal["kg", "lbs"] | None = None
@@ -79,7 +79,7 @@ class WeightEntryResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    # Computed — not stored
+    # Computed - not stored
     weight_lbs: float | None = None
     bmi: float | None = None
 

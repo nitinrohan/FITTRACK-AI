@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * AuthContext — provides the current user and auth actions to the component tree.
+ * AuthContext - provides the current user and auth actions to the component tree.
  *
  * Design:
  * - Fetches /api/v1/auth/me on mount to restore session from the HTTP-only cookie.
@@ -94,11 +94,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       .catch((err: unknown) => {
         if (cancelled) return;
-        // 401 = no valid session — expected when unauthenticated.
+        // 401 = no valid session - expected when unauthenticated.
         if (err instanceof ApiError && err.isUnauthorized) {
           dispatch({ type: "CLEAR_USER" });
         } else {
-          // Network error or unexpected — still mark initialized so the UI
+          // Network error or unexpected - still mark initialized so the UI
           // can render (the user will see an unauthenticated state).
           console.error("[AuthContext] Failed to restore session:", err);
           dispatch({ type: "CLEAR_USER" });
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await apiClient.post("/api/v1/auth/logout", undefined);
     } catch {
-      // Ignore server errors on logout — clear local state regardless.
+      // Ignore server errors on logout - clear local state regardless.
     }
     dispatch({ type: "CLEAR_USER" });
   }, []);

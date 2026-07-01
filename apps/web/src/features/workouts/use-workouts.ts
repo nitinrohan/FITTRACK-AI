@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * useWorkouts — data hook for workout history and in-progress workouts.
+ * useWorkouts - data hook for workout history and in-progress workouts.
  */
 
 import { useCallback, useEffect, useState } from "react";

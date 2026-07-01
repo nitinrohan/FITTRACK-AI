@@ -1,4 +1,4 @@
-// Wellness domain types — sleep, steps, and wellness check-in.
+// Wellness domain types - sleep, steps, and wellness check-in.
 
 // ── Sleep ─────────────────────────────────────────────────────────────────────
 
@@ -131,7 +131,7 @@ export interface DailyWellnessSnapshot {
 
 /** Convert duration in minutes to "Xh Ym" string. */
 export function formatSleepDuration(minutes: number | null): string {
-  if (minutes === null) return '—'
+  if (minutes === null) return '-'
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
   if (h === 0) return `${m}m`
@@ -141,7 +141,7 @@ export function formatSleepDuration(minutes: number | null): string {
 
 /** Convert metres to km with 1 decimal place. */
 export function formatDistanceKm(metres: number | null): string {
-  if (metres === null) return '—'
+  if (metres === null) return '-'
   return `${(metres / 1000).toFixed(1)} km`
 }
 
@@ -154,7 +154,7 @@ export const MOOD_LABELS: Record<number, string> = {
   5: 'Great',
 }
 
-/** Label for 1-5 stress rating (inverted — 1 = very calm). */
+/** Label for 1-5 stress rating (inverted - 1 = very calm). */
 export const STRESS_LABELS: Record<number, string> = {
   1: 'Very Calm',
   2: 'Calm',

@@ -1,4 +1,4 @@
-"""Weight entry repository — all DB access for the weight-tracking domain.
+"""Weight entry repository - all DB access for the weight-tracking domain.
 
 All query functions accept user_id explicitly so the service layer never
 needs to perform a cross-user lookup.

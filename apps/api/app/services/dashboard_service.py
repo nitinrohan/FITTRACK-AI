@@ -1,4 +1,4 @@
-"""Dashboard service — aggregates data from multiple domains.
+"""Dashboard service - aggregates data from multiple domains.
 
 One function, one DB session, one response.  Each section degrades
 gracefully to None when the user has no data.
@@ -23,6 +23,7 @@ from datetime import date, timedelta
 from sqlalchemy.orm import Session
 
 from app.repositories import (
+    habit_repository,
     measurement_repository,
     weight_repository,
 )
@@ -30,6 +31,8 @@ from app.schemas.dashboard import (
     DashboardSummary,
     GoalsSummarySection,
     GoalSummaryItem,
+    HabitsTodaySection,
+    HabitTodayItem,
     LatestMeasurementSection,
     TodayNutritionSection,
     WeightTrendPoint,
@@ -37,7 +40,7 @@ from app.schemas.dashboard import (
     WorkoutFrequencyPoint,
     WorkoutFrequencySection,
 )
-from app.services import nutrition_service
+from app.services import habit_service, nutrition_service
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -202,6 +205,37 @@ def _build_latest_measurement(db: Session, user_id: uuid.UUID) -> LatestMeasurem
     )
 
 
+def _build_habits_today(db: Session, user_id: uuid.UUID) -> HabitsTodaySection | None:
+    habits, _total = habit_repository.list_habits(db, user_id, include_archived=False)
+    if not habits:
+        return None
+
+    today = _today_utc()
+    items: list[HabitTodayItem] = []
+    completed_count = 0
+    for habit in habits:
+        completed_dates = {c.date for c in habit.completions}
+        done = today in completed_dates
+        if done:
+            completed_count += 1
+        items.append(
+            HabitTodayItem(
+                id=str(habit.id),
+                name=habit.name,
+                color=habit.color,
+                target_days_per_week=habit.target_days_per_week,
+                completed_today=done,
+                current_streak=habit_service.compute_current_streak(completed_dates, today),
+            )
+        )
+
+    return HabitsTodaySection(
+        habits=items,
+        total=len(items),
+        completed_count=completed_count,
+    )
+
+
 # ── Public API ─────────────────────────────────────────────────────────────────
 
 
@@ -213,4 +247,5 @@ def get_dashboard_summary(db: Session, *, user_id: uuid.UUID) -> DashboardSummar
         today_nutrition=_build_today_nutrition(db, user_id),
         goals=_build_goals(db, user_id),
         latest_measurement=_build_latest_measurement(db, user_id),
+        habits_today=_build_habits_today(db, user_id),
     )

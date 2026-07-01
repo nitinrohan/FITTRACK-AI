@@ -1,5 +1,5 @@
 /**
- * useGoals — data hook for the goals list page.
+ * useGoals - data hook for the goals list page.
  *
  * Fetches goals and exposes CRUD helpers.  Components call these helpers
  * to avoid direct API imports.  Errors are surfaced as strings so the

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     template: "%s | FitTrack AI",
   },
   description:
-    "AI-powered personal fitness tracker — workouts, nutrition, measurements, wellness, habits, and progress insights.",
+    "AI-powered personal fitness tracker - workouts, nutrition, measurements, wellness, habits, and progress insights.",
   applicationName: "FitTrack AI",
   keywords: ["fitness", "workout tracker", "nutrition", "health", "goals"],
   robots: { index: false, follow: false }, // Set to true when publicly launched

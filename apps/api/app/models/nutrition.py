@@ -3,7 +3,7 @@
 Domain model for food tracking, meal logging, and water intake.
 
 Hierarchy:
-  Food  (a food item with macro data — system or user-created)
+  Food  (a food item with macro data - system or user-created)
   FoodLog  (a logged portion of a Food for a specific meal + date)
   WaterLog  (a logged water intake entry for a specific date)
 
@@ -12,7 +12,7 @@ Design notes:
   FoodLog.quantity_g stores how much the user actually ate.
   Displayed calories/macros = stored_per_100g * quantity_g / 100.
 - Calories are stored as kcal.
-- Dates stored as plain date (not datetime) — nutrition is tracked per day.
+- Dates stored as plain date (not datetime) - nutrition is tracked per day.
 - meal_type uses a string enum (breakfast/lunch/dinner/snack/other) so new
   types can be added without a migration.
 - WaterLog stores amount_ml (millilitres, canonical unit). The frontend
@@ -96,7 +96,7 @@ class Food(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
     is_system: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
-    # Soft-delete flag — deactivated foods are hidden from search.
+    # Soft-delete flag - deactivated foods are hidden from search.
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     # ── Relationships ──────────────────────────────────────────────────────
@@ -109,7 +109,7 @@ class Food(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
     __table_args__ = (
         Index("ix_foods_user_id", "user_id"),
-        # Full-text search via LIKE on name — a dedicated search index
+        # Full-text search via LIKE on name - a dedicated search index
         # (e.g. GIN tsvector) can replace this in a future phase.
         Index("ix_foods_name", "name"),
     )

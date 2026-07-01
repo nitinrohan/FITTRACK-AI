@@ -1,11 +1,11 @@
-"""Exercise library router — /api/v1/exercises/*
+"""Exercise library router - /api/v1/exercises/*
 
 Endpoints:
-  GET    /           — List exercises (system + own custom), with search/filter
-  POST   /           — Create a custom exercise
-  GET    /{id}       — Get a single exercise
-  PATCH  /{id}       — Update a custom exercise (owner only)
-  DELETE /{id}       — Soft-delete a custom exercise (owner only)
+  GET    /           - List exercises (system + own custom), with search/filter
+  POST   /           - Create a custom exercise
+  GET    /{id}       - Get a single exercise
+  PATCH  /{id}       - Update a custom exercise (owner only)
+  DELETE /{id}       - Soft-delete a custom exercise (owner only)
 """
 
 from __future__ import annotations

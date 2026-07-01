@@ -8,7 +8,17 @@ The MVP is designed for one user and built to expand into a multi-user platform 
 
 ## What's Built
 
-**Phases 1–11 complete.** Wellness slice (sleep, steps, daily check-in, water roll-up): 44 backend tests passing, ruff clean, mypy 0 errors, tsc 0 errors.
+**Phases 1-14 complete.** Habits (daily check-offs, streaks) + dashboard widget, and a **Progress** page with selectable-range charts (weight / workouts / calories) - each chart paired with an accessible text summary and data table.
+
+Latest add: **recipes** (nutrition, off-roadmap enhancement) - a new **Recipes** page lets you save any combination of foods + exact quantities under a name (e.g. "Morning shake") and re-log the whole thing later in one tap, at any date/meal, optionally scaled (0.5x logs half the saved amounts) - without re-describing it or re-running AI. The "Log everything you ate" flow can also save what you just logged as a recipe directly. See ADR-019.
+
+Also recent: **multi-item AI meal logging + daily nutrition insight** (nutrition, off-roadmap enhancement). "Log everything you ate" on the Nutrition page accepts one free-text description of several foods at once (e.g. "45g oats, 200ml almond milk, 2 belvita biscuits, 1 scoop whey protein"), returns an editable per-item table (calories/protein/carbs/fat/fiber) with a totals row, and bulk-saves every item as a real food + food-log entry in one call. A new "Today vs. your targets" card compares the day's totals against optional user-set daily targets (`/api/v1/nutrition/targets` - never invented, only compared when actually set) with an accessible bar chart + data table, plus an AI-written explanation and suggestions for remaining meals (falls back to rule-based comparisons when AI is off). See ADR-016 through ADR-018 in the decision log.
+
+Earlier: a **Mind** page - **Stress** (self-reported 0-100 readings with daily highest / lowest / average and a Low/Moderate/High band gauge) and **Mindfulness** (a curated session library plus mindful-minute logging with a day streak). Stress is presented supportively and is explicitly not a medical assessment.
+
+Also recent: **Settings & privacy** (Phase 14) - a per-category summary of your stored data, a full **JSON data export** (downloaded client-side), AI and email-notification opt-ins, and **password-confirmed account deletion** (irreversible hard delete, typed confirmation). See [`docs/privacy.md`](./docs/privacy.md).
+
+Earlier add-on: **AI macro estimation for nutrition** - describe a food in plain text and the AI returns an editable macro *estimate* you review before saving (never auto-saved; portion math is deterministic). The AI layer is provider-independent (Anthropic / OpenAI / **Ollama**, including **Ollama Cloud** for the hosted deploy - see `render.yaml`) with graceful fallback when AI is off. Backend: 548 tests passing (4 pre-existing weight-test failures unrelated), ruff clean, mypy 0 errors; frontend tsc + eslint clean. Recipes, the multi-item meal flow, and the daily insight were all also verified with real end-to-end runs (register -> login -> set targets -> log meals -> create/log/scale/delete a recipe -> ownership checks -> daily totals -> insight) against a live Postgres-wire-protocol database, not just mocked unit tests.
 
 | Feature | Details |
 |---|---|
@@ -20,10 +30,10 @@ The MVP is designed for one user and built to expand into a multi-user platform 
 | **Workout templates** | Create reusable templates with ordered exercises |
 | **Workout logging** | Active workout timer, set/rep/weight/duration logging, personal record detection |
 | **Workout history** | Full history with filter tabs, volume calculations |
-| **Nutrition tracking** | Food database, meal logging, daily macro totals (calories, protein, carbs, fat) |
+| **Nutrition tracking** | Food database, meal logging, daily macro/fiber totals, multi-item AI meal parsing, daily nutrition targets + AI insight, saved recipes with scaled re-logging |
 | **Body measurements** | Weight entries + body measurements (chest, waist, hips, etc.) with trend tracking |
 | **Dashboard** | Summary widgets: recent workouts, weight trend, goal progress, macro summary |
-| **AI summaries** | Provider-independent AI service, weekly summary generation, usage logging with cost tracking |
+| **AI summaries** | Provider-independent AI service, weekly summary + daily nutrition insight generation, usage logging with cost tracking |
 
 ---
 
@@ -45,7 +55,7 @@ cd fittrack-ai
 cp .env.example .env
 ```
 
-Edit `.env` — at minimum change:
+Edit `.env` - at minimum change:
 - `POSTGRES_PASSWORD`
 - `APP_SECRET_KEY`
 - `JWT_SECRET_KEY`
@@ -67,11 +77,11 @@ Migrations run automatically before the API starts.
 ### 3. Verify
 
 ```
-http://localhost:3000     — Web app
-http://localhost:8000     — API root
-http://localhost:8000/docs — OpenAPI documentation
-http://localhost:8000/health — Liveness check
-http://localhost:8000/ready  — Readiness check (DB connectivity)
+http://localhost:3000     - Web app
+http://localhost:8000     - API root
+http://localhost:8000/docs - OpenAPI documentation
+http://localhost:8000/health - Liveness check
+http://localhost:8000/ready  - Readiness check (DB connectivity)
 ```
 
 ---
@@ -241,7 +251,7 @@ npx tsc --noEmit       # 0 errors
 ## Troubleshooting
 
 **`make up` fails with DB connection error**
-The API retries until the DB health check passes. Wait 10–15 seconds and check `make logs-api`.
+The API retries until the DB health check passes. Wait 10-15 seconds and check `make logs-api`.
 
 **Port already in use**
 Change the host port in `docker-compose.yml` (e.g. `"8001:8000"` for the API).
@@ -256,12 +266,13 @@ Ensure the source volumes are mounted (check `docker-compose.yml`). Restart with
 
 ## Documentation
 
-- [`docs/architecture.md`](./docs/architecture.md) — System design and component overview
-- [`docs/decision-log.md`](./docs/decision-log.md) — Architecture decision records
-- [`docs/data-model.md`](./docs/data-model.md) — Database schema (Phase 2+)
-- [`docs/api.md`](./docs/api.md) — API reference (Phase 2+)
-- [`docs/security.md`](./docs/security.md) — Security design (Phase 2+)
-- [`docs/ai-design.md`](./docs/ai-design.md) — AI assistant architecture (Phase 6+)
+- [`docs/architecture.md`](./docs/architecture.md) - System design and component overview
+- [`docs/decision-log.md`](./docs/decision-log.md) - Architecture decision records
+- [`docs/data-model.md`](./docs/data-model.md) - Database schema (Phase 2+)
+- [`docs/api.md`](./docs/api.md) - API reference (Phase 2+)
+- [`docs/security.md`](./docs/security.md) - Security design (Phase 2+)
+- [`docs/ai-design.md`](./docs/ai-design.md) - AI assistant architecture (Phase 6+)
+- [`docs/privacy.md`](./docs/privacy.md) - Privacy, data export, and account deletion (Phase 14)
 
 ---
 
@@ -280,7 +291,7 @@ Ensure the source volumes are mounted (check `docker-compose.yml`). Restart with
 | 9 | Body measurements | ✅ Complete |
 | 10 | Dashboard + AI summaries | ✅ Complete |
 | 11 | Water, sleep, steps, and wellness | ✅ Complete |
-| 12 | Habits | 🔜 Next |
-| 13 | Progress charts | Planned |
-| 14 | Privacy, export, and account deletion | Planned |
-| 15 | Integrations and platform features | Planned |
+| 12 | Habits | ✅ Complete |
+| 13 | Progress charts | ✅ Complete |
+| 14 | Privacy, export, and account deletion | ✅ Complete |
+| 15 | Integrations and platform features | 🔜 Next |

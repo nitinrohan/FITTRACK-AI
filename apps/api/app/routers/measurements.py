@@ -1,4 +1,4 @@
-"""Body measurements router — /api/v1/measurements/*
+"""Body measurements router - /api/v1/measurements/*
 
 Endpoints:
   POST   /              log a new measurement entry

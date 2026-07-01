@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * TemplateForm — modal dialog for creating or editing a workout template.
+ * TemplateForm - modal dialog for creating or editing a workout template.
  *
  * For the MVP the exercise list is managed by the user entering exercise IDs
  * or names. In a future phase an exercise picker with search will replace this.

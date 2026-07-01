@@ -60,10 +60,26 @@ export interface LatestMeasurementSection {
   right_thigh_cm: number | null;
 }
 
+export interface HabitTodayItem {
+  id: string;
+  name: string;
+  color: string | null;
+  target_days_per_week: number;
+  completed_today: boolean;
+  current_streak: number;
+}
+
+export interface HabitsTodaySection {
+  habits: HabitTodayItem[];
+  total: number;
+  completed_count: number;
+}
+
 export interface DashboardSummary {
   weight_trend: WeightTrendSection | null;
   workout_frequency: WorkoutFrequencySection | null;
   today_nutrition: TodayNutritionSection | null;
   goals: GoalsSummarySection | null;
   latest_measurement: LatestMeasurementSection | null;
+  habits_today: HabitsTodaySection | null;
 }
