@@ -29,6 +29,8 @@ if TYPE_CHECKING:
     from app.models.measurement import BodyMeasurement
     from app.models.mindfulness import MindfulnessLog, MindfulnessSession
     from app.models.nutrition import Food, FoodLog, WaterLog
+    from app.models.nutrition_target import NutritionTarget
+    from app.models.recipe import Recipe
     from app.models.stress import StressLog
     from app.models.weight_entry import WeightEntry
     from app.models.wellness import DailySteps, SleepLog, WellnessLog
@@ -161,6 +163,18 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     )
     mindfulness_logs: Mapped[list[MindfulnessLog]] = relationship(
         "MindfulnessLog",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    nutrition_target: Mapped[NutritionTarget | None] = relationship(
+        "NutritionTarget",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
+    recipes: Mapped[list[Recipe]] = relationship(
+        "Recipe",
         back_populates="user",
         cascade="all, delete-orphan",
         lazy="dynamic",

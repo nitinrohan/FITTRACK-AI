@@ -160,6 +160,219 @@ class TestSuccessfulEstimate:
 # ── Endpoint ─────────────────────────────────────────────────────────────────────
 
 
+class TestFiberField:
+    def test_fiber_included_in_portion(self) -> None:
+        db = MagicMock()
+        log = MagicMock()
+        log.id = uuid.uuid4()
+        payload = {
+            "name": "Oats",
+            "serving_size_g": 45,
+            "calories_per_100g": 389,
+            "protein_per_100g": 13,
+            "carbs_per_100g": 66,
+            "fat_per_100g": 7,
+            "fiber_per_100g": 10,
+            "confidence": "medium",
+        }
+        with (
+            patch.object(svc, "get_settings", return_value=_settings()),
+            patch.object(
+                svc.ai_service,
+                "call_ai",
+                return_value=("{}", "ollama", "llama3.1", 20, 8),
+            ),
+            patch.object(svc.ai_service, "parse_json_reply", return_value=payload),
+            patch.object(svc, "_write_log", return_value=log),
+        ):
+            result = svc.estimate_macros(db, user_id=uuid.uuid4(), description="45g oats")
+        assert result.fiber_per_100g == 10
+        assert result.portion is not None
+        # 45g / 100 * 10 fiber_per_100g = 4.5
+        assert result.portion.fiber_g == 4.5
+
+    def test_missing_fiber_stays_none(self) -> None:
+        db = MagicMock()
+        log = MagicMock()
+        log.id = uuid.uuid4()
+        payload = {
+            "name": "Cheese",
+            "calories_per_100g": 400,
+            "protein_per_100g": 25,
+        }
+        with (
+            patch.object(svc, "get_settings", return_value=_settings()),
+            patch.object(
+                svc.ai_service,
+                "call_ai",
+                return_value=("{}", "ollama", "llama3.1", 20, 8),
+            ),
+            patch.object(svc.ai_service, "parse_json_reply", return_value=payload),
+            patch.object(svc, "_write_log", return_value=log),
+        ):
+            result = svc.estimate_macros(db, user_id=uuid.uuid4(), description="cheese")
+        assert result.fiber_per_100g is None
+        assert result.portion.fiber_g is None
+
+
+# ── Multi-item meal estimation ───────────────────────────────────────────────────
+
+
+class TestMultiItemFallback:
+    def test_ai_disabled_returns_unavailable(self) -> None:
+        db = MagicMock()
+        with patch.object(svc, "get_settings", return_value=_settings(enabled=False)):
+            result = svc.estimate_meal_macros(db, user_id=uuid.uuid4(), description="oats, milk")
+        assert result.ai_available is False
+        assert result.items == []
+
+    def test_provider_failure_degrades_gracefully(self) -> None:
+        db = MagicMock()
+        with (
+            patch.object(svc, "get_settings", return_value=_settings()),
+            patch.object(
+                svc.ai_service, "call_ai", side_effect=AIUnavailableError("down")
+            ),
+            patch.object(svc, "_write_log"),
+        ):
+            result = svc.estimate_meal_macros(db, user_id=uuid.uuid4(), description="oats, milk")
+        assert result.ai_available is False
+        assert result.is_estimate is True
+
+    def test_empty_items_list_treated_as_failure(self) -> None:
+        db = MagicMock()
+        with (
+            patch.object(svc, "get_settings", return_value=_settings()),
+            patch.object(
+                svc.ai_service,
+                "call_ai",
+                return_value=("{}", "ollama", "llama3.1", 10, 5),
+            ),
+            patch.object(svc.ai_service, "parse_json_reply", return_value={"items": []}),
+            patch.object(svc, "_write_log"),
+        ):
+            result = svc.estimate_meal_macros(db, user_id=uuid.uuid4(), description="???")
+        assert result.ai_available is False
+
+
+class TestMultiItemSuccess:
+    def _run(self, items: list[dict[str, object]]) -> object:
+        db = MagicMock()
+        log = MagicMock()
+        log.id = uuid.uuid4()
+        with (
+            patch.object(svc, "get_settings", return_value=_settings()),
+            patch.object(
+                svc.ai_service,
+                "call_ai",
+                return_value=("{}", "ollama", "llama3.1", 40, 20),
+            ),
+            patch.object(svc.ai_service, "parse_json_reply", return_value={"items": items}),
+            patch.object(svc, "_write_log", return_value=log),
+        ):
+            return svc.estimate_meal_macros(
+                db, user_id=uuid.uuid4(), description="45g oats, 200ml almond milk"
+            )
+
+    def test_parses_multiple_items_with_independent_portions(self) -> None:
+        result = self._run(
+            [
+                {
+                    "name": "Oats",
+                    "quantity_g": 45,
+                    "serving_unit": "g",
+                    "calories_per_100g": 389,
+                    "protein_per_100g": 13,
+                    "carbs_per_100g": 66,
+                    "fat_per_100g": 7,
+                    "fiber_per_100g": 10,
+                    "confidence": "medium",
+                },
+                {
+                    "name": "Unsweetened almond milk",
+                    "quantity_g": 200,
+                    "serving_unit": "ml",
+                    "calories_per_100g": 13,
+                    "protein_per_100g": 0.4,
+                    "carbs_per_100g": 0.3,
+                    "fat_per_100g": 1.1,
+                    "fiber_per_100g": 0,
+                    "confidence": "medium",
+                },
+            ]
+        )
+        assert result.ai_available is True
+        assert len(result.items) == 2
+        oats = result.items[0]
+        assert oats.name == "Oats"
+        # 45g @ 389 kcal/100g = 175.05 -> rounds to 175.1
+        assert oats.portion.calories_kcal == round(389 * 0.45, 1)
+        assert result.totals is not None
+        assert result.totals.calories_kcal == round(
+            oats.portion.calories_kcal + result.items[1].portion.calories_kcal, 1
+        )
+
+    def test_repeated_identical_item_kept_as_two_entries(self) -> None:
+        # "2 scoops of protein powder" should show as two separate rows,
+        # not merged into one - matches the per-item breakdown the UI shows.
+        scoop = {
+            "name": "Optimum Nutrition Whey",
+            "quantity_g": 30,
+            "serving_unit": "scoop",
+            "calories_per_100g": 400,
+            "protein_per_100g": 80,
+            "carbs_per_100g": 10,
+            "fat_per_100g": 3,
+            "confidence": "medium",
+        }
+        result = self._run([dict(scoop), dict(scoop)])
+        assert len(result.items) == 2
+        assert result.items[0].portion.protein_g == result.items[1].portion.protein_g
+
+    def test_zero_macro_items_are_skipped(self) -> None:
+        result = self._run(
+            [
+                {
+                    "name": "Creatine",
+                    "quantity_g": 5,
+                    "calories_per_100g": 0,
+                    "protein_per_100g": 0,
+                    "carbs_per_100g": 0,
+                    "fat_per_100g": 0,
+                },
+                {
+                    "name": "Oats",
+                    "quantity_g": 45,
+                    "calories_per_100g": 389,
+                    "protein_per_100g": 13,
+                    "carbs_per_100g": 66,
+                    "fat_per_100g": 7,
+                },
+            ]
+        )
+        # Only the oats item survives (creatine has no macros and is dropped
+        # rather than shown as a bogus 0-calorie row).
+        assert len(result.items) == 1
+        assert result.items[0].name == "Oats"
+
+    def test_missing_quantity_defaults_to_100g(self) -> None:
+        result = self._run(
+            [
+                {
+                    "name": "Mystery bar",
+                    "calories_per_100g": 450,
+                    "protein_per_100g": 10,
+                    "carbs_per_100g": 50,
+                    "fat_per_100g": 20,
+                }
+            ]
+        )
+        assert result.items[0].quantity_g == 100.0
+
+
+# ── Endpoint ─────────────────────────────────────────────────────────────────────
+
+
 class TestEndpoint:
     def test_requires_auth(self, client: TestClient) -> None:
         r = client.post("/api/v1/nutrition/estimate-macros", json={"description": "egg"})

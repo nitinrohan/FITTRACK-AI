@@ -16,6 +16,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useNutrition, useFoodSearch } from "@/features/nutrition/use-nutrition";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { DescribeMealPanel } from "@/components/nutrition/describe-meal-panel";
+import { DailyInsightCard } from "@/components/nutrition/daily-insight-card";
 import { cn } from "@/lib/utils";
 import { foodsApi, nutritionApi } from "@/lib/nutrition-api";
 import type {
@@ -56,6 +58,8 @@ function formatDateLabel(dateStr: string): string {
 
 export default function NutritionPage() {
   const [date, setDate] = useState(todayStr);
+  const [showDescribePanel, setShowDescribePanel] = useState(false);
+  const [insightRefreshKey, setInsightRefreshKey] = useState(0);
 
   const {
     daily,
@@ -67,6 +71,12 @@ export default function NutritionPage() {
     logWater,
     deleteWaterLog,
   } = useNutrition(date);
+
+  // Bump the insight refresh key whenever the day's totals change (any log
+  // added/edited/removed), so the "Today vs. your targets" card stays current.
+  useEffect(() => {
+    if (daily) setInsightRefreshKey((k) => k + 1);
+  }, [daily]);
 
   const goToday = () => setDate(todayStr());
   const goPrev = () => setDate((d) => offsetDate(d, -1));
@@ -119,6 +129,28 @@ export default function NutritionPage() {
         </div>
       </div>
 
+      {/* Describe-a-meal quick action */}
+      {!showDescribePanel && (
+        <button
+          type="button"
+          onClick={() => setShowDescribePanel(true)}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-brand-300 bg-brand-50/50 px-4 py-3 text-sm font-medium text-brand-700 hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 dark:border-brand-800 dark:bg-brand-950/20 dark:text-brand-300"
+        >
+          <SparkleIcon />
+          Log everything you ate, all at once
+        </button>
+      )}
+      {showDescribePanel && (
+        <DescribeMealPanel
+          date={date}
+          onLogged={async () => {
+            await refresh();
+            setShowDescribePanel(false);
+          }}
+          onCancel={() => setShowDescribePanel(false)}
+        />
+      )}
+
       {/* Loading */}
       {isLoading && (
         <div className="flex justify-center py-16">
@@ -144,6 +176,9 @@ export default function NutritionPage() {
         <div className="space-y-6">
           {/* Macro summary */}
           <MacroSummaryBar totals={daily.day_totals} />
+
+          {/* Today vs. targets + AI insight */}
+          <DailyInsightCard date={date} refreshKey={insightRefreshKey} />
 
           {/* Meal sections */}
           <div className="space-y-4">
@@ -184,6 +219,7 @@ function MacroSummaryBar({ totals }: { totals: MacroTotals }) {
     { label: "Protein", value: Math.round(totals.protein_g), unit: "g", color: "bg-brand-500" },
     { label: "Carbs", value: Math.round(totals.carbs_g), unit: "g", color: "bg-yellow-400" },
     { label: "Fat", value: Math.round(totals.fat_g), unit: "g", color: "bg-pink-400" },
+    { label: "Fiber", value: Math.round(totals.fiber_g), unit: "g", color: "bg-teal-400" },
   ];
 
   return (
@@ -191,7 +227,7 @@ function MacroSummaryBar({ totals }: { totals: MacroTotals }) {
       <h2 className="mb-3 text-sm font-medium text-surface-500">
         Daily totals
       </h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {macros.map(({ label, value, unit, color }) => (
           <div key={label} className="rounded-lg bg-surface-50 p-3">
             <div className="flex items-center gap-1.5 mb-1">
@@ -1074,6 +1110,14 @@ function TrashIcon() {
       <path d="M19 6l-1 14H6L5 6" />
       <path d="M10 11v6M14 11v6" />
       <path d="M9 6V4h6v2" />
+    </svg>
+  );
+}
+
+function SparkleIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" />
     </svg>
   );
 }

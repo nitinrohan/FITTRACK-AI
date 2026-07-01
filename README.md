@@ -10,11 +10,15 @@ The MVP is designed for one user and built to expand into a multi-user platform 
 
 **Phases 1-14 complete.** Habits (daily check-offs, streaks) + dashboard widget, and a **Progress** page with selectable-range charts (weight / workouts / calories) - each chart paired with an accessible text summary and data table.
 
-Latest add: a **Mind** page - **Stress** (self-reported 0-100 readings with daily highest / lowest / average and a Low/Moderate/High band gauge) and **Mindfulness** (a curated session library plus mindful-minute logging with a day streak). Stress is presented supportively and is explicitly not a medical assessment.
+Latest add: **recipes** (nutrition, off-roadmap enhancement) - a new **Recipes** page lets you save any combination of foods + exact quantities under a name (e.g. "Morning shake") and re-log the whole thing later in one tap, at any date/meal, optionally scaled (0.5x logs half the saved amounts) - without re-describing it or re-running AI. The "Log everything you ate" flow can also save what you just logged as a recipe directly. See ADR-019.
+
+Also recent: **multi-item AI meal logging + daily nutrition insight** (nutrition, off-roadmap enhancement). "Log everything you ate" on the Nutrition page accepts one free-text description of several foods at once (e.g. "45g oats, 200ml almond milk, 2 belvita biscuits, 1 scoop whey protein"), returns an editable per-item table (calories/protein/carbs/fat/fiber) with a totals row, and bulk-saves every item as a real food + food-log entry in one call. A new "Today vs. your targets" card compares the day's totals against optional user-set daily targets (`/api/v1/nutrition/targets` - never invented, only compared when actually set) with an accessible bar chart + data table, plus an AI-written explanation and suggestions for remaining meals (falls back to rule-based comparisons when AI is off). See ADR-016 through ADR-018 in the decision log.
+
+Earlier: a **Mind** page - **Stress** (self-reported 0-100 readings with daily highest / lowest / average and a Low/Moderate/High band gauge) and **Mindfulness** (a curated session library plus mindful-minute logging with a day streak). Stress is presented supportively and is explicitly not a medical assessment.
 
 Also recent: **Settings & privacy** (Phase 14) - a per-category summary of your stored data, a full **JSON data export** (downloaded client-side), AI and email-notification opt-ins, and **password-confirmed account deletion** (irreversible hard delete, typed confirmation). See [`docs/privacy.md`](./docs/privacy.md).
 
-Earlier add-on: **AI macro estimation for nutrition** - describe a food in plain text and the AI returns an editable macro *estimate* you review before saving (never auto-saved; portion math is deterministic). The AI layer is provider-independent (Anthropic / OpenAI / **Ollama** for free local dev) with graceful fallback when AI is off. Backend: 501 tests passing (4 pre-existing weight-test failures unrelated), ruff clean, mypy 0 errors; frontend tsc + eslint clean.
+Earlier add-on: **AI macro estimation for nutrition** - describe a food in plain text and the AI returns an editable macro *estimate* you review before saving (never auto-saved; portion math is deterministic). The AI layer is provider-independent (Anthropic / OpenAI / **Ollama**, including **Ollama Cloud** for the hosted deploy - see `render.yaml`) with graceful fallback when AI is off. Backend: 548 tests passing (4 pre-existing weight-test failures unrelated), ruff clean, mypy 0 errors; frontend tsc + eslint clean. Recipes, the multi-item meal flow, and the daily insight were all also verified with real end-to-end runs (register -> login -> set targets -> log meals -> create/log/scale/delete a recipe -> ownership checks -> daily totals -> insight) against a live Postgres-wire-protocol database, not just mocked unit tests.
 
 | Feature | Details |
 |---|---|
@@ -26,10 +30,10 @@ Earlier add-on: **AI macro estimation for nutrition** - describe a food in plain
 | **Workout templates** | Create reusable templates with ordered exercises |
 | **Workout logging** | Active workout timer, set/rep/weight/duration logging, personal record detection |
 | **Workout history** | Full history with filter tabs, volume calculations |
-| **Nutrition tracking** | Food database, meal logging, daily macro totals (calories, protein, carbs, fat) |
+| **Nutrition tracking** | Food database, meal logging, daily macro/fiber totals, multi-item AI meal parsing, daily nutrition targets + AI insight, saved recipes with scaled re-logging |
 | **Body measurements** | Weight entries + body measurements (chest, waist, hips, etc.) with trend tracking |
 | **Dashboard** | Summary widgets: recent workouts, weight trend, goal progress, macro summary |
-| **AI summaries** | Provider-independent AI service, weekly summary generation, usage logging with cost tracking |
+| **AI summaries** | Provider-independent AI service, weekly summary + daily nutrition insight generation, usage logging with cost tracking |
 
 ---
 

@@ -277,3 +277,74 @@ Each entry follows the format:
 - The link field is a clean seam to fill in real content later, per session.
 
 **Trade-offs:** No in-app playback yet; the experience depends on third-party links until an audio source is chosen.
+
+---
+
+## ADR-016: Nutrition targets are a dedicated settings table, not a Goal
+
+**Date:** 2026-07-01  
+**Status:** Accepted
+
+**Context:** The daily nutrition insight feature needs to compare logged calories/protein/carbs/fat/fiber against numbers the user actually chose - never invented ones. The existing `Goal` model (title/description/target_value/status lifecycle) covers open-ended, dated fitness goals like "lose 5kg by September."
+
+**Decision:** Added a separate `nutrition_targets` table - one optional row per user with five nullable fields (`calorie_target_kcal`, `protein_target_g`, `carbs_target_g`, `fat_target_g`, `fiber_target_g`). No status lifecycle; it's a plain settings row, upserted via `PUT /api/v1/nutrition/targets`.
+
+**Rationale:**
+- Daily macro targets are a standing setting, not a dated goal with active/paused/completed states - forcing them into `Goal` would mean either faking a lifecycle or adding nutrition-specific columns to a general-purpose table.
+- Every field is independently nullable so a user can set just a protein target. `is_set` on the response is `true` only when at least one field is non-null, and the AI insight service is required to treat an unset field as "no target," never a guessed default (see AI Assistant Rules: never invent user goals/data).
+
+**Trade-offs:** Two separate places a user's "goals" can live (`Goal` for dated targets, `NutritionTarget` for daily macros). Acceptable - they answer different questions and the nutrition table is intentionally minimal.
+
+---
+
+## ADR-017: Multi-item AI meal parsing is a separate endpoint, not a loop over the single-item one
+
+**Date:** 2026-07-01  
+**Status:** Accepted
+
+**Context:** Users often describe an entire meal or "everything eaten so far today" in one message (e.g. "45g oats, 200ml almond milk, 2 belvita biscuits, 1 scoop whey protein"). The existing `/estimate-macros` endpoint and prompt (`macro-est-v1`) are built for exactly one food.
+
+**Decision:** Added `POST /api/v1/nutrition/estimate-meal` with its own prompt version (`macro-est-multi-v1`) that asks the model to split the description into a JSON array of items, each with independent per-100g macros (including fiber, added to both the single- and multi-item schemas). Portion totals and the meal-level totals are computed in deterministic Python, never by the model. A separate `POST /api/v1/nutrition/log-meal` bulk-saves all user-approved items as one Food + one FoodLog per item in a single atomic commit.
+
+**Rationale:**
+- A single free-text call is far cheaper and more natural than making the user submit N separate single-item estimates, and lets the model use context across items (e.g. recognising "2 scoops" as two identical entries rather than one doubled one).
+- Keeping it a distinct endpoint/prompt (rather than looping the single-item prompt) means the response shape (list of items + totals) is explicit and versioned independently, so future prompt tuning for one flow doesn't silently affect the other.
+- Items with all-zero macros (a food the model genuinely couldn't estimate) are dropped from the preview rather than shown as a bogus zero-calorie row.
+
+**Trade-offs:** Two prompts/response shapes to maintain instead of one. Accepted given how different the parsing task and response shape are (single object vs. array + totals).
+
+---
+
+## ADR-018: Daily nutrition insight computes comparisons in code; the model only writes the narrative
+
+**Date:** 2026-07-01  
+**Status:** Accepted
+
+**Context:** After logging a batch of foods, users want a plain-language read on how the day is tracking against their own targets, plus manageable suggestions for remaining meals - similar in spirit to the existing weekly AI summary but scoped to a single day's nutrition.
+
+**Decision:** `daily_insight_service.get_daily_insight()` computes every number (current vs. target, percent, remaining) in deterministic Python from the day's real `FoodLog` totals and the user's own `NutritionTarget` row, then sends only that computed snapshot to the model, which is restricted to writing 2-4 highlights, 1-3 suggestions, and one encouragement line. When AI is off or fails, a rule-based fallback derived from the same comparisons is returned instead - the insight is never unavailable outright, and it never mutates any data (it's a GET). General population reference ranges (e.g. typical fiber intake) may be mentioned to the model as generic educational context, explicitly labelled as not the user's personal target.
+
+**Rationale:**
+- Matches the existing pattern in `weekly_summary_service` (deterministic snapshot -> versioned prompt -> parsed JSON -> rule-based fallback) rather than inventing a new one.
+- Keeps the model out of the one place a math error would be most visible and most damaging to trust - the actual macro numbers.
+- Satisfies the health-and-safety rule against presenting estimates as medical fact: the endpoint never diagnoses, guarantees outcomes, or recommends extreme restriction, and always discloses it isn't dietitian advice.
+
+**Trade-offs:** The AI's narrative is only as good as the deterministic snapshot handed to it - it cannot reason over data outside that day (e.g. weekly trends), which is an intentional scope boundary, not an oversight.
+
+---
+
+## ADR-019: Recipes are hard-deleted; logging a recipe creates plain FoodLog rows
+
+**Date:** 2026-07-01  
+**Status:** Accepted
+
+**Context:** Users wanted to save a combination of foods they eat often (e.g. a specific shake) and re-log the exact same thing later - with the option to log a different-sized portion - without re-describing it to the AI or re-searching each food.
+
+**Decision:** `Recipe` -> `RecipeItem` is a simple one-to-many (food_id + quantity_g + position), hard-deleted on delete (items cascade) rather than archived like `Food`/`Habit`. `POST /{id}/log` creates one ordinary `FoodLog` row per item via the same `nutrition_repository.create_food_log` the manual and AI-estimated flows use, with `quantity_g = saved_quantity * scale_factor` (default 1.0 = exactly as saved). A recipe itself never appears in daily totals, progress, or the dashboard - only the FoodLog rows it produces do. Recipe item/total macros are computed fresh from the current `Food.*_per_100g` values every time (never cached on the recipe), matching how `FoodLog` display values already work. The scale-math and macro-summing helpers were extracted into a new shared `nutrition_calculations.py` (`scale_macro`, `scale_optional_macro`, `sum_macro_totals`) so `nutrition_service` and `recipe_service` share one tested implementation instead of duplicating the arithmetic.
+
+**Rationale:**
+- No other table references `recipe_id` - logging one just creates independent `FoodLog` rows - so a hard delete (with `RecipeItem` cascading) is safe and there's no history to preserve, unlike `Habit` (whose completions reference the habit).
+- Reusing `create_food_log` for logging means recipes get all the existing FoodLog behavior (daily totals, Progress-page charts, edit/delete afterward) for free, with zero special-casing anywhere else in the app.
+- Computing macros fresh (not caching them on the recipe) means editing a food's macros later automatically updates every recipe that uses it, same guarantee `FoodLog` already gives.
+
+**Trade-offs:** If a food referenced by a saved recipe needs to be deleted, the `RESTRICT` foreign key blocks it (same trade-off `FoodLog` already accepts) - the user would need to delete the recipe (or remove that item) first.

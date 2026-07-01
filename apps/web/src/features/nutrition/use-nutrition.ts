@@ -10,13 +10,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { foodsApi, nutritionApi } from "@/lib/nutrition-api";
 import type {
+  DailyInsight,
   DailyNutrition,
   Food,
   FoodListResponse,
   LogFoodPayload,
+  LogMealPayload,
   LogWaterPayload,
   MealType,
+  NutritionTarget,
   UpdateFoodLogPayload,
+  UpdateNutritionTargetPayload,
   UpdateWaterLogPayload,
 } from "@/types/nutrition";
 
@@ -52,6 +56,14 @@ export function useNutrition(date: string) {
   const logFood = useCallback(
     async (payload: LogFoodPayload): Promise<void> => {
       await nutritionApi.logFood(payload);
+      await refresh();
+    },
+    [refresh]
+  );
+
+  const logMeal = useCallback(
+    async (payload: LogMealPayload): Promise<void> => {
+      await nutritionApi.logMeal(payload);
       await refresh();
     },
     [refresh]
@@ -103,12 +115,90 @@ export function useNutrition(date: string) {
     error: state.error,
     refresh,
     logFood,
+    logMeal,
     updateFoodLog,
     deleteFoodLog,
     logWater,
     updateWaterLog,
     deleteWaterLog,
   };
+}
+
+// ── Daily insight hook ────────────────────────────────────────────────────────
+
+interface UseDailyInsightState {
+  insight: DailyInsight | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+/** Read-only AI comparison of a day's nutrition vs. the user's own targets.
+ *  Refetch by bumping `refreshKey` (e.g. after logging a meal). */
+export function useDailyInsight(date: string, refreshKey: number = 0) {
+  const [state, setState] = useState<UseDailyInsightState>({
+    insight: null,
+    isLoading: true,
+    error: null,
+  });
+
+  const refresh = useCallback(async () => {
+    setState((s) => ({ ...s, isLoading: true, error: null }));
+    try {
+      const data = await nutritionApi.getInsight(date);
+      setState({ insight: data, isLoading: false, error: null });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load nutrition insight";
+      setState((s) => ({ ...s, isLoading: false, error: msg }));
+    }
+  }, [date]);
+
+  useEffect(() => {
+    void refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refresh, refreshKey]);
+
+  return { ...state, refresh };
+}
+
+// ── Nutrition targets hook ────────────────────────────────────────────────────
+
+interface UseNutritionTargetsState {
+  targets: NutritionTarget | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+export function useNutritionTargets() {
+  const [state, setState] = useState<UseNutritionTargetsState>({
+    targets: null,
+    isLoading: true,
+    error: null,
+  });
+
+  const refresh = useCallback(async () => {
+    setState((s) => ({ ...s, isLoading: true, error: null }));
+    try {
+      const data = await nutritionApi.getTargets();
+      setState({ targets: data, isLoading: false, error: null });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load nutrition targets";
+      setState((s) => ({ ...s, isLoading: false, error: msg }));
+    }
+  }, []);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  const update = useCallback(
+    async (payload: UpdateNutritionTargetPayload): Promise<void> => {
+      const data = await nutritionApi.updateTargets(payload);
+      setState({ targets: data, isLoading: false, error: null });
+    },
+    []
+  );
+
+  return { ...state, refresh, update };
 }
 
 // ── Food search hook ──────────────────────────────────────────────────────────

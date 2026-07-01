@@ -46,6 +46,7 @@ from app.routers import (
     nutrition,
     privacy,
     progress,
+    recipes,
     stress,
     users,
     weight,
@@ -140,6 +141,9 @@ def create_app() -> FastAPI:
 
     # nutrition router - food library, food log, water log.
     app.include_router(nutrition.router)
+
+    # recipes router - saved food combinations, re-loggable with scaling.
+    app.include_router(recipes.router)
 
     # measurements router - body circumference measurements.
     app.include_router(measurements.router)

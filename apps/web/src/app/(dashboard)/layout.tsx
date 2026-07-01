@@ -193,6 +193,7 @@ const NAV_LINKS = [
   { href: "/dashboard/templates", label: "Templates" },
   { href: "/dashboard/workouts", label: "Workouts" },
   { href: "/dashboard/nutrition", label: "Nutrition" },
+  { href: "/dashboard/recipes", label: "Recipes" },
   { href: "/dashboard/measurements", label: "Measurements" },
   { href: "/dashboard/wellness", label: "Wellness" },
   { href: "/dashboard/mind", label: "Mind" },
